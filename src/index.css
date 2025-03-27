@@ -14,6 +14,35 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@theme {
+  --color-primary: #26326c;
+  --color-primary2: #0faee6;
+  --color-secondary: #e51b27;
+  --color-secondary2: #ffcf55;
+  --color-surface: #ededed;
+  --color-error: #d81a1a;
+  --color-success: #48ca02;
+  --color-neutral: #605d62;
+  --color-neutral2: #939393;
+  --color-onBack: #0e1217;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-lato: 'Lato', sans-serif;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../public/fonts/Roboto-Regular.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('../public/fonts//Lato-Regular.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
