@@ -16,11 +16,12 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 className="text-3xl">Vite + React</h1>
+      <h1 className="text-4xl text-red-500">Vite + React</h1>
       <div className="card">
         <Button
           label="Click mee"
           onClick={() => setCount((count) => count + 1)}
+          variantColor='variant1'
         />
         count is: {count}
         <p>
