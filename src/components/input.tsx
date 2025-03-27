@@ -5,7 +5,6 @@ export const InputText = ({
   name,
   placeholder = '',
   type = 'text',
-  className = '',
   register,
   errors = {},
   onChange,
@@ -16,7 +15,7 @@ export const InputText = ({
     <div className="flex flex-col">
       <label
         htmlFor={name}
-        className={`py-1 text-onBack ${errors[name] ? 'text-error' : ''}`}
+        className={`py-1 text-primary subtitle-md ${errors[name] ? 'text-error' : ''}`}
       >
         {label} <span className="text-error">*</span>
       </label>
@@ -28,8 +27,7 @@ export const InputText = ({
           type={type}
           onChange={onChange}
           value={value}
-          className={`${className} ${errors[name] ? '' : ''}`}
-          {...(register ? register(name, validationRules) : {})}
+          className="body-lg placeholder-neutral  border-b-[1px] rounded p-2"
         />
       </div>
       <div className={`${errors[name] ? 'h-3 mb-2' : 'h-0'}`}>
