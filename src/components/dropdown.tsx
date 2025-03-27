@@ -1,7 +1,6 @@
-import React from 'react';
-import { DropdownProps } from '../interfaces/dropdown';
+import { DropdownProps } from '../interfaces';
 
-export const Dropdown: React.FC<DropdownProps> = ({
+export const Dropdown = ({
   name,
   label,
   options = [],
@@ -10,7 +9,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   placeholder = '',
   valueKey,
   errors = {},
-}) => {
+}: DropdownProps) => {
   return (
     <div className="flex flex-col mx-2">
       {label && (

@@ -1,7 +1,6 @@
-import React from 'react';
-import { InputProps } from '../interfaces/input';
+import { InputProps } from '../interfaces/components/input';
 
-export const InputText: React.FC<InputProps> = ({
+export const InputText = ({
   label,
   name,
   placeholder = '',
@@ -12,7 +11,7 @@ export const InputText: React.FC<InputProps> = ({
   onChange,
   value,
   validationRules = {},
-}) => {
+}: InputProps) => {
   return (
     <div className="flex flex-col">
       <label
