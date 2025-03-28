@@ -20,7 +20,7 @@ const FormAreas = () => {
                     <InputText
                     label="Nombre del Área"
                     name="inputArea"
-                    placeholder="Type something"
+                    placeholder="Ingrese nombre del área"
                     type="text"
                     className="w-[540px]"
                     labelPadding='py-5'

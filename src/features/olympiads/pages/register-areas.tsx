@@ -1,10 +1,10 @@
-import FormInfo from '../components/form-info';
+import FormAreas from '../components/form-areas';
 
-export const Register = () => {
+export const RegisterAreas = () => {
   return (
     <div className=" min-h-screen flex flex-col bg-white">
       <main className="flex-grow">
-        <FormInfo />
+        <FormAreas />
       </main>
     </div>
   );

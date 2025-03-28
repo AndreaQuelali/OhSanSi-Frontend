@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import FormAreas from './features/olympiads/components/form-areas'
+import { RegisterAreas } from './features/olympiads/pages/register-areas';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -7,8 +7,8 @@ function App() {
   return (
     <>
       <div>
-        <FormAreas
-        />
+        {/*<Register/>*/}
+        <RegisterAreas/>
       </div>
     </>
   );
