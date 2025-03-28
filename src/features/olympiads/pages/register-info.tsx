@@ -1,11 +1,9 @@
 import FormInfo from '../components/form-info';
 
-export const Register = () => {
+export const FormInfoPage = () => {
   return (
-    <div className=" min-h-screen flex flex-col bg-primary">
-      <main className="flex-grow">
-        <FormInfo />
-      </main>
-    </div>
+    <main>
+      <FormInfo />
+    </main>
   );
 };

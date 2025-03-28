@@ -1,10 +1,10 @@
-import { Button, Dropdown, InputText } from '../../../components';
+import { Button, Dropdown, InputText } from '@/components';
 
 export default function FormInfo() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <form className="max-w-9/12 mx-auto w-full mb-20">
+    <div className="flex items-center justify-center w-full h-[85vh]">
+      <div className="flex flex-col items-center justify-center flex-grow w-full max-w-6xl px-4 py-10 gap-8">
+        <form className="w-full">
           <h1 className="text-center text-primary mb-20 headline-lg">
             Registro de Información General de la Olimpiada
           </h1>
@@ -13,7 +13,7 @@ export default function FormInfo() {
               name="year"
               label="Año/Gestión"
               placeholder="Seleccionar año o gestión"
-              className="w-[400px]"
+              className="w-[500px]"
               options={[{ id: 1, name: 'Option 1' }]}
               value={1}
               onChange={() => {}}
@@ -25,7 +25,7 @@ export default function FormInfo() {
               name="cost"
               placeholder="0.00"
               type="number"
-              className="w-[400px]"
+              className="w-[500px]"
             />
           </div>
 
@@ -35,20 +35,22 @@ export default function FormInfo() {
               name="dateIni"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[400px]"
+              className="w-[500px]"
             />
             <InputText
               label="Fecha de Cierre"
               name="dateEnd"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[400px]"
+              className="w-[500px]"
             />
           </div>
         </form>
-        <div className="flex w-full max-w-9/12 justify-end gap-4">
-          <Button label="Cancelar" variantColor="variant2" />
-          <Button label="Registrar" />
+        <div className="flex w-full justify-center mt-10">
+          <div className="flex w-full justify-end gap-4">
+            <Button label="Cancelar" variantColor="variant2" />
+            <Button label="Registrar" />
+          </div>
         </div>
       </div>
     </div>
