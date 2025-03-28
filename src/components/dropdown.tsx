@@ -9,21 +9,19 @@ export const Dropdown = ({
   placeholder = '',
   valueKey,
   errors = {},
+  className = '',
 }: DropdownProps) => {
   return (
     <div className="flex flex-col mx-2">
       {label && (
-        <label
-          htmlFor={name}
-          className="mt-[20px] py-1 text-primary subtitle-md "
-        >
+        <label htmlFor={name} className=" py-1 text-primary subtitle-md ">
           {label} <span className="text-error">*</span>
         </label>
       )}
       <select
         id={name}
         name={name}
-        className="w-full md:w-[340px] h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack  p-2"
+        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className}`}
         value={value}
         onChange={onChange}
       >

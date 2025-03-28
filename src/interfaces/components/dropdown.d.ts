@@ -16,4 +16,5 @@ export interface DropdownProps {
   valueKey: string;
   register?: UseFormRegister<FieldValues>;
   errors?: FieldErrors;
+  className?: string;
 }
