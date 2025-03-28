@@ -5,6 +5,8 @@ export const InputText = ({
   name,
   placeholder = '',
   type = 'text',
+  className='',
+  labelPadding = 'py-1',
   register,
   errors = {},
   onChange,
@@ -15,19 +17,19 @@ export const InputText = ({
     <div className="flex flex-col">
       <label
         htmlFor={name}
-        className={`py-1 text-primary subtitle-md ${errors[name] ? 'text-error' : ''}`}
+        className={`text-primary subtitle-md ${labelPadding} ${errors[name] ? 'text-error' : ''}`}
       >
         {label} <span className="text-error">*</span>
       </label>
-      <div className="relative w-full">
-        <input
+      <div className="w-full">
+      <input
           id={name}
           name={name}
           placeholder={placeholder}
           type={type}
           onChange={onChange}
           value={value}
-          className="body-lg placeholder-neutral  border-b-[1px] rounded p-2"
+          className={`body-lg placeholder-neutral border-neutral border-b-[1px] rounded p-2 ${className}`} 
         />
       </div>
       <div className={`${errors[name] ? 'h-3 mb-2' : 'h-0'}`}>
