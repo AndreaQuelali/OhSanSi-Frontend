@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
-import CloseIcon from "../icons/close";
-import UploadImageIcon from "../icons/uploadImage";
+import CloseIcon from "../../../assets/icons/close";
+import UploadImageIcon from "../../../assets/icons/uploadImage";
 
 const CardUploadImage = () => {
   const [image, setImage] = useState<string | null>(null);

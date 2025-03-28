@@ -1,4 +1,4 @@
-import { Button, Dropdown, InputText } from '../../../../components';
+import { Button, Dropdown, InputText } from '../../../components';
 import { useState } from 'react';
 import CardUploadImage from './card-upload-image';
 
@@ -44,6 +44,7 @@ const FormAreas = () => {
                 <div className='flex flex-row justify-end space-x-5'>
                     <Button
                         label='Cancelar'
+                        variantColor='variant2'
                     />
                     <Button
                         label='Registrar'

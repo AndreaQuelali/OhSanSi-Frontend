@@ -13,7 +13,8 @@ export const Button = ({
 
   const varCol: Record<string, string> = {
     variant1: 'text-white bg-primary hover:bg-secondary2',
-    variant2: 'text-primary bg-white border-primary',
+    variant2:
+      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2',
     variant3: '',
     variantDesactivate: 'bg-neutral2',
   };
