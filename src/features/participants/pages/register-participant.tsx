@@ -4,6 +4,7 @@ import { NumberCircle } from '../components/number';
 import FormDataPart from '../components/form-data-participant';
 import FormTutor from '../components/form-tutor';
 import { Button } from '@/components';
+import FormAreaPart from '../components/form-areas-participant';
 
 export default function RegisterParticipant() {
   const [step, setStep] = useState(0);
@@ -47,7 +48,9 @@ export default function RegisterParticipant() {
           <FormTutor />
         </TabsContent>
 
-        <TabsContent value="areas">HOla</TabsContent>
+        <TabsContent value="areas">
+          <FormAreaPart />
+        </TabsContent>
       </Tabs>
 
       <div className="flex justify-between mx-20">
