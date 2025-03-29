@@ -1,4 +1,4 @@
-import { ButtonProps } from '../../interfaces';
+import { ButtonProps } from "@/interfaces";
 
 export const Button = ({
   type = 'button',
@@ -9,11 +9,12 @@ export const Button = ({
   icon: Icon,
 }: ButtonProps) => {
   const baseButton =
-    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center whitespace-nowrap';
+    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center cursor-pointer whitespace-nowrap';
 
   const varCol: Record<string, string> = {
     variant1: 'text-white bg-primary hover:bg-secondary2',
-    variant2: 'text-primary bg-white border-primary',
+    variant2:
+      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2',
     variant3: '',
     variantDesactivate: 'bg-neutral2',
   };

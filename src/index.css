@@ -5,7 +5,7 @@
   --color-primary2: #0faee6;
   --color-secondary: #e51b27;
   --color-secondary2: #ffcf55;
-  --color-surface: #ededed;
+  --color-surface: #f7f7f7;
   --color-error: #d81a1a;
   --color-success: #48ca02;
   --color-neutral: #605d62;
@@ -100,4 +100,12 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  height: 100%;
 }
