@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button, Dropdown, InputText } from './components';
 import { Register } from './features/olympiads/pages/register-info';
 
 function App() {

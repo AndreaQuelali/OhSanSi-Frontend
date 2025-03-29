@@ -45,7 +45,7 @@ export default function FormInfo() {
               register={register}
               errors={errors}
               validationRules={{
-                required: "Debe seleccionar un año/gestión", 
+                required: "", 
               }}
             />
             <InputText

@@ -1,5 +1,5 @@
 import { InputProps } from '../interfaces/components/input';
-import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
+import { FieldValues } from 'react-hook-form';
 
 export const InputText = <T extends FieldValues>({
   label,
