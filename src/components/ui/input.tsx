@@ -1,4 +1,4 @@
-import { InputProps } from '../interfaces/components/input';
+import { InputProps } from "@/interfaces";
 
 export const InputText = ({
   label,
@@ -29,7 +29,7 @@ export const InputText = ({
           type={type}
           onChange={onChange}
           value={value}
-          className={`h-[50px] body-lg placeholder-neutral border-b-[1px] rounded p-2 ${className}`}
+          className={`h-[50px] body-lg placeholder-neutral border-b-[1px] rounded p-2 outline-none ${className}`}
         />
       </div>
       <div className={`${errors[name] ? 'h-3 mb-2' : 'h-0'}`}>
