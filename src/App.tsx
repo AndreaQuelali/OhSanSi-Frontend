@@ -1,13 +1,7 @@
-import RegisterParticipant from "./features/participants/pages/register-participant";
-
+import AppRoutes from './routes/app-routes';
 
 function App() {
-
-  return (
-    <>
-      <RegisterParticipant />
-    </>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

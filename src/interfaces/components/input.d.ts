@@ -6,6 +6,7 @@ export interface InputProps {
   placeholder?: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'date';
   className?: string;
+  labelPadding?: string;
   register?: UseFormRegister<FieldValues>;
   errors?: FieldErrors;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;

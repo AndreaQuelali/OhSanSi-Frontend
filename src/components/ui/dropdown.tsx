@@ -1,4 +1,4 @@
-import { DropdownProps } from '../interfaces';
+import { DropdownProps } from '@/interfaces';
 
 export const Dropdown = ({
   name,
@@ -12,7 +12,7 @@ export const Dropdown = ({
   className = '',
 }: DropdownProps) => {
   return (
-    <div className="flex flex-col mx-2">
+    <div className="flex flex-col">
       {label && (
         <label htmlFor={name} className=" py-1 text-primary subtitle-md ">
           {label} <span className="text-error">*</span>
@@ -21,7 +21,7 @@ export const Dropdown = ({
       <select
         id={name}
         name={name}
-        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className}`}
+        className={`h-[50px] bg-transparent outline-none rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className}`}
         value={value}
         onChange={onChange}
       >
