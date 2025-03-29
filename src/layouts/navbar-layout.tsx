@@ -1,9 +1,10 @@
 import { Link, Outlet } from 'react-router';
 import IconUser from '@/components/icons/icon-user';
+import FooterDesign from '@/components/ui/footer-design';
 
 export default function NavbarLayout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-white">
       <nav className="relative sm:sticky sm:top-0 bg-surface h-[80px] flex items-center px-6 z-50">
         <div className="flex justify-between items-center w-full h-full">
           <Link to="/" className="flex items-center">
@@ -44,9 +45,10 @@ export default function NavbarLayout() {
           </ul>
         </div>
       </nav>
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
+      <FooterDesign />
     </div>
   );
 }
