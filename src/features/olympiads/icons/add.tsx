@@ -1,4 +1,3 @@
-// add.tsx
 import React from 'react';
 
 const AddIcon = ({ className }: { className?: string }) => {
