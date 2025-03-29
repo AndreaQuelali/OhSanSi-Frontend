@@ -1,4 +1,4 @@
-import { ButtonProps } from "@/interfaces";
+import { ButtonProps } from '@/interfaces';
 
 export const Button = ({
   type = 'button',
@@ -7,6 +7,7 @@ export const Button = ({
   onClick,
   disabled = false,
   icon: Icon,
+  className = '',
 }: ButtonProps) => {
   const baseButton =
     'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center cursor-pointer whitespace-nowrap';
@@ -24,9 +25,9 @@ export const Button = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseButton} ${varCol[variantColor]} flex items-center justify-center`}
+      className={`${baseButton} ${varCol[variantColor]} ${className} flex items-center justify-center`}
     >
-      {Icon && <Icon className="mr-2" />} {/* Renderiza el icono si existe */}
+      {Icon && <Icon className="mr-2" />}
       <p className="pl-2 text-center text-wrap">{label}</p>
     </button>
   );
