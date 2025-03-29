@@ -2,6 +2,7 @@ export * from './icons/close';
 export * from './icons/icon-user';
 export * from './icons/upload-image';
 export * from './index';
+export * from './ui/button-icon';
 export * from './ui/button';
 export * from './ui/dropdown';
 export * from './ui/footer-design';

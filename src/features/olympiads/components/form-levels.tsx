@@ -9,11 +9,12 @@ export default function FormLevels() {
           <h1 className="text-center text-primary mb-10 headline-lg">
             Registro de Niveles/Categorías de Olimpiada
           </h1>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-12">
+          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row mb-12 justify-center items-center gap-3">
             <Dropdown
               name="area"
               label="Área"
               placeholder="Seleccionar área"
+              className="w-[340px]"
               options={[{ id: 1, name: 'Option 1' }]}
               value={1}
               onChange={() => {}}
@@ -22,6 +23,7 @@ export default function FormLevels() {
             />
             <InputText
               label="Nivel/Categoría"
+              className="w-[340px]"
               name="level"
               placeholder="Ingresar nivel/categoria"
               type="text"
