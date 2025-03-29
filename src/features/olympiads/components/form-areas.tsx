@@ -6,17 +6,17 @@ const FormAreas = () => {
     const [inputValue, setInputValue] = useState("");
 
   return (
-    <div className='my-16 mx-64'>
+    <div className='my-16 max-w-4xl mx-auto px-4'>
         <form>
             <div className='flex flex-col'>
-                <h1 className='text-center headline-lg text-primary'>
+                <h1 className='text-center text-2xl sm:text-3xl font-bold text-primary'>
                     Registro de Áreas de Competencia de Olimpiada
                 </h1>
-                <h1 className='text-center headline-md text-primary'>
+                <h1 className='text-center text-xl sm:text-2xl font-semibold text-primary'>
                     Gestión 2025
                 </h1>
-                <div className='flex flex-row justify-between my-7'>
-                    <div>      
+                <div className='flex flex-col sm:flex-row justify-between items-center my-7 gap-5'>
+                    <div className='w-full sm:max-w-[540px]'>      
                     <InputText
                     label="Nombre del Área"
                     name="inputArea"
@@ -31,7 +31,7 @@ const FormAreas = () => {
                     validationRules={{}}
                     />
                     </div>
-                    <div className='w-[400px]'>
+                    <div className='w-full sm:max-w-[400px]'>
                         <CardUploadImage/>
                     </div>
                 </div>
