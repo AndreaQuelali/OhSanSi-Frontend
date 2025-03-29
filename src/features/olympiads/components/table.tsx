@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import DataTable, { Column } from 'react-data-table-component';
+import DataTable from 'react-data-table-component';
 import DeleteIcon from '../icons/delete';
 import { ButtonIcon } from '../../../components/buttons/button-icon';
 import { Button } from '../../../components';
+
+interface Table {
+  id: number;
+  area: string;
+  level: string;
+  grade: string;
+}
+
+interface Column {
+  name: string;
+  selector?: (row: Table) => string;
+  sortable?: boolean;
+  cell?: (row: Table) => React.ReactNode;
+}
 
 export const Table: React.FC = () => {
   const [rows, setRows] = useState<Table[]>([
@@ -24,7 +38,7 @@ export const Table: React.FC = () => {
     setRows(rows.filter((row) => row.id !== id));
   };
 
-  const columns: Column<Table>[] = [
+  const columns: Column[] = [
     {
       name: 'Área',
       selector: (row: Table) => row.area,
@@ -83,6 +97,7 @@ export const Table: React.FC = () => {
           responsive
           highlightOnHover
           customStyles={customStyles}
+          className='rounded-lg text-center'
         />
       </div>
     </div>

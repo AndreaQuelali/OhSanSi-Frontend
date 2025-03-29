@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@interfaces': path.resolve(__dirname, 'src/interfaces'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
 });
