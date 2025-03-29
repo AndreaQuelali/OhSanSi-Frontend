@@ -1,12 +1,17 @@
+import { Button } from '@/components';
 import FormLevels from '../components/form-levels';
-import TableLevels from '../components/table-levels';
+import { Table } from '../components/table';
 
 export const RegisterLevels = () => {
   return (
-    <div className=" min-h-screen flex flex-col">
-      <main className="flex-grow flex flex-col items-center justify-center">
+    <div className="w-full">
+      <main className=" flex flex-col">
         <FormLevels />
-        <TableLevels />
+        <Table />
+        <div className="max-w-9/12 mx-auto w-full flex justify-end gap-4">
+          <Button label="Cancelar" variantColor="variant2" />
+          <Button label="Registrar" />
+        </div>
       </main>
     </div>
   );

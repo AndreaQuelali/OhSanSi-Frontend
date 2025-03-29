@@ -3,10 +3,10 @@ import AddIcon from '../icons/add';
 
 export default function FormLevels() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col">
       <div className="flex flex-col items-center justify-center flex-grow">
         <form className="max-w-9/12 mx-auto w-full">
-          <h1 className="text-center text-primary mb-20 headline-lg">
+          <h1 className="text-center text-primary mb-10 headline-lg">
             Registro de Niveles/Categorías de Olimpiada
           </h1>
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-12">
