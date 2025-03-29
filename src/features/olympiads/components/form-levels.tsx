@@ -2,7 +2,7 @@ import { Button, Dropdown, InputText } from '../../../components';
 import AddIcon from '../icons/add';
 import { Table } from './table';
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 type FormData = {
   area: string;
@@ -11,8 +11,14 @@ type FormData = {
   gmax: string;
 };
 
-export default function FormLevels() {
+type TableRow = {
+  id: number;
+  area: string;
+  level: string;
+  grade: string; // Combinamos gmin y gmax en una sola propiedad
+};
 
+export default function FormLevels() {
   const {
     register,
     handleSubmit,
@@ -29,6 +35,8 @@ export default function FormLevels() {
   });
 
   const minGrade = watch("gmin");
+  const [rows, setRows] = useState<TableRow[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (minGrade) {
@@ -37,7 +45,26 @@ export default function FormLevels() {
   }, [minGrade, trigger]);
 
   const onSubmit = (data: FormData) => {
-    console.log("Formulario enviado con éxito:", data);
+    setErrorMessage(null);
+    const isDuplicate = rows.some(row => row.area === data.area && row.level === data.level);
+  
+    if (isDuplicate) {
+      setErrorMessage("Este nivel/categoría ya se encuentra agregado");
+      return;
+    }
+  
+    const newRow: TableRow = {
+      id: Date.now(),
+      area: data.area,
+      level: data.level,
+      grade: `${data.gmin} - ${data.gmax}`,
+    };
+  
+    setRows([...rows, newRow]);
+  };
+
+  const handleDeleteRow = (id: number) => {
+    setRows(rows.filter((row) => row.id !== id)); 
   };
 
   return (
@@ -111,12 +138,20 @@ export default function FormLevels() {
             />
           </div>
           <Button label="Agregar" className="w-full " icon={AddIcon} type="submit"  disabled={!isValid} variantColor={!isValid ? "variantDesactivate" : "variant1"} />
+          
+          <div className="min-h-[24px] flex mt-2">
+            {errorMessage && <p className="text-error subtitle-sm">{errorMessage}</p>}
+          </div>
           <div className='w-full'>
-            <Table />
+            <Table data={rows} onDeleteRow={handleDeleteRow} />
           </div>
           <div className="mx-auto w-full flex justify-end gap-4">
             <Button label="Cancelar" variantColor="variant2" />
-            <Button label="Registrar"/>
+            <Button
+              label="Registrar"
+              disabled={rows.length === 0}
+              variantColor={rows.length === 0 ? "variantDesactivate" : "variant1"}
+            />
           </div>
         </form>
       </div>
