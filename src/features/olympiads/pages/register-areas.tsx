@@ -1,4 +1,4 @@
-import FooterDesign from '../../../components/footer-design';
+import FooterDesign from '@/components/ui/footer-design';
 import FormAreas from '../components/form-areas';
 
 export const RegisterAreas = () => {

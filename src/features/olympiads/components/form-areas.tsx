@@ -1,4 +1,4 @@
-import { Button, Dropdown, InputText } from '../../../components';
+import { Button, Dropdown, InputText } from '@/components';
 import { useState } from 'react';
 import CardUploadImage from './card-upload-image';
 
