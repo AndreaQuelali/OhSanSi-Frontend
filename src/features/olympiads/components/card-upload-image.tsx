@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
-import CloseIcon from "../../../assets/icons/close";
-import UploadImageIcon from "../../../assets/icons/uploadImage";
+import CloseIcon from '@/components/icons/close';
+import UploadImageIcon from '@/components/icons/upload-image';
+import React, { useState, useRef } from 'react';
 
 const CardUploadImage = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -20,7 +20,7 @@ const CardUploadImage = () => {
   const handleRemoveImage = () => {
     setImage(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; 
+      fileInputRef.current.value = '';
     }
   };
 
@@ -33,7 +33,7 @@ const CardUploadImage = () => {
             onClick={handleRemoveImage}
             className="absolute top-[-10px] right-[-10px] bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg cursor-pointer"
           >
-            <CloseIcon/>
+            <CloseIcon />
           </button>
         </div>
       ) : (
@@ -41,7 +41,7 @@ const CardUploadImage = () => {
           className="flex flex-col items-center justify-center cursor-pointer p-4"
           onClick={() => fileInputRef.current?.click()}
         >
-          <UploadImageIcon/>
+          <UploadImageIcon />
           <p className="text-neutral-400 subtitle-md mt-2">Subir imagen</p>
         </div>
       )}
