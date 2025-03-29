@@ -88,7 +88,7 @@ const CardUploadImage = forwardRef(({ onChange }: CardUploadImageProps, ref) => 
           onChange={handleImageChange}
         />
       </div>
-      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
+      {error && <p className="text-error mt-2 subtitle-sm text-center">{error}</p>}
     </div>
   );
 });
