@@ -10,7 +10,7 @@ export const Button = ({
   className = '',
 }: ButtonProps) => {
   const baseButton =
-    'button-lg rounded-[20px] h-10 pl-4 pr-5 text-center flex items-center whitespace-nowrap';
+    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center cursor-pointer whitespace-nowrap';
 
   const varCol: Record<string, string> = {
     variant1: 'text-white bg-primary hover:bg-secondary2',
