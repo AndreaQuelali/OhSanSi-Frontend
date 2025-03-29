@@ -1,18 +1,18 @@
 import { DropdownProps } from "../interfaces";
+import { FieldErrors, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
-export const Dropdown = ({
+export const Dropdown = <T extends FieldValues>({
   name,
   label,
   options = [],
-  value,
-  placeholder = "",
-  valueKey = "id",
-  displayKey = "name",
-  errors = {},
-  className = "",
+  placeholder = "Selecciona una opción",
+  displayKey,
+  valueKey,
   register,
-  ...rest
-}: DropdownProps) => {
+  errors = {},
+  validationRules = {},
+  className = "",
+}: DropdownProps<T>) => {
   return (
     <div className="flex flex-col">
       {label && (
@@ -22,22 +22,23 @@ export const Dropdown = ({
       )}
       <select
         id={name}
-        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className}`}
-        {...rest}
-        {...(register ? register(name) : {})} 
+        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
+          errors[name] ? "border-error" : ""
+        }`} 
+        {...register(name, validationRules)} 
       >
         <option value="" disabled className="bg-neutral2 text-white">
           {placeholder}
         </option>
-        {options.map((option) => (
-          <option key={option[valueKey]} value={option[valueKey]} className="bg-neutral2 text-onBack">
+        {options.map((option, index) => (
+          <option key={index} value={option[valueKey]} className="bg-neutral2 text-onBack">
             {option[displayKey]} 
           </option>
         ))}
       </select>
-      <div className="min-h-[30px]">
+      <div className='h-[25px]'>
         {errors?.[name] && (
-          <span className="text-error subtitle-sm">{errors[name]?.message as string}</span>
+          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
         )}
       </div>
     </div>

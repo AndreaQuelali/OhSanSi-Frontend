@@ -15,9 +15,9 @@ export default function FormInfo() {
     formState: { errors, isValid },
     getValues,
   } = useForm<FormData>({
-    mode: "onChange", // Validación en tiempo real
+    mode: "onChange", 
     defaultValues: {
-      year: "", // Inicializamos con un valor vacío para que aparezca el placeholder
+      year: "", 
     },
   });
 
@@ -33,16 +33,20 @@ export default function FormInfo() {
             Registro de Información General de la Olimpiada
           </h1>
           
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-12">
+          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
             <Dropdown
+              name="year"
               label="Año/Gestión"
               placeholder="Seleccionar año o gestión"
               className="w-[400px]"
               options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
               displayKey="name"
               valueKey="id"
-              {...register("year", { required: "Debe seleccionar un año/gestión" })}
+              register={register}
               errors={errors}
+              validationRules={{
+                required: "Debe seleccionar un año/gestión", 
+              }}
             />
             <InputText
               label="Costo de Inscripción"
@@ -53,11 +57,11 @@ export default function FormInfo() {
               register={register}
               validationRules={{
                 pattern: {
-                  value: /^\d+(\.\d{1,2})?$/, // Permite números positivos con hasta dos decimales
+                  value: /^\d+(\.\d{1,2})?$/, 
                   message: "El costo debe ser un número positivo con hasta dos decimales",
                 },
                 required: "Se debe ingresar un valor mayor a 0.00",
-                min: { value: 0.01, message: "El costo debe ser un valor positivo" },
+                min: { value: 0.01, message: "Se debe ingresar un valor mayor a 0.00" },
               }}
               errors={errors}
             />
@@ -116,14 +120,9 @@ export default function FormInfo() {
             />
           </div>
 
-          <div className="flex flex-row mt-5 justify-end gap-4">
+          <div className="flex flex-row mt-10 justify-end gap-4">
             <Button label="Cancelar" variantColor="variant2" />
-            <Button
-              type="submit"
-              label="Registrar"
-              variantColor={isValid ? "variant1" : "variantDesactivate"} // Alterna entre las variantes según la validez
-              disabled={!isValid} // Deshabilitar si el formulario no es válido
-            />
+            <Button type="submit" label="Registrar" disabled={!isValid} variantColor={!isValid ? "variantDesactivate" : "variant1"} />
           </div>
         </form>
       </div>
