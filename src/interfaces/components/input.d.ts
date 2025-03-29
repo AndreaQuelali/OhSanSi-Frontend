@@ -10,4 +10,5 @@ interface InputProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   errors?: FieldErrors<T>;
   validationRules?: Record<string, unknown>;
+  isRequired?: boolean;
 }

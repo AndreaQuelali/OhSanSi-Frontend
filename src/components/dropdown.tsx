@@ -1,5 +1,5 @@
 import { DropdownProps } from "../interfaces";
-import { FieldErrors, FieldValues, Path, UseFormRegister } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 
 export const Dropdown = <T extends FieldValues>({
   name,
@@ -12,12 +12,13 @@ export const Dropdown = <T extends FieldValues>({
   errors = {},
   validationRules = {},
   className = "",
+  isRequired = true,
 }: DropdownProps<T>) => {
   return (
     <div className="flex flex-col">
       {label && (
         <label htmlFor={name} className="py-1 text-primary subtitle-md">
-          {label} <span className="text-error">*</span>
+          {label} {isRequired && <span className="text-error">*</span>}
         </label>
       )}
       <select

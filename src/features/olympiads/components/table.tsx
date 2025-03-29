@@ -68,7 +68,7 @@ export const Table: React.FC = () => {
 
   return (
     <div className="w-full flex items-center justify-center my-6">
-      <div className=" w-9/12">
+      <div className="w-full">
         <div className="flex justify-between">
           <h2 className="text-primary subtitle-md">
             Niveles/Categorías agregadas

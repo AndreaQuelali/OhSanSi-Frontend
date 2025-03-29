@@ -1,5 +1,5 @@
 import { InputProps } from '../interfaces/components/input';
-import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
+import { FieldValues } from 'react-hook-form';
 
 export const InputText = <T extends FieldValues>({
   label,
@@ -11,11 +11,12 @@ export const InputText = <T extends FieldValues>({
   register,
   errors,
   validationRules = {},
+  isRequired = true,
 }: InputProps<T>) => {
   return (
     <div className="flex flex-col">
       <label htmlFor={name as string} className={`text-primary subtitle-md ${labelPadding}`}>
-        {label} <span className="text-error">*</span>
+      {label} {isRequired && <span className="text-error">*</span>}
       </label>
       <div className="w-full">
         <input
