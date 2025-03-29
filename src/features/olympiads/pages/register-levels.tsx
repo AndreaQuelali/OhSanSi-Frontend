@@ -1,6 +1,5 @@
-import { Button } from '@/components';
+
 import FormLevels from '../components/form-levels';
-import { Table } from '../components/table';
 
 export const RegisterLevels = () => {
   return (
