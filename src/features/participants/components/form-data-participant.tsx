@@ -1,40 +1,15 @@
 import { Dropdown, InputText } from '../../../components';
-import { useForm } from "react-hook-form";
-
-type FormData = {
-  name: string;
-  lastname: string;
-  ci: number;
-  email: string;
-  phone: number;
-  birthday: string;
-  school: string;
-  grade: string;
-  depa: string;
-  prov: string;
-};
+import { useFormContext } from "react-hook-form"; 
 
 export default function FormDataPart() {
   const {
     register,
-    handleSubmit,
-    formState: { errors, isValid },
-    getValues,
+    formState: { errors },
     watch,
-  } = useForm<FormData>({
-    mode: "onChange", 
-    defaultValues: {
-      depa: "",
-      prov: "",
-      grade: "",
-    },
-  });
+  } = useFormContext(); // Usar useFormContext para acceder al contexto del formulario
 
-  const selectedDepartment = watch("depa");
-
-  const onSubmit = (data: FormData) => {
-    console.log("Formulario enviado con éxito:", data);
-  };
+  const selectedDepartment = watch("olimpista.depa");
+  console.log("Departamento seleccionado:", selectedDepartment);
 
   return (
     <div className="flex flex-col my-6">
@@ -46,7 +21,7 @@ export default function FormDataPart() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Nombre(s)"
-              name="name"
+              name="olimpista.name"
               placeholder="Lucia Damaris"
               className="w-2xs"
               register={register}
@@ -61,7 +36,7 @@ export default function FormDataPart() {
             />
             <InputText
               label="Apellido(s)"
-              name="lastname"
+              name="olimpista.lastname"
               placeholder="Quiroz Lopez"
               className="w-2xs"
               register={register}
@@ -76,7 +51,7 @@ export default function FormDataPart() {
             />
             <InputText
               label="Número de cédula de identidad"
-              name="ci"
+              name="olimpista.ci"
               placeholder="1234567"
               className="w-2xs"
               register={register}
@@ -93,7 +68,7 @@ export default function FormDataPart() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Correo electrónico"
-              name="email"
+              name="olimpista.email"
               placeholder="lucia@gmail.com"
               type="email"
               className="w-2xs"
@@ -109,7 +84,7 @@ export default function FormDataPart() {
             />
             <InputText
               label="Número de celular"
-              name="phone"
+              name="olimpista.phone"
               placeholder="77777777"
               className="w-2xs"
               register={register}
@@ -124,7 +99,7 @@ export default function FormDataPart() {
             />
             <InputText
               label="Fecha de nacimiento"
-              name="birthday"
+              name="olimpista.birthday"
               placeholder="DD/MM/AAAA"
               type="date"
               className="w-2xs"
@@ -138,7 +113,7 @@ export default function FormDataPart() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Unidad educativa"
-              name="school"
+              name="olimpista.school"
               placeholder="Seleccionar unidad educativa"
               className="w-[620px]"
               register={register}
@@ -153,7 +128,7 @@ export default function FormDataPart() {
             />
             <Dropdown
               label="Curso"
-              name="grade"
+              name="olimpista.grade"
               placeholder="Seleccionar curso"
               className="w-2xs"
               options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
@@ -169,7 +144,7 @@ export default function FormDataPart() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between">
             <Dropdown
               label="Departamento"
-              name="depa"
+              name="olimpista.depa"
               placeholder="Seleccionar departamento"
               className="w-[430px]"
               options={[
@@ -188,7 +163,7 @@ export default function FormDataPart() {
             <div>
               <Dropdown
                 label="Provincia"
-                name="prov"
+                name="olimpista.prov"
                 placeholder="Seleccionar provincia"
                 className="w-[430px]"
                 options={[
@@ -202,7 +177,7 @@ export default function FormDataPart() {
                 validationRules={{
                   required: "La provincia es obligatoria", 
                 }}
-                disabled={!selectedDepartment}
+                disabled={!selectedDepartment || selectedDepartment === ""}
               />
               <div className='h-[25px]'>
                 {!selectedDepartment && (

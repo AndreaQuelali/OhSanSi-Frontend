@@ -45,9 +45,16 @@ export const Dropdown = <T extends FieldValues>({
         ))}
       </select>
       <div className="h-[25px]">
-        {errors?.[name] && (
+        {name
+          .split('.')
+          .reduce((acc: Record<string, any>, key: string) => acc?.[key], errors) && (
           <span className="text-error subtitle-sm">
-            {String(errors[name]?.message)}
+            {String(
+              name
+                .split('.')
+                .reduce((acc: Record<string, any>, key: string) => acc?.[key], errors)
+                ?.message
+            )}
           </span>
         )}
       </div>

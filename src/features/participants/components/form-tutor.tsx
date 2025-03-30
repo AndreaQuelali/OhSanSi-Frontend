@@ -1,32 +1,12 @@
 import { Button, Dropdown, InputText } from '../../../components';
 import { useForm } from "react-hook-form";
-
-type FormData = {
-  name: string;
-  lastname: string;
-  ci: number;
-  email: string;
-  phone: number;
-  rol: string;
-};
+import { useFormContext } from 'react-hook-form';
 
 export default function FormTutor() {
-
   const {
     register,
-    handleSubmit,
-    formState: { errors, isValid },
-    getValues,
-  } = useForm<FormData>({
-    mode: "onChange", 
-    defaultValues: {
-      
-    },
-  });
-
-  const onSubmit = (data: FormData) => {
-    console.log("Formulario enviado con éxito:", data);
-  };
+    formState: { errors },
+  } = useFormContext(); 
 
   return (
     <div className=" flex flex-col my-6">
