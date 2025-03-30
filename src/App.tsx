@@ -1,8 +1,8 @@
-import { RegisterAreas } from './features';
+import { RegisterAreas, RegisterLevelsPage } from './features';
 import AppRoutes from './routes/app-routes';
 
 function App() {
-  return <RegisterAreas/>
+  return <RegisterLevelsPage/>
 }
 
 export default App;
