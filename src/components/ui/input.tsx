@@ -31,9 +31,9 @@ export const InputText = <T extends FieldValues>({
         />
       </div>
       <div className="h-[25px]">
-        {errors?.[name] && (
+        {errors && name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors) && (
           <span className="text-error subtitle-sm text-wrap text-center">
-            {String(errors[name]?.message)}
+            {String(name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors)?.message)}
           </span>
         )}
       </div>

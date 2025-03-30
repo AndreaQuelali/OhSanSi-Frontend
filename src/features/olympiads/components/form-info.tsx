@@ -1,17 +1,17 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Dropdown, InputText } from '../../../components';
+import { Button, Dropdown, InputText, Modal } from '../../../components';
+import { useApiForm } from '@/hooks/use-api-form';
+import { FormData } from '../interfaces/form-info';
 
-type FormData = {
-  year: string;
-  cost: number;
-  dateIni: string;
-  dateEnd: string;
-};
 
 export default function FormInfo() {
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState<FormData | null>(null);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
     getValues,
   } = useForm<FormData>({
@@ -20,9 +20,39 @@ export default function FormInfo() {
       year: '',
     },
   });
+  const { submitForm } = useApiForm('olympiad-registration');
 
-  const onSubmit = (data: FormData) => {
-    console.log('Formulario enviado con éxito:', data);
+  const onSubmit = async (data: FormData) => {
+    setFormData(data);
+    setShowModal(true);
+  };
+
+  const onConfirm = async () => {
+    if (!formData) return;
+
+    const payload = {
+      gestion: Number(formData.year),
+      costo: parseFloat(formData.cost.toString()),
+      fecha_inicio: formData.dateIni,
+      fecha_fin: formData.dateEnd,
+      max_categorias_olimpista: Number(formData.limitAreas),
+    };
+
+    const response = await submitForm(payload);
+
+    if (response) {
+      console.log('Registro exitoso:', response);
+      alert('Registro exitoso');
+      reset();
+    } else {
+      alert('Error en el registro. Intente nuevamente.');
+    }
+
+    setShowModal(false);
+  };
+
+  const onCloseModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -50,9 +80,7 @@ export default function FormInfo() {
               valueKey="id"
               register={register}
               errors={errors}
-              validationRules={{
-                required: 'Debe seleccionar un año/gestión',
-              }}
+              validationRules={{ required: 'Debe seleccionar un año/gestión' }}
             />
             <InputText
               label="Costo de Inscripción"
@@ -113,7 +141,6 @@ export default function FormInfo() {
                 validate: (value: string) => {
                   const [dayEnd, monthEnd, yearEnd] = value.split('/');
                   const dateEnd = new Date(`${yearEnd}-${monthEnd}-${dayEnd}`);
-
                   const dateIniValue = getValues('dateIni');
                   if (!dateIniValue)
                     return 'Debe ingresar la fecha de inicio primero';
@@ -130,7 +157,7 @@ export default function FormInfo() {
               errors={errors}
             />
           </div>
-            <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
+          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
             <InputText
               label="Límite de Áreas por Estudiante"
               name="limitAreas"
@@ -139,19 +166,19 @@ export default function FormInfo() {
               className="w-[480px]"
               register={register}
               validationRules={{
-              pattern: {
-                value: /^\d+$/,
-                message: 'El límite debe ser un número entero positivo',
-              },
-              required: 'Se debe ingresar un valor mayor a 0',
-              min: {
-                value: 1,
-                message: 'Se debe ingresar un valor mayor o igual a 1',
-              },
+                pattern: {
+                  value: /^\d+$/,
+                  message: 'El límite debe ser un número entero positivo',
+                },
+                required: 'Se debe ingresar un valor mayor a 0',
+                min: {
+                  value: 1,
+                  message: 'Se debe ingresar un valor mayor o igual a 1',
+                },
               }}
               errors={errors}
             />
-            </div>
+          </div>
 
           <div className="flex flex-row mt-10 justify-end gap-4">
             <Button label="Cancelar" variantColor="variant2" />
@@ -164,6 +191,13 @@ export default function FormInfo() {
           </div>
         </form>
       </div>
+      {showModal && (
+        <Modal
+          onClose={onCloseModal}
+          text="¿Estás seguro de que deseas registrar esta información?"
+          onConfirm={onConfirm}
+        />
+      )}
     </div>
   );
 }

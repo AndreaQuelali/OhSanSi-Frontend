@@ -14,7 +14,8 @@ export const Dropdown = <T extends FieldValues>({
   validationRules = {},
   className = '',
   isRequired = true,
-}: DropdownProps<T>) => {
+  disabled = false,
+}: DropdownProps<T> & { disabled?: boolean }) => {
   return (
     <div className="flex flex-col">
       {label && (
@@ -24,10 +25,11 @@ export const Dropdown = <T extends FieldValues>({
       )}
       <select
         id={name}
-        className={`bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
-          errors[name] ? 'border-error' : ''
-        }`}
-        {...(register ? register(name, validationRules) : {})}
+        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
+          errors[name] ? "border-error" : ""
+        }`} 
+        {...register(name, validationRules)}
+        disabled={disabled} 
       >
         <option value="" disabled className="bg-neutral2 text-white">
           {placeholder}
@@ -43,9 +45,16 @@ export const Dropdown = <T extends FieldValues>({
         ))}
       </select>
       <div className="h-[25px]">
-        {errors?.[name] && (
+        {name
+          .split('.')
+          .reduce((acc: Record<string, any>, key: string) => acc?.[key], errors) && (
           <span className="text-error subtitle-sm">
-            {String(errors[name]?.message)}
+            {String(
+              name
+                .split('.')
+                .reduce((acc: Record<string, any>, key: string) => acc?.[key], errors)
+                ?.message
+            )}
           </span>
         )}
       </div>
