@@ -70,17 +70,18 @@ export default function FormLevels() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-[78vh]">
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-center text-primary mb-10 headline-lg">
+    <div className="flex flex-col justify-center items-center min-h-[78vh] py-4 px-2 sm:px-4">
+      <div className="w-full max-w-6xl flex flex-col items-center justify-center flex-grow">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+          <h1 className="text-center text-primary mb-6 md:mb-10 text-xl sm:text-2xl md:headline-lg">
             Registro de Niveles/Categorías de Olimpiada
           </h1>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between gap-6">
+          
+          <div className="px-2 sm:px-4 md:px-6 lg:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Dropdown
               name="area"
               label="Área"
-              className="w-[340px] h-[50px]"
+              className="w-full h-[50px]"
               placeholder="Seleccionar área"
               options={[
                 { id: 'M', name: 'Matemática' },
@@ -96,7 +97,7 @@ export default function FormLevels() {
             />
             <InputText
               label="Nivel/Categoría"
-              className="w-[340px]"
+              className="w-full"
               name="level"
               placeholder="Ingresar nivel/categoria"
               type="text"
@@ -114,7 +115,7 @@ export default function FormLevels() {
               name="gmin"
               label="Grado Min."
               placeholder="Seleccionar grado min"
-              className='h-[50px]'
+              className="w-full h-[50px]"
               options={[
                 { id: '1', name: '1' },
                 { id: '2', name: '2' },
@@ -130,7 +131,7 @@ export default function FormLevels() {
             <Dropdown
               name="gmax"
               label="Grado Max."
-              className='h-[50px]'
+              className="w-full h-[50px]"
               placeholder="Seleccionar grado max"
               options={[
                 { id: '1', name: '1' },
@@ -154,32 +155,39 @@ export default function FormLevels() {
               isRequired={false}
             />
           </div>
-          <Button
-            label="Agregar"
-            className="w-full "
-            icon={AddIcon}
-            type="submit"
-            disabled={!isValid}
-            variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
-          />
-
-          <div className="min-h-[24px] flex mt-2">
-            {errorMessage && (
-              <p className="text-error subtitle-sm">{errorMessage}</p>
-            )}
-          </div>
-          <div className="w-full min-h-[180px]">
-            <Table data={rows} onDeleteRow={handleDeleteRow} />
-          </div>
-          <div className="mx-auto w-full flex justify-end gap-4">
-            <Button label="Cancelar" variantColor="variant2" />
+          
+          <div className="mt-4 px-2 sm:px-4 md:px-6 lg:px-0">
             <Button
-              label="Registrar"
-              disabled={rows.length === 0}
-              variantColor={
-                rows.length === 0 ? 'variantDesactivate' : 'variant1'
-              }
+              label="Agregar"
+              className="w-full"
+              icon={AddIcon}
+              type="submit"
+              disabled={!isValid}
+              variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
             />
+
+            <div className="min-h-[24px] flex mt-2">
+              {errorMessage && (
+                <p className="text-error text-sm sm:subtitle-sm">{errorMessage}</p>
+              )}
+            </div>
+            
+            <div className="w-full min-h-[180px] mt-4 overflow-x-auto">
+              <Table data={rows} onDeleteRow={handleDeleteRow} />
+            </div>
+            
+            <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
+              
+              <Button
+                label="Registrar"
+                disabled={rows.length === 0}
+                variantColor={
+                  rows.length === 0 ? 'variantDesactivate' : 'variant1'
+                }
+                className="w-full sm:w-auto"
+              />
+              <Button label="Cancelar" variantColor="variant2" className="w-full sm:w-auto" />
+            </div>
           </div>
         </form>
       </div>

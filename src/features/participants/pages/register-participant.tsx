@@ -70,7 +70,7 @@ export default function RegisterParticipant() {
           </div>
         </div>
       </main>
-      <FooterDesign />
+      {/* <FooterDesign /> */}
     </div>
   );
 }
