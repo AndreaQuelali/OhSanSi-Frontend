@@ -1,5 +1,7 @@
-import { DropdownProps } from "../interfaces";
+
 import { FieldValues } from "react-hook-form";
+import { DropdownProps } from '@/interfaces';
+
 
 export const Dropdown = <T extends FieldValues>({
   name,

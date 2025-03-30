@@ -1,12 +1,7 @@
-import { Register } from './features/olympiads/pages/register-info';
+import AppRoutes from './routes/app-routes';
 
 function App() {
-
-  return (
-    <>
-      <Register/>
-    </>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
