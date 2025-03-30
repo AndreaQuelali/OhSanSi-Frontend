@@ -32,8 +32,8 @@ const FormAreas = () => {
   const { data: apiAreas, loading, error } = useFetchData<TableRow[]>('/areas');
 
   const areas = (apiAreas || []).map((area) => ({
-    id: area.id, 
-    area: area.area || area.nombre, 
+    id: area.id,
+    area: String(area.area || area.nombre),
   }));
 
   const handleRegister = async () => {
@@ -61,6 +61,7 @@ const FormAreas = () => {
       alert('Áreas registradas correctamente');
       setRows([]);
       setImage(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error al enviar los datos:', error);
       alert(

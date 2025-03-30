@@ -43,7 +43,7 @@ export default function FormInfo() {
     if (response) {
       console.log('Registro exitoso:', response);
       alert('Registro exitoso');
-      reset();
+      reset(); 
     } else {
       alert('Error en el registro. Intente nuevamente.');
     }
