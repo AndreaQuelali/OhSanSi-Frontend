@@ -1,12 +1,13 @@
+import CloseIcon from "../icons/close";
 import { Button } from "./button";
 import { ButtonIcon } from "./button-icon";
 
 export const Modal = ({ onClose, text, onConfirm }: ModalProps) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-surface bg-opacity-30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-surface bg-opacity-10 z-50">
       <div className="w-96 h-auto bg-white rounded-xl p-6">
         <div className="w-full flex justify-end">
-          <ButtonIcon icon={icon} onClick={onClose} variantColor="variant2" />
+          <ButtonIcon icon={CloseIcon} onClick={onClose} variantColor="variant2" />
         </div>
 
         <p className="subtitle-md text-onBack p-2 text-center">{text}</p>

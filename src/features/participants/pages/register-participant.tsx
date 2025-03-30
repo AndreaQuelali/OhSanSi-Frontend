@@ -45,7 +45,8 @@ export default function RegisterParticipant() {
     },
   });
 
-  const { handleSubmit, trigger, formState: { isValid } } = methods;
+  const { handleSubmit, trigger, formState: { isValid }, watch } = methods;
+  const selectedAreas = watch("areas.selectedAreas", []);
 
   const tabs = [
     { key: 'olimpista', label: 'Olimpista' },
@@ -112,9 +113,20 @@ export default function RegisterParticipant() {
                 label="Anterior"
               />
               {step === tabs.length - 1 ? (
-                <Button onClick={handleSubmit(onSubmit)} label="Registrar" />
+                <Button
+                  type="submit"
+                  onClick={handleSubmit(onSubmit)}
+                  label="Registrar"
+                  disabled={selectedAreas.length === 0 || !isValid} // Deshabilitar si no hay áreas seleccionadas
+                  variantColor={selectedAreas.length === 0 || !isValid ? 'variantDesactivate' : 'variant1'}
+                />
               ) : (
-                <Button onClick={nextStep} label="Siguiente" />
+                <Button
+                  onClick={nextStep}
+                  label="Siguiente"
+                  disabled={!isValid}
+                  variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
+                />
               )}
             </div>
           </div>
