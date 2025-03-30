@@ -18,7 +18,7 @@ export default function FormTutor() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Nombre(s)"
-              name="name"
+              name="tutor.name"
               placeholder="Carlos Santiago"
               className="w-[400px]"
               register={register}
@@ -33,7 +33,7 @@ export default function FormTutor() {
             />
             <InputText
               label="Apellido(s)"
-              name="lastname"
+              name="tutor.lastname"
               placeholder="Paredes Soliz"
               className="w-[400px]"
               register={register}
@@ -50,7 +50,7 @@ export default function FormTutor() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Número de cédula de identidad"
-              name="ci"
+              name="tutor.ci"
               placeholder="1234567"
               className="w-[400px]"
               register={register}
@@ -65,7 +65,7 @@ export default function FormTutor() {
             />
             <InputText
               label="Número de celular"
-              name="phone"
+              name="tutor.phone"
               placeholder="77777777"
               className="w-[400px]"
               register={register}
@@ -82,7 +82,7 @@ export default function FormTutor() {
           <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
             <InputText
               label="Correo electrónico"
-              name="email"
+              name="tutor.email"
               placeholder="carlos@gmail.com"
               type="email"
               className="w-[400px]"
@@ -98,7 +98,7 @@ export default function FormTutor() {
             />
             <Dropdown
               label="Rol/Parentesco"
-              name="rol"
+              name="tutor.rol"
               placeholder="Seleccionar rol o parentesco"
               className="w-[400px]"
               options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
