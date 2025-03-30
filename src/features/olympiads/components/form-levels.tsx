@@ -59,7 +59,7 @@ export default function FormLevels() {
       id: Date.now(),
       area: data.area,
       level: data.level,
-      grade: `${data.gmin} - ${data.gmax}`,
+      grade: data.gmax ? `${data.gmin} - ${data.gmax}` : `${data.gmin}`,
     };
 
     setRows([...rows, newRow]);
@@ -90,7 +90,7 @@ export default function FormLevels() {
               valueKey="id"
               register={register}
               validationRules={{
-                required: '',
+                required: 'Debe seleccionar el área',
               }}
               errors={errors}
             />
@@ -102,11 +102,11 @@ export default function FormLevels() {
               type="text"
               register={register}
               validationRules={{
+                required: "El nombre es obligatorio",
                 pattern: {
-                  value: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\s]+$/,
-                  message: 'Solo se permiten caracteres alfanuméricos',
+                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message: "Solo se permiten letras, guion y un solo espacio entre palabras",
                 },
-                required: 'Debe ingresar un nivel/categoría',
               }}
               errors={errors}
             />
@@ -123,7 +123,7 @@ export default function FormLevels() {
               valueKey="id"
               register={register}
               validationRules={{
-                required: '',
+                required: 'Debe seleccionar el grado mínimo',
               }}
               errors={errors}
             />
@@ -133,6 +133,7 @@ export default function FormLevels() {
               className='h-[50px]'
               placeholder="Seleccionar grado max"
               options={[
+                { id: '', name: '' }, // Opción vacía para permitir la deselección
                 { id: '1', name: '1' },
                 { id: '2', name: '2' },
               ]}
@@ -141,15 +142,14 @@ export default function FormLevels() {
               register={register}
               validationRules={{
                 validate: (value: string) => {
-                  if (!minGrade) {
-                    return 'Debe seleccionar primero el grado mínimo';
-                  }
+                  if (value === '') return true; // Permitir deseleccionar sin error
+                  if (!minGrade) return 'Debe seleccionar primero el grado mínimo';
                   if (parseInt(value) <= parseInt(minGrade)) {
                     return 'El grado máximo debe ser mayor al grado mínimo';
                   }
                   return true;
                 },
-              }}
+              }}              
               errors={errors}
               isRequired={false}
             />
