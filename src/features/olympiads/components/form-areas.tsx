@@ -1,8 +1,10 @@
-import { Button, InputText } from '../../../components';
+import { Button, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import CardUploadImage from './card-upload-image';
 import { TableAreas } from './table-areas';
+import { useFetchData } from '@/hooks/use-fetch-data';
+import axios from 'axios';
 
 type FormData = {
   inputArea: string;
@@ -11,6 +13,7 @@ type FormData = {
 type TableRow = {
   id: number;
   area: string;
+  [x: string]: string | number;
 };
 
 const FormAreas = () => {
@@ -22,18 +25,54 @@ const FormAreas = () => {
     mode: 'onChange',
   });
 
-  const [image, setImage] = useState<File | null>(null); // Estado para la imagen
-  const [rows, setRows] = useState<TableRow[]>([]); // Estado para la tabla
+  const [image, setImage] = useState<File | null>(null);
+  const [rows, setRows] = useState<TableRow[]>([]); // Áreas temporales
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: apiAreas, loading, error } = useFetchData<TableRow[]>('/areas');
 
-  const onSubmit = (data: FormData) => {
-    if (!image) {
-      return; // Evita el envío si no hay imagen
+  const areas = (apiAreas || []).map((area) => ({
+    id: area.id, 
+    area: area.area || area.nombre, 
+  }));
+
+  const handleRegister = async () => {
+    setIsModalOpen(false);
+    if (rows.length === 0 || !image) {
+      alert('Debe agregar al menos un área y una imagen.');
+      return;
     }
 
+    try {
+      const formData = new FormData();
+      formData.append('id_olimpiada', '1');
+      formData.append('imagen', image);
+      formData.append(
+        'areas',
+        JSON.stringify(rows.map((row) => ({ nombre: row.area }))),
+      );
+
+      await axios.post('http://127.0.0.1:8000/api/areas', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      alert('Áreas registradas correctamente');
+      setRows([]);
+      setImage(null);
+    } catch (error: any) {
+      console.error('Error al enviar los datos:', error);
+      alert(
+        error.response?.data?.message ||
+          'Ocurrió un error al registrar las áreas.',
+      );
+    }
+  };
+
+  const onSubmit = (data: FormData) => {
     setErrorMessage(null);
 
-    // Verificar si el área ya está en la tabl
     const isDuplicate = rows.some(
       (row) => row.area.toLowerCase() === data.inputArea.toLowerCase(),
     );
@@ -46,7 +85,6 @@ const FormAreas = () => {
       id: Date.now(),
       area: data.inputArea,
     };
-
     setRows([...rows, newRow]);
   };
 
@@ -85,14 +123,13 @@ const FormAreas = () => {
               />
             </div>
             <div className="md:w-[350px] lg:w-[450px]">
-              <CardUploadImage onChange={setImage} />{' '}
-              {/* Pasamos la función que actualiza el estado */}
+              <CardUploadImage onChange={setImage} />
             </div>
           </div>
           <Button
             type="submit"
             label="Agregar"
-            disabled={!isValid || !image} // Deshabilita si no es válido o no hay imagen
+            disabled={!isValid || !image}
             variantColor={
               !isValid || !image ? 'variantDesactivate' : 'variant1'
             }
@@ -103,20 +140,38 @@ const FormAreas = () => {
             )}
           </div>
           <div className="w-full md:min-h-[150px]">
-            <TableAreas data={rows} onDeleteRow={handleDeleteRow} />
+            {loading ? (
+              <p>Cargando áreas...</p>
+            ) : error ? (
+              <p className="text-error">{error}</p>
+            ) : (
+              <TableAreas
+                data={[...areas, ...rows]} 
+                onDeleteRow={handleDeleteRow}
+              />
+            )}
           </div>
           <div className="flex flex-col md:flex-row md:justify-end space-y-5 md:space-x-5">
             <Button label="Cancelar" variantColor="variant2" />
             <Button
               label="Registrar"
-              disabled={rows.length === 0}
+              disabled={rows.length === 0 || !image}
               variantColor={
-                rows.length === 0 ? 'variantDesactivate' : 'variant1'
+                rows.length === 0 || !image ? 'variantDesactivate' : 'variant1'
               }
+              onClick={() => setIsModalOpen(true)}
             />
           </div>
         </div>
       </form>
+
+      {isModalOpen && (
+        <Modal
+          text="¿Está seguro de registrar las áreas?"
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleRegister}
+        />
+      )}
     </div>
   );
 };
