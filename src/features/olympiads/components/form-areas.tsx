@@ -1,10 +1,7 @@
 import { Button, InputText } from '../../../components';
-import { useState } from 'react';
 import CardUploadImage from './card-upload-image';
 
 const FormAreas = () => {
-  const [inputValue, setInputValue] = useState('');
-
   return (
     <div className="flex items-center justify-center w-full h-[75vh]">
       <form>
@@ -22,10 +19,7 @@ const FormAreas = () => {
                 type="text"
                 className="w-[540px]"
                 labelPadding="py-5"
-                register={() => {}}
                 errors={{}}
-                onChange={(e) => setInputValue(e.target.value)}
-                value={inputValue}
                 validationRules={{}}
               />
             </div>

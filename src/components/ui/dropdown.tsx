@@ -1,20 +1,18 @@
-
-import { FieldValues } from "react-hook-form";
+import { FieldValues } from 'react-hook-form';
 
 import { DropdownProps } from '@/interfaces';
-
 
 export const Dropdown = <T extends FieldValues>({
   name,
   label,
   options = [],
-  placeholder = "Selecciona una opción",
+  placeholder = 'Selecciona una opción',
   displayKey,
   valueKey,
   register,
   errors = {},
   validationRules = {},
-  className = "",
+  className = '',
   isRequired = true,
   disabled = false,
 }: DropdownProps<T> & { disabled?: boolean }) => {
@@ -37,14 +35,20 @@ export const Dropdown = <T extends FieldValues>({
           {placeholder}
         </option>
         {options.map((option, index) => (
-          <option key={index} value={option[valueKey]} className="bg-neutral2 text-onBack">
+          <option
+            key={index}
+            value={option[valueKey]}
+            className="bg-neutral2 text-onBack"
+          >
             {option[displayKey]}
           </option>
         ))}
       </select>
-      <div className='h-[25px]'>
+      <div className="h-[25px]">
         {errors?.[name] && (
-          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span>
+          <span className="text-error subtitle-sm">
+            {String(errors[name]?.message)}
+          </span>
         )}
       </div>
     </div>

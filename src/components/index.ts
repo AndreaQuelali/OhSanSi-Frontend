@@ -1,4 +1,5 @@
 export * from './icons/close';
+export * from './icons/icon-down';
 export * from './icons/icon-user';
 export * from './icons/upload-image';
 export * from './index';
@@ -7,3 +8,4 @@ export * from './ui/button';
 export * from './ui/dropdown';
 export * from './ui/footer-design';
 export * from './ui/input';
+export * from './ui/modal';
