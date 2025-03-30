@@ -50,14 +50,14 @@ export const TableAreas: React.FC<TableProps> = ({ data, onDeleteRow }) => {
   };
 
   return (
-    <div className="w-full flex items-center justify-center my-6">
+    <div className="w-full flex items-center justify-center">
       <div className="w-full">
         <div className="flex justify-between">
           <h2 className="text-primary subtitle-md">
             Áreas agregadas
           </h2>
         </div>
-        <div className="max-h-[150px] overflow-y-auto">
+        <div className="max-h-[110px] overflow-y-auto">
           <DataTable
             title=""
             columns={columns}
