@@ -74,7 +74,7 @@ export default function FormLevels() {
           <h1 className="text-center text-primary mb-10 headline-lg">
             Registro de Niveles/Categorías de Olimpiada
           </h1>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-12">
+          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
             <Dropdown
               name="area"
               label="Área"
@@ -142,7 +142,7 @@ export default function FormLevels() {
           <div className="min-h-[24px] flex mt-2">
             {errorMessage && <p className="text-error subtitle-sm">{errorMessage}</p>}
           </div>
-          <div className='w-full'>
+          <div className='w-full min-h-[220px] max-h-[300px]'>
             <Table data={rows} onDeleteRow={handleDeleteRow} />
           </div>
           <div className="mx-auto w-full flex justify-end gap-4">

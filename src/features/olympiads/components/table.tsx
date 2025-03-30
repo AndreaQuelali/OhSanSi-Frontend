@@ -68,15 +68,16 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
           </h2>
           <Button label="Ver todo" variantColor="variant2" />
         </div>
-
-        <DataTable
-          title=""
-          columns={columns}
-          data={data} // Ahora usa los datos pasados por prop
-          responsive
-          highlightOnHover
-          customStyles={customStyles}
-        />
+        <div className='max-h-[170px] overflow-y-auto'>
+          <DataTable
+            title=""
+            columns={columns}
+            data={data} // Ahora usa los datos pasados por prop
+            responsive
+            highlightOnHover
+            customStyles={customStyles}
+          />
+        </div>
       </div>
     </div>
   );
