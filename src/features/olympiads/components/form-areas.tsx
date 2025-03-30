@@ -55,7 +55,7 @@ const FormAreas = () => {
   };
 
   return (
-    <div className="my-5 mx-10 lg:my-10 lg:mx-64">
+    <div className="my-5 mx-10 md:mx-0 lg:mx-0 flex flex-col items-center justify-center h-full">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col">
           <h1 className="text-center headline-lg text-primary">
@@ -69,7 +69,7 @@ const FormAreas = () => {
                 name="inputArea"
                 placeholder="Ingrese nombre del área"
                 type="text"
-                className="w-full md:w-[250px] lg:w-[400px]"
+                className="w-full md:w-[250px] lg:w-[580px]"
                 labelPadding="py-5"
                 register={register}
                 errors={errors}
@@ -84,7 +84,7 @@ const FormAreas = () => {
                 }}
               />
             </div>
-            <div className="md:w-[350px] lg:w-[400px]">
+            <div className="md:w-[350px] lg:w-[450px]">
               <CardUploadImage onChange={setImage} />{' '}
               {/* Pasamos la función que actualiza el estado */}
             </div>
@@ -102,7 +102,7 @@ const FormAreas = () => {
               <p className="text-error subtitle-sm">{errorMessage}</p>
             )}
           </div>
-          <div className="w-full md:min-h-[220px]">
+          <div className="w-full md:min-h-[150px]">
             <TableAreas data={rows} onDeleteRow={handleDeleteRow} />
           </div>
           <div className="flex flex-col md:flex-row md:justify-end space-y-5 md:space-x-5">
