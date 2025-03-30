@@ -15,4 +15,5 @@ export interface DropdownProps<T extends FieldValues> {
   errors?: FieldErrors<T>; 
   validationRules?: Record<string, unknown>;
   className?: string;
+  isRequired?: boolean;
 }
