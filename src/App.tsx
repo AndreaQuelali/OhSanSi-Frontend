@@ -1,14 +1,7 @@
-import { useState } from 'react';
-import { RegisterLevels } from './features/olympiads/pages/register-levels';
+import AppRoutes from './routes/app-routes';
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <RegisterLevels/>
-    </>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

@@ -1,5 +1,7 @@
-import { InputProps } from '../interfaces/components/input';
+
 import { FieldValues } from 'react-hook-form';
+import { InputProps } from "@/interfaces";
+
 
 export const InputText = <T extends FieldValues>({
   label,
@@ -24,7 +26,7 @@ export const InputText = <T extends FieldValues>({
           placeholder={placeholder}
           type={type}
           className={`h-[50px] body-lg placeholder-neutral border-b-[1px] border-neutral rounded p-2 ${className}`}
-          {...register(name, validationRules)}
+          {...(register ? register(name, validationRules) : {})}
         />
       </div>
       <div className='h-[25px]'>

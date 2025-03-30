@@ -90,6 +90,7 @@ export default function FormLevels() {
             />
             <InputText
               label="Nivel/Categoría"
+              className="w-[340px]"
               name="level"
               placeholder="Ingresar nivel/categoria"
               type="text"

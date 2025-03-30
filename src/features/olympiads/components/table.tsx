@@ -1,8 +1,21 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import DeleteIcon from '../icons/delete';
-import { ButtonIcon } from '../../../components/buttons/button-icon';
-import { Button } from '../../../components';
+import { Button, ButtonIcon } from '../../../components';
+
+interface Table {
+  id: number;
+  area: string;
+  level: string;
+  grade: string;
+}
+
+interface Column {
+  name: string;
+  selector?: (row: Table) => string;
+  sortable?: boolean;
+  cell?: (row: Table) => React.ReactNode;
+}
 
 type TableRow = {
   id: number;
