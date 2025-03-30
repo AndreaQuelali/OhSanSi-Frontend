@@ -1,5 +1,6 @@
 
 import { FieldValues } from "react-hook-form";
+
 import { DropdownProps } from '@/interfaces';
 
 
@@ -14,12 +15,13 @@ export const Dropdown = <T extends FieldValues>({
   errors = {},
   validationRules = {},
   className = "",
+  isRequired = true,
 }: DropdownProps<T>) => {
   return (
     <div className="flex flex-col">
       {label && (
         <label htmlFor={name} className="py-1 text-primary subtitle-md">
-          {label} <span className="text-error">*</span>
+          {label} {isRequired && <span className="text-error">*</span>}
         </label>
       )}
       <select
@@ -38,6 +40,11 @@ export const Dropdown = <T extends FieldValues>({
           </option>
         ))}
       </select>
+      <div className='h-[25px]'>
+        {errors?.[name] && (
+          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
+        )}
+      </div>
       <div className='h-[25px]'>
         {errors?.[name] && (
           <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 

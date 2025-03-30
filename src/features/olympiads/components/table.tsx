@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
+import React from 'react';
+import DataTable, { TableColumn } from 'react-data-table-component';
 import DeleteIcon from '../icons/delete';
 import { Button, ButtonIcon } from '../../../components';
 
@@ -17,51 +17,44 @@ interface Column {
   cell?: (row: Table) => React.ReactNode;
 }
 
-export const Table: React.FC = () => {
-  const [rows, setRows] = useState<Table[]>([
-    {
-      id: 1,
-      area: 'Matemática',
-      level: 'Guacamayo',
-      grade: '5to de secundaria a 6to de secundaria',
-    },
-    {
-      id: 2,
-      area: 'Matemática',
-      level: '2S',
-      grade: '3ro de primaria a 6to de primaria',
-    },
-  ]);
+type TableRow = {
+  id: number;
+  area: string;
+  level: string;
+  grade: string;
+};
 
-  const deleteRow = (id: number) => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
+type TableProps = {
+  data: TableRow[]; // Recibe los datos de la tabla desde FormLevels
+  onDeleteRow: (id: number) => void; // Función para eliminar una fila
+};
 
-  const columns: Column[] = [
+export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
+  const columns: TableColumn<TableRow>[] = [
     {
       name: 'Área',
-      selector: (row: Table) => row.area,
+      selector: (row: TableRow) => row.area,
       sortable: true,
       cell: (row) => <span className="text-onBack body-lg">{row.area}</span>,
     },
     {
       name: 'Nivel/Categoría',
-      selector: (row: Table) => row.level,
+      selector: (row: TableRow) => row.level,
       sortable: true,
       cell: (row) => <span className="text-onBack body-lg">{row.level}</span>,
     },
     {
       name: 'Grados',
-      selector: (row: Table) => row.grade,
+      selector: (row: TableRow) => row.grade,
       sortable: true,
       cell: (row) => <span className="text-onBack body-lg">{row.grade}</span>,
     },
     {
       name: '',
-      cell: (row: Table) => (
+      cell: (row: TableRow) => (
         <ButtonIcon
           icon={DeleteIcon}
-          onClick={() => deleteRow(row.id)}
+          onClick={() => onDeleteRow(row.id)} // Llamamos la función para eliminar
           variantColor="variant2"
         />
       ),
@@ -81,23 +74,23 @@ export const Table: React.FC = () => {
 
   return (
     <div className="w-full flex items-center justify-center my-6">
-      <div className=" w-9/12">
+      <div className="w-full">
         <div className="flex justify-between">
           <h2 className="text-primary subtitle-md">
             Niveles/Categorías agregadas
           </h2>
           <Button label="Ver todo" variantColor="variant2" />
         </div>
-
-        <DataTable
-          title=""
-          columns={columns}
-          data={rows}
-          responsive
-          highlightOnHover
-          customStyles={customStyles}
-          className='rounded-lg text-center'
-        />
+        <div className='max-h-[170px] overflow-y-auto'>
+          <DataTable
+            title=""
+            columns={columns}
+            data={data} // Ahora usa los datos pasados por prop
+            responsive
+            highlightOnHover
+            customStyles={customStyles}
+          />
+        </div>
       </div>
     </div>
   );
