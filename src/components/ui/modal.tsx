@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from './buttons/button';
+import { Button } from "./button";
+import { ButtonIcon } from "./button-icon";
 
 export const Modal = ({ onClose, text, onConfirm }: ModalProps) => {
   return (
