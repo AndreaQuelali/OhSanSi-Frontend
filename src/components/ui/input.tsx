@@ -1,41 +1,39 @@
-import { InputProps } from "@/interfaces";
+import { FieldValues } from 'react-hook-form';
 
-export const InputText = ({
+import { InputProps } from '@/interfaces';
+
+export const InputText = <T extends FieldValues>({
   label,
   name,
   placeholder = '',
   type = 'text',
-  className='',
+  className = '',
   labelPadding = 'py-1',
   register,
-  errors = {},
-  onChange,
-  value,
-  // validationRules = {},
-}: InputProps) => {
+  errors,
+  validationRules = {},
+}: InputProps<T>) => {
   return (
     <div className="flex flex-col">
       <label
-        htmlFor={name}
-        className={`text-primary subtitle-md ${labelPadding} ${errors[name] ? 'text-error' : ''}`}
+        htmlFor={name as string}
+        className={`text-primary subtitle-md ${labelPadding}`}
       >
         {label} <span className="text-error">*</span>
       </label>
       <div className="w-full">
-      <input
-          id={name}
-          name={name}
+        <input
+          id={name as string}
           placeholder={placeholder}
           type={type}
-          onChange={onChange}
-          value={value}
-          className={`h-[50px] body-lg placeholder-neutral border-b-[1px] rounded p-2 outline-none ${className}`}
+          className={`h-[50px] body-lg placeholder-neutral border-b-[1px] border-neutral rounded p-2 ${className}`}
+          {...(register ? register(name, validationRules) : {})}
         />
       </div>
-      <div className={`${errors[name] ? 'h-3 mb-2' : 'h-0'}`}>
-        {errors[name] && (
-          <span className="text-error text-wrap text-center">
-            {errors[name]?.message as string}
+      <div className="h-[25px]">
+        {errors?.[name] && (
+          <span className="text-error subtitle-sm text-wrap text-center">
+            {String(errors[name]?.message)}
           </span>
         )}
       </div>

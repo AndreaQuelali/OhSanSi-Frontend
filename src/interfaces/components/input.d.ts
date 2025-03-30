@@ -1,8 +1,8 @@
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 
-export interface InputProps {
+interface InputProps<T extends FieldValues> {
   label: string;
-  name: string;
+  name: Path<T>;
   placeholder?: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'date';
   className?: string;
