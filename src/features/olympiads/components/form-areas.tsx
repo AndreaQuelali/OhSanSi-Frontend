@@ -76,7 +76,7 @@ const FormAreas = () => {
             </div>
         </form>
     </div>
-  )
-}
+  );
+};
 
 export default FormAreas;

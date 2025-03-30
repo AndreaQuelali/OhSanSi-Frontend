@@ -1,17 +1,7 @@
-import { useState } from 'react';
-import { RegisterAreas } from './features/olympiads/pages/register-areas';
+import AppRoutes from './routes/app-routes';
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <div>
-        {/*<Register/>*/}
-        <RegisterAreas/>
-      </div>
-    </>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

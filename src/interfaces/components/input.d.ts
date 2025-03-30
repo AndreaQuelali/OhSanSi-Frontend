@@ -9,6 +9,8 @@ interface InputProps<T extends FieldValues> {
   labelPadding?: string;
   register: UseFormRegister<T>;
   errors?: FieldErrors<T>;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string | number;
   validationRules?: Record<string, unknown>;
   isRequired?: boolean;
 }
