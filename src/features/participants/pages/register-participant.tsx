@@ -74,7 +74,7 @@ export default function RegisterParticipant() {
               Registro de Olimpista
             </h1>
             <Tabs value={tabs[step].key}>
-              <TabsList className="flex mx-20">
+              <TabsList className="flex justify-center w-full max-w-6xl mx-auto border-b-[1px] border-neutral2">
                 {tabs.map((tab, index) => (
                   <TabsTrigger
                     key={tab.key}
@@ -104,8 +104,7 @@ export default function RegisterParticipant() {
               </TabsContent>
             </Tabs>
 
-
-            <div className="flex justify-between mx-20">
+            <div className="flex flex-col-reverse md:flex-row justify-center md:justify-between px-4 md:px-10 gap-4">
               <Button
                 onClick={prevStep}
                 disabled={step === 0}
@@ -136,5 +135,6 @@ export default function RegisterParticipant() {
         </div>
       </div>
     </FormProvider>
+
   );
 }

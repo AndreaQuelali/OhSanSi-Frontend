@@ -9,18 +9,18 @@ export default function FormTutor() {
   } = useFormContext(); 
 
   return (
-    <div className=" flex flex-col my-6">
+    <div className="flex flex-col my-6">
       <div className="flex flex-col items-center justify-center flex-grow">
-        <form className="max-w-9/12 mx-auto w-full">
-          <h1 className=" text-primary mb-2 headline-md">
+        <form className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0">
+          <h1 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center sm:text-left">
             Registro de Datos de Tutor
           </h1>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <InputText
               label="Nombre(s)"
               name="tutor.name"
               placeholder="Carlos Santiago"
-              className="w-[400px]"
+              className="w-full md:w-[400px]"
               register={register}
               validationRules={{
                 required: "El nombre es obligatorio",
@@ -35,7 +35,7 @@ export default function FormTutor() {
               label="Apellido(s)"
               name="tutor.lastname"
               placeholder="Paredes Soliz"
-              className="w-[400px]"
+              className="w-full md:w-[400px]"
               register={register}
               validationRules={{
                 required: "El apellido es obligatorio",
@@ -47,12 +47,12 @@ export default function FormTutor() {
               errors={errors}
             />
           </div>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <InputText
               label="Número de cédula de identidad"
               name="tutor.ci"
               placeholder="1234567"
-              className="w-[400px]"
+              className="w-full md:w-[400px]"
               register={register}
               validationRules={{
                 required: "El número de cédula es obligatorio",
@@ -67,7 +67,7 @@ export default function FormTutor() {
               label="Número de celular"
               name="tutor.phone"
               placeholder="77777777"
-              className="w-[400px]"
+               className="w-full md:w-[400px]"
               register={register}
               validationRules={{
                 required: "El número de celular es obligatorio",
@@ -79,13 +79,13 @@ export default function FormTutor() {
               errors={errors}
             />
           </div>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InputText
               label="Correo electrónico"
               name="tutor.email"
               placeholder="carlos@gmail.com"
               type="email"
-              className="w-[400px]"
+              className="w-full md:w-[400px]"
               register={register}
               validationRules={{
                 required: "El correo electrónico es obligatorio",
@@ -100,7 +100,7 @@ export default function FormTutor() {
               label="Rol/Parentesco"
               name="tutor.rol"
               placeholder="Seleccionar rol o parentesco"
-              className="w-[400px]"
+              className="w-full h-[50px] md:w-[400px]"
               options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
               displayKey="name"
               valueKey="id"
