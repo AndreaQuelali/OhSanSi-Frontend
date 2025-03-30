@@ -53,7 +53,7 @@ const FormAreas = () => {
   };
 
   return (
-    <div className='my-10 mx-64'>
+    <div className='my-5 mx-10 lg:my-10 lg:mx-64'>
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col'>
                 <h1 className='text-center headline-lg text-primary'>
@@ -62,14 +62,14 @@ const FormAreas = () => {
                 <h1 className='text-center headline-md text-primary'>
                     Gestión 2025
                 </h1>
-                <div className='flex flex-row justify-between my-7 gap-9'>
+                <div className='flex flex-col md:flex-row md:justify-between my-7 md:gap-9'>
                     <div>      
                         <InputText
                             label="Nombre del Área"
                             name="inputArea"
                             placeholder="Ingrese nombre del área"
                             type="text"
-                            className="w-[400px]"
+                            className="w-full md:w-[250px] lg:w-[400px]"
                             labelPadding='py-5'
                             register={register}
                             errors={errors}
@@ -82,7 +82,7 @@ const FormAreas = () => {
                             }}
                         />
                     </div>
-                    <div className='w-[400px]'>
+                    <div className='md:w-[350px] lg:w-[400px]'>
                         <CardUploadImage onChange={setImage} /> {/* Pasamos la función que actualiza el estado */}
                     </div>
                 </div>
@@ -97,10 +97,10 @@ const FormAreas = () => {
                     <p className="text-error subtitle-sm">{errorMessage}</p>
                 )}
                 </div>
-                <div className="w-full min-h-[220px]">
+                <div className="w-full md:min-h-[220px]">
                   <TableAreas data={rows} onDeleteRow={handleDeleteRow} />
                 </div>
-                <div className='flex flex-row justify-end space-x-5'>
+                <div className='flex flex-col md:flex-row md:justify-end space-y-5 md:space-x-5'>
                     <Button label='Cancelar' variantColor='variant2' />
                     <Button label="Registrar" disabled={rows.length === 0} variantColor={rows.length === 0 ? "variantDesactivate" : "variant1"} />
                 </div>
