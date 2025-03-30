@@ -102,11 +102,11 @@ export default function FormLevels() {
               type="text"
               register={register}
               validationRules={{
+                required: "El nombre es obligatorio",
                 pattern: {
-                  value: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\s]+$/,
-                  message: 'Solo se permiten caracteres alfanuméricos',
+                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message: "Solo se permiten letras, guion y un solo espacio entre palabras",
                 },
-                required: 'Debe ingresar un nivel/categoría',
               }}
               errors={errors}
             />
