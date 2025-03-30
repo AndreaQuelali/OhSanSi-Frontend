@@ -43,7 +43,11 @@ export default function FormTutor() {
               className="w-[400px]"
               register={register}
               validationRules={{
-
+                required: "El nombre es obligatorio",
+                pattern: {
+                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message: "Solo se permiten letras y un solo espacio entre palabras",
+                },
               }}
               errors={errors}
             />
@@ -54,7 +58,11 @@ export default function FormTutor() {
               className="w-[400px]"
               register={register}
               validationRules={{
-
+                required: "El apellido es obligatorio",
+                pattern: {
+                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message: "Solo se permiten letras y un solo espacio entre palabras",
+                },
               }}
               errors={errors}
             />
@@ -67,7 +75,11 @@ export default function FormTutor() {
               className="w-[400px]"
               register={register}
               validationRules={{
-
+                required: "El número de cédula es obligatorio",
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Solo se permiten números",
+                },
               }}
               errors={errors}
             />
@@ -78,7 +90,11 @@ export default function FormTutor() {
               className="w-[400px]"
               register={register}
               validationRules={{
-
+                required: "El número de celular es obligatorio",
+                pattern: {
+                  value: /^[0-9]{8,}$/,
+                  message: "Debe contener solo números y al menos 8 dígitos",
+                },
               }}
               errors={errors}
             />
@@ -92,7 +108,11 @@ export default function FormTutor() {
               className="w-[400px]"
               register={register}
               validationRules={{
-
+                required: "El correo electrónico es obligatorio",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Correo electrónico no válido",
+                },
               }}
               errors={errors}
             />
@@ -107,7 +127,7 @@ export default function FormTutor() {
               register={register}
               errors={errors}
               validationRules={{
-                required: "Debe seleccionar un año/gestión", 
+                required: "El rol/parentesco es obligatorio", 
               }}
             />
           </div>
