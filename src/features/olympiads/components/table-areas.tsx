@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import DeleteIcon from '../icons/delete';
-import { Button, ButtonIcon } from '../../../components';
+import { ButtonIcon } from '../../../components';
 
 interface TableAreas {
   id: number;

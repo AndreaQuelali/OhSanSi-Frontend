@@ -18,7 +18,6 @@ const FormAreas = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    getValues,
   } = useForm<FormData>({
     mode: "onChange", 
   });
