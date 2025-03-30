@@ -45,6 +45,11 @@ export const Dropdown = <T extends FieldValues>({
           <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
         )}
       </div>
+      <div className='h-[25px]'>
+        {errors?.[name] && (
+          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
+        )}
+      </div>
     </div>
   );
 };

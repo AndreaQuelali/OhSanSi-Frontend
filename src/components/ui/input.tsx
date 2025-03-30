@@ -1,7 +1,5 @@
-
 import { FieldValues } from 'react-hook-form';
-import { InputProps } from "@/interfaces";
-
+import { InputProps } from '@/interfaces';
 
 export const InputText = <T extends FieldValues>({
   label,
@@ -17,8 +15,11 @@ export const InputText = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <div className="flex flex-col">
-      <label htmlFor={name as string} className={`text-primary subtitle-md ${labelPadding}`}>
-      {label} {isRequired && <span className="text-error">*</span>}
+      <label
+        htmlFor={name as string}
+        className={`text-primary subtitle-md ${labelPadding}`}
+      >
+        {label} {isRequired && <span className="text-error">*</span>}
       </label>
       <div className="w-full">
         <input
@@ -29,7 +30,7 @@ export const InputText = <T extends FieldValues>({
           {...(register ? register(name, validationRules) : {})}
         />
       </div>
-      <div className='h-[25px]'>
+      <div className="h-[25px]">
         {errors?.[name] && (
           <span className="text-error subtitle-sm text-wrap text-center">
             {String(errors[name]?.message)}
