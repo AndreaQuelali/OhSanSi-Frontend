@@ -10,13 +10,6 @@ interface Table {
   grade: string;
 }
 
-interface Column {
-  name: string;
-  selector?: (row: Table) => string;
-  sortable?: boolean;
-  cell?: (row: Table) => React.ReactNode;
-}
-
 type TableRow = {
   id: number;
   area: string;
@@ -81,7 +74,7 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
           </h2>
           <Button label="Ver todo" variantColor="variant2" />
         </div>
-        <div className='max-h-[170px] overflow-y-auto'>
+        <div className="max-h-[100px] overflow-y-auto">
           <DataTable
             title=""
             columns={columns}

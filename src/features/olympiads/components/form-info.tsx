@@ -26,7 +26,7 @@ export default function FormInfo() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col h-[85vh]">
       <div className="flex flex-col items-center justify-center flex-grow">
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-9/12 mx-auto w-full mb-20">
           <h1 className="text-center text-primary mb-20 headline-lg">
@@ -38,7 +38,7 @@ export default function FormInfo() {
               name="year"
               label="Año/Gestión"
               placeholder="Seleccionar año o gestión"
-              className="w-[400px]"
+              className="w-[480px] h-[50px]"
               options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
               displayKey="name"
               valueKey="id"
@@ -53,7 +53,7 @@ export default function FormInfo() {
               name="cost"
               placeholder="0.00"
               type="number"
-              className="w-[400px]"
+              className="w-[480px]"
               register={register}
               validationRules={{
                 pattern: {
@@ -73,7 +73,7 @@ export default function FormInfo() {
               name="dateIni"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[400px]"
+              className="w-[480px]"
               register={register}
               validationRules={{
                 required: "Debe ingresar una fecha de inicio",
@@ -96,7 +96,7 @@ export default function FormInfo() {
               name="dateEnd"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[400px]"
+              className="w-[480px]"
               register={register}
               validationRules={{
                 required: "Debe ingresar una fecha de cierre",

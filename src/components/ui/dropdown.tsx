@@ -1,20 +1,18 @@
-
-import { FieldValues } from "react-hook-form";
+import { FieldValues } from 'react-hook-form';
 
 import { DropdownProps } from '@/interfaces';
-
 
 export const Dropdown = <T extends FieldValues>({
   name,
   label,
   options = [],
-  placeholder = "Selecciona una opción",
+  placeholder = 'Selecciona una opción',
   displayKey,
   valueKey,
   register,
   errors = {},
   validationRules = {},
-  className = "",
+  className = '',
   isRequired = true,
 }: DropdownProps<T>) => {
   return (
@@ -26,28 +24,29 @@ export const Dropdown = <T extends FieldValues>({
       )}
       <select
         id={name}
-        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
-          errors[name] ? "border-error" : ""
-        }`} 
-        {...register(name, validationRules)} 
+        className={`bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
+          errors[name] ? 'border-error' : ''
+        }`}
+        {...(register ? register(name, validationRules) : {})}
       >
         <option value="" disabled className="bg-neutral2 text-white">
           {placeholder}
         </option>
         {options.map((option, index) => (
-          <option key={index} value={option[valueKey]} className="bg-neutral2 text-onBack">
-            {option[displayKey]} 
+          <option
+            key={index}
+            value={option[valueKey]}
+            className="bg-neutral2 text-onBack"
+          >
+            {option[displayKey]}
           </option>
         ))}
       </select>
-      <div className='h-[25px]'>
+      <div className="h-[25px]">
         {errors?.[name] && (
-          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
-        )}
-      </div>
-      <div className='h-[25px]'>
-        {errors?.[name] && (
-          <span className="text-error subtitle-sm">{String(errors[name]?.message)}</span> 
+          <span className="text-error subtitle-sm">
+            {String(errors[name]?.message)}
+          </span>
         )}
       </div>
     </div>

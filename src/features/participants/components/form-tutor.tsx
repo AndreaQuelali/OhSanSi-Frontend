@@ -48,7 +48,7 @@ export default function FormTutor() {
               name="rol"
               placeholder="Seleccionar rol o parentesco"
               type="date"
-              className="w-[400px]"
+              className="w-[400px] h-[50px]"
             />
           </div>
         </form>
