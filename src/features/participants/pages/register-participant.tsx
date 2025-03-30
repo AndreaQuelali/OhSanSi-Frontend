@@ -26,12 +26,12 @@ export default function RegisterParticipant() {
             Registro de Olimpista
           </h1>
           <Tabs value={tabs[step].key}>
-            <TabsList className="flex mx-20">
+            <TabsList className="flex justify-center w-full max-w-6xl mx-auto border-b-[1px] border-neutral2">
               {tabs.map((tab, index) => (
                 <TabsTrigger
                   key={tab.key}
                   value={tab.key}
-                  className={`flex items-center px-4 py-2 subtitle-md text-neutral2 w-1/3 justify-center ${
+                  className={`flex-1 flex items-center justify-center px-4 py-2 subtitle-md text-neutral2 ${
                     step === index
                       ? 'border-b-[5px] border-primary text-primary'
                       : 'border-b-[3px] border-neutral2 '
@@ -55,8 +55,7 @@ export default function RegisterParticipant() {
               <FormAreaPart />
             </TabsContent>
           </Tabs>
-
-          <div className="flex justify-between mx-20">
+          <div className="flex flex-col-reverse md:flex-row justify-center md:justify-between px-4 md:px-10 gap-4">
             <Button
               onClick={prevStep}
               disabled={step === 0}
@@ -70,7 +69,7 @@ export default function RegisterParticipant() {
           </div>
         </div>
       </main>
-      <FooterDesign />
+      {/* <FooterDesign /> */}
     </div>
   );
 }

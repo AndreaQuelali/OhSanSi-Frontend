@@ -11,8 +11,8 @@ export default function FormAreaPart() {
   return (
     <div className="flex flex-col my-6">
       <div className="max-w-9/12 mx-auto w-full">
-        <h2 className="text-primary headline-md mb-6">Selección de Áreas</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <h2 className="text-primary text-lg md:text-2xl font-semibold mb-4 text-center md:text-left">Selección de Áreas</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {areas.map((area) => (
             <CardArea label={area.name} imageUrl={area.image} />
           ))}
