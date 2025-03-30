@@ -1,4 +1,4 @@
-import { Button, Dropdown, InputText } from '../../../components';
+import { Button, Dropdown, InputText, Modal } from '../../../components';
 import AddIcon from '../icons/add';
 import { Table } from './table';
 import { useForm } from 'react-hook-form';
@@ -25,12 +25,11 @@ export default function FormLevels() {
   });
 
   const minGrade = watch('gmin');
-  const [rows, setRows] = useState<TableRow[]>([]); 
+  const [rows, setRows] = useState<TableRow[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
   const { data: areas } = useFetchData<Area[]>('/areas');
-
-  
 
   useEffect(() => {
     if (minGrade) {
@@ -63,6 +62,7 @@ export default function FormLevels() {
 
     setRows([...rows, newRow]);
   };
+
   const handleRegister = async () => {
     if (rows.length === 0) {
       alert('Debe agregar al menos un nivel/categoría.');
@@ -92,7 +92,6 @@ export default function FormLevels() {
 
       alert('Niveles registrados correctamente');
       setRows([]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error al registrar los niveles:', error);
       alert('Ocurrió un error al registrar los niveles.');
@@ -172,7 +171,7 @@ export default function FormLevels() {
               label="Grado Max."
               className="h-[50px]"
               placeholder="Seleccionar grado max"
-              options={[{ id: '', name: '' }, ...gradeOptions]} // Opción vacía para permitir la deselección
+              options={[{ id: '', name: '' }, ...gradeOptions]} 
               displayKey="name"
               valueKey="id"
               register={register}
@@ -218,11 +217,22 @@ export default function FormLevels() {
                   ? 'variantDesactivate'
                   : 'variant1'
               }
-              onClick={handleRegister}
+              onClick={() => setIsModalOpen(true)} 
             />
           </div>
         </form>
       </div>
+
+      {isModalOpen && (
+        <Modal
+          text="¿Está seguro de registrar los niveles?"
+          onClose={() => setIsModalOpen(false)} 
+          onConfirm={async () => {
+            setIsModalOpen(false);
+            await handleRegister(); 
+          }}
+        />
+      )}
     </div>
   );
 }
