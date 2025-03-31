@@ -6,47 +6,45 @@ import FormDataPart from '../components/form-data-participant';
 import FormTutor from '../components/form-tutor';
 import { Button } from '@/components';
 import FormAreaPart from '../components/form-areas-participant';
-import FooterDesign from '@/components/ui/footer-design';
-
-type FormData = {
-  olimpista: {
-    name: string;
-    lastname: string;
-    ci: string;
-    email: string;
-    phone: string;
-    birthday: string;
-    school: string;
-    grade: string;
-    depa: string;
-    prov: string;
-  };
-  tutor: {
-    name: string;
-    lastname: string;
-    ci: string;
-    email: string;
-    phone: string;
-    rol: string;
-  };
-  areas: {
-    selectedAreas: string[];
-  };
-};
 
 export default function RegisterParticipant() {
   const [step, setStep] = useState(0);
+  const savedData = localStorage.getItem('participantData');
+  const defaultValues = savedData
+    ? JSON.parse(savedData)
+    : {
+        olimpista: {
+          name: '',
+          lastname: '',
+          ci: '',
+          email: '',
+          phone: '',
+          birthday: '',
+          school: '',
+          grade: '',
+          depa: '',
+          prov: '',
+        },
+        tutor: {
+          name: '',
+          lastname: '',
+          ci: '',
+          email: '',
+          phone: '',
+          rol: '',
+        },
+        areas: { selectedAreas: [] },
+      };
+
   const methods = useForm({
-    mode: "onChange",
-    defaultValues: {
-      olimpista: { name: "", lastname: "", ci: "", email: "", phone: "", birthday: "", school: "", grade: "", depa: "", prov: "" },
-      tutor: { name: "", lastname: "", ci: "", email: "", phone: "", rol: "" },
-      areas: { selectedAreas: [] },
-    },
+    mode: 'onChange',
+    defaultValues,
   });
 
-  const { handleSubmit, trigger, formState: { isValid }, watch } = methods;
-  const selectedAreas = watch("areas.selectedAreas", []);
+  const {
+    trigger,
+    formState: { isValid },
+  } = methods;
 
   const tabs = [
     { key: 'olimpista', label: 'Olimpista' },
@@ -56,14 +54,16 @@ export default function RegisterParticipant() {
 
   const nextStep = async () => {
     const isStepValid = await trigger(); // Valida el formulario actual
-    if (isStepValid) setStep((prev) => Math.min(prev + 1, tabs.length - 1));
+    if (isStepValid) {
+      // Guarda los datos actuales en localStorage
+      const formData = methods.getValues(); // Obtiene los valores actuales del formulario
+      localStorage.setItem('participantData', JSON.stringify(formData));
+
+      setStep((prev) => Math.min(prev + 1, tabs.length - 1)); // Avanza al siguiente paso
+    }
   };
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
-
-  const onSubmit = (data: FormData) => {
-    console.log("Formulario enviado con éxito:", data);
-  };
 
   return (
     <FormProvider {...methods}>
@@ -100,26 +100,20 @@ export default function RegisterParticipant() {
               </TabsContent>
 
               <TabsContent value="areas">
-                <FormAreaPart />
+                <FormAreaPart setStep={setStep} currentStep={step} />
               </TabsContent>
             </Tabs>
 
             <div className="flex flex-col-reverse md:flex-row justify-center md:justify-between px-4 md:px-10 gap-4">
-              <Button
-                onClick={prevStep}
-                disabled={step === 0}
-                variantColor="variant2"
-                label="Anterior"
-              />
-              {step === tabs.length - 1 ? (
+              {step === tabs.length - 1 ? null : ( 
                 <Button
-                  type="submit"
-                  onClick={handleSubmit(onSubmit)}
-                  label="Registrar"
-                  disabled={selectedAreas.length === 0 || !isValid} // Deshabilitar si no hay áreas seleccionadas
-                  variantColor={selectedAreas.length === 0 || !isValid ? 'variantDesactivate' : 'variant1'}
+                  onClick={prevStep}
+                  disabled={step === 0}
+                  variantColor="variant2"
+                  label="Anterior"
                 />
-              ) : (
+              )}
+              {step === tabs.length - 1 ? null : (
                 <Button
                   onClick={nextStep}
                   label="Siguiente"
@@ -130,11 +124,8 @@ export default function RegisterParticipant() {
             </div>
           </div>
         </main>
-        <div className='z-0'>
-          {/*<FooterDesign />*/}
-        </div>
+        <div className="z-0"></div>
       </div>
     </FormProvider>
-
   );
 }

@@ -1,12 +1,11 @@
-import { Button, Dropdown, InputText } from '../../../components';
-import { useForm } from "react-hook-form";
+import { Dropdown, InputText } from '../../../components';
 import { useFormContext } from 'react-hook-form';
 
 export default function FormTutor() {
   const {
     register,
     formState: { errors },
-  } = useFormContext(); 
+  } = useFormContext();
 
   return (
     <div className="flex flex-col my-6">
@@ -23,10 +22,12 @@ export default function FormTutor() {
               className="w-full md:w-[400px]"
               register={register}
               validationRules={{
-                required: "El nombre es obligatorio",
+                required: 'El nombre es obligatorio',
                 pattern: {
-                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message: "Solo se permiten letras y un solo espacio entre palabras",
+                  value:
+                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message:
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -38,10 +39,12 @@ export default function FormTutor() {
               className="w-full md:w-[400px]"
               register={register}
               validationRules={{
-                required: "El apellido es obligatorio",
+                required: 'El apellido es obligatorio',
                 pattern: {
-                  value: /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message: "Solo se permiten letras y un solo espacio entre palabras",
+                  value:
+                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                  message:
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -55,10 +58,10 @@ export default function FormTutor() {
               className="w-full md:w-[400px]"
               register={register}
               validationRules={{
-                required: "El número de cédula es obligatorio",
+                required: 'El número de cédula es obligatorio',
                 pattern: {
                   value: /^[0-9]+$/,
-                  message: "Solo se permiten números",
+                  message: 'Solo se permiten números',
                 },
               }}
               errors={errors}
@@ -67,13 +70,13 @@ export default function FormTutor() {
               label="Número de celular"
               name="tutor.phone"
               placeholder="77777777"
-               className="w-full md:w-[400px]"
+              className="w-full md:w-[400px]"
               register={register}
               validationRules={{
-                required: "El número de celular es obligatorio",
+                required: 'El número de celular es obligatorio',
                 pattern: {
                   value: /^[0-9]{8,}$/,
-                  message: "Debe contener solo números y al menos 8 dígitos",
+                  message: 'Debe contener solo números y al menos 8 dígitos',
                 },
               }}
               errors={errors}
@@ -88,27 +91,42 @@ export default function FormTutor() {
               className="w-full md:w-[400px]"
               register={register}
               validationRules={{
-                required: "El correo electrónico es obligatorio",
+                required: 'El correo electrónico es obligatorio',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Correo electrónico no válido",
+                  message: 'Correo electrónico no válido',
                 },
               }}
               errors={errors}
             />
             <Dropdown
               label="Rol/Parentesco"
-              name="tutor.rol"
               placeholder="Seleccionar rol o parentesco"
               className="w-full h-[50px] md:w-[400px]"
-              options={[{ id: "2024", name: "2024" }, { id: "2025", name: "2025" }]}
-              displayKey="name"
-              valueKey="id"
+              options={[
+                { id: 1, rol_parentesco: 'Padre' },
+                { id: 2, rol_parentesco: 'Madre' },
+                { id: 3, rol_parentesco: 'Apoderado' },
+                { id: 4, rol_parentesco: 'Tutor' },
+              ]}
+              displayKey="rol_parentesco"
+              valueKey="rol_parentesco"
               register={register}
-              errors={errors}
+              name="tutor.rol"
               validationRules={{
-                required: "El rol/parentesco es obligatorio", 
+                required: 'El rol/parentesco es obligatorio',
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const selectedValue = e.target.value.toLowerCase(); // Convierte a minúsculas
+                  const savedData = localStorage.getItem('participantData');
+                  const formData = savedData ? JSON.parse(savedData) : {};
+                  formData.tutor = { ...formData.tutor, rol: selectedValue }; // Actualiza el rol en el objeto
+                  localStorage.setItem(
+                    'participantData',
+                    JSON.stringify(formData),
+                  ); // Guarda en localStorage
+                },
               }}
+              errors={errors}
             />
           </div>
         </form>

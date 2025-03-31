@@ -1,36 +1,38 @@
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { CardArea } from "./card-area";
-import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { CardArea } from './card-area';
+import { Modal } from '@/components/ui/modal';
+import { Button } from '@/components/ui/button';
+import { useFetchData } from '@/hooks/use-fetch-data';
+import axios from 'axios';
+import { Area, FormAreaPartProps } from '../interfaces/register-participants';
 
-const areas = [
-  { id: 1, name: "Matemáticas", image: "/images/matematicas.jpg", requiresCategory: true },
-  { id: 2, name: "Ciencias", image: "/images/ciencias.jpg", requiresCategory: true },
-  { id: 3, name: "Historia", image: "/images/historia.jpg", requiresCategory: false },
-  { id: 4, name: "Arte", image: "/images/arte.jpg", requiresCategory: false },
-];
 
-export default function FormAreaPart() {
+export default function FormAreaPart({
+  setStep,
+  currentStep,
+}: FormAreaPartProps) {
   const { setValue, watch, trigger } = useFormContext();
-  const selectedAreas = watch("areas.selectedAreas", []);
+  const selectedAreas = watch('areas.selectedAreas', []);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false); // Modal de
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const openModal = (areaName: string) => {
-    setSelectedArea(areaName);
-    setModalOpen(true);
-  };
+  const {
+    data: areas,
+    loading,
+    error,
+  } = useFetchData<Area[]>('http://localhost:8000/api/areas');
 
   const closeModal = () => {
     setModalOpen(false);
     if (selectedArea) {
-      // Si el área requiere categoría pero el usuario cancela, se deselecciona
       setValue(
-        "areas.selectedAreas",
+        'areas.selectedAreas',
         selectedAreas.filter((name: string) => name !== selectedArea),
-        { shouldValidate: true }
+        { shouldValidate: true },
       );
     }
     setSelectedArea(null);
@@ -40,18 +42,107 @@ export default function FormAreaPart() {
     setModalOpen(false);
   };
 
-  const toggleArea = (areaName: string, requiresCategory: boolean) => {
-    if (selectedAreas.includes(areaName)) {
+  const toggleArea = (areaId: number) => {
+    if (selectedAreas.includes(areaId)) {
       setValue(
-        "areas.selectedAreas",
-        selectedAreas.filter((name: string) => name !== areaName),
-        { shouldValidate: true }
+        'areas.selectedAreas',
+        selectedAreas.filter((id: number) => id !== areaId),
+        { shouldValidate: true },
       );
     } else {
-      setValue("areas.selectedAreas", [...selectedAreas, areaName], { shouldValidate: true });
-      if (requiresCategory) openModal(areaName);
+      setValue('areas.selectedAreas', [...selectedAreas, areaId], {
+        shouldValidate: true,
+      });
     }
-    trigger("areas.selectedAreas");
+    trigger('areas.selectedAreas');
+  };
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('participantData');
+    const formData = savedData ? JSON.parse(savedData) : {};
+    formData.areas = { selectedAreas };
+    localStorage.setItem('participantData', JSON.stringify(formData));
+  }, [selectedAreas]);
+
+  const handleRegister = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const savedData = localStorage.getItem('participantData');
+      if (!savedData) {
+        alert('No hay datos guardados para registrar.');
+        return;
+      }
+
+      const formData = JSON.parse(savedData);
+
+      const transformedTutor = {
+        nombres: formData.tutor.name,
+        apellidos: formData.tutor.lastname,
+        ci: formData.tutor.ci,
+        celular: formData.tutor.phone,
+        correo_electronico: formData.tutor.email,
+        rol_parentesco: formData.tutor.rol.toLowerCase(),
+      };
+
+      console.log('Datos del tutor:', transformedTutor);
+
+      const tutorResponse = await axios.post(
+        'http://localhost:8000/api/tutores',
+        transformedTutor,
+      );
+      const tutorId = tutorResponse.data.tutor.id_tutor;
+      console.log('ID del tutor:', tutorId);
+
+      const transformedOlimpista = {
+        nombres: formData.olimpista.name,
+        apellidos: formData.olimpista.lastname,
+        cedula_identidad: formData.olimpista.ci,
+        numero_celular: formData.olimpista.phone,
+        correo_electronico: formData.olimpista.email,
+        fecha_nacimiento: formData.olimpista.birthday,
+        unidad_educativa: formData.olimpista.school,
+        id_grado: formData.olimpista.grade,
+        id_provincia: formData.olimpista.prov,
+        id_tutor: tutorId,
+      };
+
+      console.log('Datos del olimpista:', transformedOlimpista);
+
+      const olimpistaResponse = await axios.post(
+        'http://localhost:8000/api/student-registration',
+        transformedOlimpista,
+      );
+      const olimpistaId = olimpistaResponse.data.olimpista.id_olimpista;
+      console.log('ID del olimpista:', olimpistaId);
+
+      const transformedAreas = {
+        id_olimpista: olimpistaId,
+        id_olimpiada: 1, 
+        id_pago: 1, 
+        estado: 'pendiente', 
+        niveles: selectedAreas, 
+      };
+
+      console.log('Áreas transformadas:', transformedAreas);
+
+      await axios.post(
+        'http://localhost:8000/api/inscripciones',
+        transformedAreas,
+      );
+
+      alert('Datos registrados correctamente.');
+      localStorage.removeItem('participantData');
+      // deselecionar areas
+      setValue('areas.selectedAreas', []);
+      window.location.href = '/register-applicants';
+
+    } catch (error) {
+      console.error('Error al registrar los datos:', error);
+      alert('Ocurrió un error al registrar los datos.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -60,17 +151,23 @@ export default function FormAreaPart() {
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center sm:text-left">
           Selección de Áreas
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {areas.map((area) => (
-            <CardArea
-              key={area.id}
-              label={area.name}
-              imageUrl={area.image}
-              selected={selectedAreas.includes(area.name)}
-              onClick={() => toggleArea(area.name, area.requiresCategory)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p>Cargando áreas...</p>
+        ) : error ? (
+          <p>Error al cargar las áreas.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {areas?.map((area) => (
+              <CardArea
+                key={area.id_area}
+                label={area.nombre}
+                imageUrl={`http://127.0.0.1:8000/storage/${area.imagen}`}
+                selected={selectedAreas.includes(area.id_area)}
+                onClick={() => toggleArea(area.id_area, area.nombre)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {modalOpen && selectedArea && (
@@ -80,6 +177,33 @@ export default function FormAreaPart() {
           onConfirm={confirmSelection}
         />
       )}
+      {confirmationModalOpen && (
+        <Modal
+          text="¿Estás seguro de que deseas registrar los datos?"
+          onClose={() => setConfirmationModalOpen(false)}
+          onConfirm={() => {
+            setConfirmationModalOpen(false);
+            handleRegister();
+          }}
+        />
+      )}
+      <div className="flex justify-between items-center mt-6">
+        <Button
+          label="Anterior"
+          onClick={() => setStep(Math.max(0, currentStep - 1))}
+          variantColor="variant2"
+        />
+        <Button
+          label="Registrar"
+          onClick={() => setConfirmationModalOpen(true)} 
+          disabled={isSubmitting || selectedAreas.length === 0}
+          variantColor={
+            isSubmitting || selectedAreas.length === 0
+              ? 'variantDesactivate'
+              : 'variant1'
+          }
+        />
+      </div>
     </div>
   );
 }

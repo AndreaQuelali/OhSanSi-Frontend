@@ -1,0 +1,29 @@
+export type Area = {
+  id_area: number;
+  id_olimpiada: number;
+  nombre: string;
+  imagen: string;
+};
+
+export type FormAreaPartProps = {
+  setStep: (step: number) => void;
+  currentStep: number;
+};
+
+export type Grado = {
+  id_grado: number;
+  nombre_grado: string;
+  nivel_academico: string;
+  orden: number;
+};
+
+export type Departamento = {
+  id_departamento: number;
+  nombre_departamento: string;
+};
+
+export type Provincia = {
+  id_provincia: number;
+  nombre_provincia: string;
+  id_departamento: number;
+};
