@@ -143,7 +143,7 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El correo electrónico es obligatorio',
                 pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  value: /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
                   message: 'Correo electrónico no válido',
                 },
               }}

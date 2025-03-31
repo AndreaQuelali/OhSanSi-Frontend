@@ -142,12 +142,12 @@ export default function FormLevels() {
               type="text"
               register={register}
               validationRules={{
-                required: 'El nombre es obligatorio',
+                required: 'El nivel/categoría es obligatorio',
                 pattern: {
                   value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?(?: [A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?)*(?<! )$/,
                   message:
-                    'Solo se permiten letras, guion y un solo espacio entre palabras',
+                    'Solo se permiten letras, números, guion en medio y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
