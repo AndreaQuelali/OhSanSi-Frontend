@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
-import { Area, FormData, TableRow } from '../interfaces/form-levels';
-import { gradeOptions } from '@/utils/grade';
+import { FormData, TableRow } from '../interfaces/form-levels';
+import { API_URL } from '@/config/api-config';
 
 export default function FormLevels() {
   const {
@@ -15,6 +15,8 @@ export default function FormLevels() {
     formState: { errors, isValid },
     watch,
     trigger,
+    setError,
+    clearErrors,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -26,10 +28,28 @@ export default function FormLevels() {
 
   const minGrade = watch('gmin');
   const [rows, setRows] = useState<TableRow[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
-  const { data: areas } = useFetchData<Area[]>('/areas');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: areasData } = useFetchData<
+    {
+      id_area: number;
+      nombre_area: string;
+      niveles: {
+        id_nivel: number;
+        nombre_nivel: string;
+      }[];
+    }[]
+  >(`${API_URL}/areas-niveles-grados`);
+
+  const { data: grades } = useFetchData<
+    {
+      id_grado: number;
+      nombre_grado: string;
+      nivel_academico: string;
+      orden: number;
+    }[]
+  >(`${API_URL}/grados`);
 
   useEffect(() => {
     if (minGrade) {
@@ -38,31 +58,61 @@ export default function FormLevels() {
   }, [minGrade, trigger]);
 
   const onSubmit = (data: FormData) => {
-    setErrorMessage(null);
+    clearErrors('level');
 
-    const isDuplicate = rows.some(
-      (row) => row.area === data.area && row.level === data.level,
+    const isDuplicateInTable = rows.some(
+      (row) =>
+        row.area ===
+          areasData?.find((area) => area.id_area.toString() === data.area)
+            ?.nombre_area &&
+        row.level.toLowerCase() === data.level.toLowerCase(),
     );
 
-    if (isDuplicate) {
-      setErrorMessage('Este nivel/categoría ya se encuentra agregado');
+    if (isDuplicateInTable) {
+      setError('level', {
+        type: 'manual',
+        message: 'Este nivel ya existe en la tabla para el área seleccionada.',
+      });
+      return;
+    }
+
+    const area = areasData?.find(
+      (area) => area.id_area.toString() === data.area,
+    );
+    const nivelExiste = area?.niveles.some(
+      (nivel) => nivel.nombre_nivel.toLowerCase() === data.level.toLowerCase(),
+    );
+
+    if (nivelExiste) {
+      setError('level', {
+        type: 'manual',
+        message: 'Este nivel ya existe en el área seleccionada.',
+      });
       return;
     }
 
     const selectedArea =
-      areas?.find((area) => area.id_area.toString() === data.area)?.nombre ||
-      '';
+      areasData?.find((area) => area.id_area.toString() === data.area)
+        ?.nombre_area || '';
+
+    const minGradeName =
+      grades?.find((grade) => grade.id_grado.toString() === data.gmin)
+        ?.nombre_grado || '';
+    const maxGradeName =
+      grades?.find((grade) => grade.id_grado.toString() === data.gmax)
+        ?.nombre_grado || '';
 
     const newRow: TableRow = {
       id: Date.now(),
       area: selectedArea,
       level: data.level,
-      grade: data.gmax ? `${data.gmin} - ${data.gmax}` : `${data.gmin}`,
+      grade: maxGradeName
+        ? `${minGradeName} - ${maxGradeName}`
+        : `${minGradeName}`,
     };
 
     setRows([...rows, newRow]);
   };
-
   const handleRegister = async () => {
     if (rows.length === 0) {
       alert('Debe agregar al menos un nivel/categoría.');
@@ -72,26 +122,31 @@ export default function FormLevels() {
     setIsSubmitting(true);
 
     try {
-      for (const row of rows) {
-        const areaId = areas?.find((area) => area.nombre === row.area)?.id_area;
-        const [grado_min, grado_max] = row.grade.split(' - ').map(Number);
+      const payload = rows.map((row) => {
+        const areaId = areasData?.find(
+          (area) => area.nombre_area === row.area,
+        )?.id_area;
+        const [grado_min_name, grado_max_name] = row.grade.split(' - ');
+        const grado_min = grades?.find(
+          (grade) => grade.nombre_grado === grado_min_name,
+        )?.id_grado;
+        const grado_max =
+          grades?.find((grade) => grade.nombre_grado === grado_max_name)
+            ?.id_grado || grado_min;
 
-        const payload = {
+        return {
           nombre: row.level,
           id_area: areaId,
           grado_min,
-          grado_max: grado_max || grado_min,
+          grado_max,
         };
+      });
 
-        await axios.post('http://localhost:8000/api/niveles', payload, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-      }
+      await axios.post(`${API_URL}/niveles`, payload);
 
       alert('Niveles registrados correctamente');
       setRows([]);
+      window.location.reload();
     } catch (error: any) {
       console.error('Error al registrar los niveles:', error);
       alert('Ocurrió un error al registrar los niveles.');
@@ -99,7 +154,6 @@ export default function FormLevels() {
       setIsSubmitting(false);
     }
   };
-
   const handleDeleteRow = (id: number) => {
     setRows(rows.filter((row) => row.id !== id));
   };
@@ -118,10 +172,10 @@ export default function FormLevels() {
               className="w-[340px] h-[50px]"
               placeholder="Seleccionar área"
               options={
-                areas
-                  ? areas.map((area) => ({
+                areasData
+                  ? areasData.map((area) => ({
                       id: area.id_area.toString(),
-                      name: area.nombre,
+                      name: area.nombre_area,
                     }))
                   : []
               }
@@ -144,10 +198,8 @@ export default function FormLevels() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras, guion y un solo espacio entre palabras',
+                  value: /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/,
+                  message: 'Solo se permiten letras y números',
                 },
               }}
               errors={errors}
@@ -157,7 +209,14 @@ export default function FormLevels() {
               label="Grado Min."
               placeholder="Seleccionar grado min"
               className="h-[50px]"
-              options={gradeOptions}
+              options={
+                grades
+                  ? grades.map((grade) => ({
+                      id: grade.id_grado.toString(),
+                      name: grade.nombre_grado,
+                    }))
+                  : []
+              }
               displayKey="name"
               valueKey="id"
               register={register}
@@ -171,16 +230,29 @@ export default function FormLevels() {
               label="Grado Max."
               className="h-[50px]"
               placeholder="Seleccionar grado max"
-              options={[{ id: '', name: '' }, ...gradeOptions]} 
+              options={
+                grades
+                  ? grades.map((grade) => ({
+                      id: grade.id_grado.toString(),
+                      name: grade.nombre_grado,
+                    }))
+                  : []
+              }
               displayKey="name"
               valueKey="id"
               register={register}
               validationRules={{
                 validate: (value: string) => {
-                  if (value === '') return true; // Permitir deseleccionar sin error
-                  if (!minGrade)
+                  if (value === '') return true;
+                  const minOrder = grades?.find(
+                    (grade) => grade.id_grado.toString() === minGrade,
+                  )?.orden;
+                  const maxOrder = grades?.find(
+                    (grade) => grade.id_grado.toString() === value,
+                  )?.orden;
+                  if (!minOrder)
                     return 'Debe seleccionar primero el grado mínimo';
-                  if (parseInt(value) <= parseInt(minGrade)) {
+                  if (maxOrder && maxOrder <= minOrder) {
                     return 'El grado máximo debe ser mayor al grado mínimo';
                   }
                   return true;
@@ -198,12 +270,6 @@ export default function FormLevels() {
             disabled={!isValid}
             variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
           />
-
-          <div className="min-h-[24px] flex mt-2">
-            {errorMessage && (
-              <p className="text-error subtitle-sm">{errorMessage}</p>
-            )}
-          </div>
           <div className="w-full min-h-[180px]">
             <Table data={rows} onDeleteRow={handleDeleteRow} />
           </div>
@@ -217,7 +283,7 @@ export default function FormLevels() {
                   ? 'variantDesactivate'
                   : 'variant1'
               }
-              onClick={() => setIsModalOpen(true)} 
+              onClick={() => setIsModalOpen(true)}
             />
           </div>
         </form>
@@ -226,10 +292,10 @@ export default function FormLevels() {
       {isModalOpen && (
         <Modal
           text="¿Está seguro de registrar los niveles?"
-          onClose={() => setIsModalOpen(false)} 
+          onClose={() => setIsModalOpen(false)}
           onConfirm={async () => {
             setIsModalOpen(false);
-            await handleRegister(); 
+            await handleRegister();
           }}
         />
       )}
