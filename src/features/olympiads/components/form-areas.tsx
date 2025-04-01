@@ -5,6 +5,7 @@ import CardUploadImage from './card-upload-image';
 import { TableAreas } from './table-areas';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
+import { API_URL } from '@/config/api-config';
 
 type FormData = {
   inputArea: string;
@@ -13,7 +14,7 @@ type FormData = {
 type TableRow = {
   id: number;
   area: string;
-  [x: string]: string | number;
+  nombre?: string;
 };
 
 const FormAreas = () => {
@@ -21,64 +22,47 @@ const FormAreas = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    setError,
+    clearErrors,
+    reset,
   } = useForm<FormData>({
     mode: 'onChange',
   });
 
   const [image, setImage] = useState<File | null>(null);
-  const [rows, setRows] = useState<TableRow[]>([]); // Áreas temporales
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [rows, setRows] = useState<TableRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: apiAreas, loading, error } = useFetchData<TableRow[]>('/areas');
+  const { data: apiAreas } = useFetchData<TableRow[]>('/areas');
 
   const areas = (apiAreas || []).map((area) => ({
     id: area.id,
     area: String(area.area || area.nombre),
   }));
 
-  const handleRegister = async () => {
-    setIsModalOpen(false);
-    if (rows.length === 0 || !image) {
-      alert('Debe agregar al menos un área y una imagen.');
+  const onSubmit = (data: FormData) => {
+    clearErrors('inputArea');
+
+    const isDuplicateInTable = rows.some(
+      (row) => row.area.toLowerCase() === data.inputArea.toLowerCase(),
+    );
+
+    if (isDuplicateInTable) {
+      setError('inputArea', {
+        type: 'manual',
+        message: 'Esta área ya se encuentra agregada en la tabla.',
+      });
       return;
     }
 
-    try {
-      const formData = new FormData();
-      formData.append('id_olimpiada', '1');
-      formData.append('imagen', image);
-      formData.append(
-        'areas',
-        JSON.stringify(rows.map((row) => ({ nombre: row.area }))),
-      );
-
-      await axios.post('http://127.0.0.1:8000/api/areas', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      alert('Áreas registradas correctamente');
-      setRows([]);
-      setImage(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error('Error al enviar los datos:', error);
-      alert(
-        error.response?.data?.message ||
-          'Ocurrió un error al registrar las áreas.',
-      );
-    }
-  };
-
-  const onSubmit = (data: FormData) => {
-    setErrorMessage(null);
-
-    const isDuplicate = rows.some(
-      (row) => row.area.toLowerCase() === data.inputArea.toLowerCase(),
+    const isDuplicateInDatabase = areas.some(
+      (area) => area.area.toLowerCase() === data.inputArea.toLowerCase(),
     );
-    if (isDuplicate) {
-      setErrorMessage('Esta área ya se encuentra agregada');
+
+    if (isDuplicateInDatabase) {
+      setError('inputArea', {
+        type: 'manual',
+        message: 'Esta área ya existe en la base de datos.',
+      });
       return;
     }
 
@@ -91,6 +75,44 @@ const FormAreas = () => {
 
   const handleDeleteRow = (id: number) => {
     setRows(rows.filter((row) => row.id !== id));
+  };
+
+  const handleRegister = async () => {
+    setIsModalOpen(false);
+
+    if (rows.length === 0) {
+      alert('Debe agregar al menos un área para registrar.');
+      return;
+    }
+    if (!image) {
+      alert('Debe cargar una imagen para registrar las áreas.');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('id_olimpiada', '1');
+      formData.append('imagen', image); 
+      formData.append(
+        'areas',
+        JSON.stringify(rows.map((row) => ({ nombre: row.area }))),
+      );
+
+      await axios.post(`${API_URL}/areas`, formData);
+
+      alert('Áreas registradas correctamente');
+      setRows([]); 
+      setImage(null); 
+      reset();
+      window.location.reload();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Error al enviar los datos:', error);
+      alert(
+        error.response?.data?.message ||
+          'Ocurrió un error al registrar las áreas.',
+      );
+    }
   };
 
   return (
@@ -128,7 +150,15 @@ const FormAreas = () => {
               />
             </div>
             <div className="md:w-[350px] lg:w-[450px]">
-              <CardUploadImage onChange={setImage} />
+              <CardUploadImage
+                onChange={(file) => {
+                  if (rows.length > 0) {
+                    setImage(file || image);
+                  } else {
+                    setImage(file);
+                  }
+                }}
+              />
             </div>
           </div>
           <Button
@@ -139,30 +169,22 @@ const FormAreas = () => {
               !isValid || !image ? 'variantDesactivate' : 'variant1'
             }
           />
-          <div className="min-h-[24px] flex mt-2">
-            {errorMessage && (
-              <p className="text-error subtitle-sm">{errorMessage}</p>
-            )}
-          </div>
-          <div className="w-full md:min-h-[150px]">
-            {loading ? (
-              <p>Cargando áreas...</p>
-            ) : error ? (
-              <p className="text-error">{error}</p>
+          <div className="w-full md:min-h-[150px] flex items-center justify-center">
+            {rows.length === 0 ? (
+              <p className="text-center body-md text-primary">
+                No hay áreas agregadas.
+              </p>
             ) : (
-              <TableAreas
-                data={[...areas, ...rows]} 
-                onDeleteRow={handleDeleteRow}
-              />
+              <TableAreas data={rows} onDeleteRow={handleDeleteRow} />
             )}
           </div>
           <div className="flex flex-col md:flex-row md:justify-end space-y-5 md:space-x-5">
             <Button label="Cancelar" variantColor="variant2" />
             <Button
               label="Registrar"
-              disabled={rows.length === 0 || !image}
+              disabled={rows.length === 0}
               variantColor={
-                rows.length === 0 || !image ? 'variantDesactivate' : 'variant1'
+                rows.length === 0 ? 'variantDesactivate' : 'variant1'
               }
               onClick={() => setIsModalOpen(true)}
             />
