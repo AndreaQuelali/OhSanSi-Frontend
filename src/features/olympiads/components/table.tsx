@@ -82,7 +82,7 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
             responsive
             highlightOnHover
             customStyles={customStyles}
-            noDataComponent={<span className="text-gray-500 body-lg">No hay niveles o categorías agregadas</span>}
+            noDataComponent={<span className="text-neutral2 body-lg">No hay niveles o categorías agregadas</span>}
           />
         </div>
       </div>
