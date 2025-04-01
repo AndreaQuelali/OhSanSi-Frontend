@@ -163,7 +163,7 @@ export default function FormAreaPart({
                 label={area.nombre}
                 imageUrl={`http://127.0.0.1:8000/storage/${area.imagen}`}
                 selected={selectedAreas.includes(area.id_area)}
-                onClick={() => toggleArea(area.id_area, area.nombre)}
+                onClick={() => toggleArea(area.id_area)}
               />
             ))}
           </div>

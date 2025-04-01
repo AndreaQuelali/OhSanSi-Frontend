@@ -1,13 +1,15 @@
-import { Link, Outlet, useLocation } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import IconUser from '@/components/icons/icon-user';
 import FooterDesign from '@/components/ui/footer-design';
-import IconDown from '@/components/icons/icon-down';
+import IconHambur from '@/components/icons/icon-hambur';
+import IconClose from '@/components/icons/icon-close';
+import DesktopMenu from '@/components/ui/menu-desktop';
 
 export default function NavbarLayout() {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLLIElement>(null);
-  const location = useLocation();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -16,6 +18,13 @@ export default function NavbarLayout() {
         !adminMenuRef.current.contains(event.target as Node)
       ) {
         setIsAdminMenuOpen(false);
+      }
+
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileMenuOpen(false);
       }
     };
 
@@ -27,100 +36,73 @@ export default function NavbarLayout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <nav className="relative sm:sticky sm:top-0 bg-surface h-[80px] flex items-center px-6 z-50">
+      <nav className="sticky top-0 bg-surface h-[80px] flex items-center px-6 z-50">
         <div className="flex justify-between items-center w-full h-full">
           <Link to="/" className="flex items-center">
             <img
               src="/assets/images/ohsansi.jpg"
               alt="Logo"
-              className="w-16 h-16"
+              className="w-12 h-12 md:w-16 md:h-16"
             />
           </Link>
-          <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
-            <li>
-              <Link
-                to="/register-applicants"
-                className={`subtitle-sm p-1 ${
-                  location.pathname === '/register-applicants'
-                    ? 'text-red-500 border-b-[1px] border-b-red-500'
-                    : 'text-primary hover:text-secondary'
-                }`}
-              >
-                Postulante
-              </Link>
-            </li>
-            <li
-              ref={adminMenuRef}
-              className="relative"
-              onClick={() => setIsAdminMenuOpen((prev) => !prev)}
+          <DesktopMenu
+            isAdminMenuOpen={isAdminMenuOpen}
+            setIsAdminMenuOpen={setIsAdminMenuOpen}
+            adminMenuRef={adminMenuRef}
+          />
+          <div className="lg:hidden" ref={mobileMenuRef}>
+            <button
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="focus:outline-none"
             >
-              <span
-                className={`subtitle-sm p-1 cursor-pointer ${
-                  location.pathname.startsWith('/') ||
-                  location.pathname.startsWith('/register-areas') ||
-                  location.pathname.startsWith('/register-levels')
-                    ? 'text-red-500 border-b-[1px] border-b-red-500'
-                    : 'text-primary hover:text-secondary'
-                }`}
+              {isMobileMenuOpen ? (
+                <IconClose className="w-8 h-8 cursor-pointer" />
+              ) : (
+                <IconHambur className="w-8 h-8 cursor-pointer transition" />
+              )}
+            </button>
+            {isMobileMenuOpen && (
+              <div
+                className="absolute top-full left-0 w-full bg-white shadow-lg rounded-md z-50"
+                onClick={(e) => e.stopPropagation()} 
               >
-                Administrador
-                <IconDown
-                  className={`w-4 h-4 inline-block ml-1 transition-transform duration-200 ${
-                    isAdminMenuOpen ? 'rotate-180' : 'rotate-0'
-                  }`}
-                />
-              </span>
-              {isAdminMenuOpen && (
-                <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md mt-2 w-48">
-                  <li
-                    className={`hover:bg-gray-100 ${
-                      location.pathname === '/'
-                        ? 'text-red-500'
-                        : 'text-primary'
-                    }`}
-                  >
+                <ul>
+                  <li>
+                    <Link
+                      to="/register-applicants"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Postulante
+                    </Link>
+                  </li>
+                  <li>
                     <Link
                       to="/"
-                      className="block px-4 py-2 text-sm hover:text-secondary"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
                       Registro General
                     </Link>
                   </li>
-                  <li
-                    className={`hover:bg-gray-100 ${
-                      location.pathname === '/register-areas'
-                        ? 'text-red-500'
-                        : 'text-primary'
-                    }`}
-                  >
+                  <li>
                     <Link
                       to="/register-areas"
-                      className="block px-4 py-2 text-sm hover:text-secondary"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
                       Registro de Áreas
                     </Link>
                   </li>
-                  <li
-                    className={`hover:bg-gray-100 ${
-                      location.pathname === '/register-levels'
-                        ? 'text-red-500'
-                        : 'text-primary'
-                    }`}
-                  >
+                  <li>
                     <Link
                       to="/register-levels"
-                      className="block px-4 py-2 text-sm hover:text-secondary"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
                       Registro de Niveles
                     </Link>
                   </li>
                 </ul>
-              )}
-            </li>
-            <li>
-              <IconUser className="w-8 h-8 cursor-pointer" />
-            </li>
-          </ul>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
       <main className="flex-grow">
