@@ -149,6 +149,10 @@ export default function FormLevels() {
                   message:
                     'Solo se permiten letras, números, guion en medio y un solo espacio entre palabras',
                 },
+                maxLength: {
+                  value: 50,
+                  message: 'El nivel/categoría no puede exceder los 50 caracteres',
+                },
               }}
               errors={errors}
             />

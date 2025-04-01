@@ -120,6 +120,10 @@ const FormAreas = () => {
                     message:
                       'Solo se permiten letras, guion en medio y un solo espacio entre palabras',
                   },
+                  maxLength: {
+                    value: 50,
+                    message: 'El nombre no puede exceder los 50 caracteres',
+                  },
                 }}
               />
             </div>
