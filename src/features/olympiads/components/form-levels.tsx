@@ -105,17 +105,17 @@ export default function FormLevels() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-[78vh]">
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-center text-primary mb-10 headline-lg">
+    <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
+        <div className="flex flex-col">
+          <h1 className="text-center text-primary mb-8 headline-lg">
             Registro de Niveles/Categorías de Olimpiada
           </h1>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-9 mb-6">
             <Dropdown
               name="area"
               label="Área"
-              className="w-[340px] h-[50px]"
+              className="w-full"
               placeholder="Seleccionar área"
               options={
                 areas
@@ -136,7 +136,7 @@ export default function FormLevels() {
 
             <InputText
               label="Nivel/Categoría"
-              className="w-[340px]"
+              className="w-full"
               name="level"
               placeholder="Ingresar nivel/categoria"
               type="text"
@@ -156,7 +156,6 @@ export default function FormLevels() {
               name="gmin"
               label="Grado Min."
               placeholder="Seleccionar grado min"
-              className="h-[50px]"
               options={gradeOptions}
               displayKey="name"
               valueKey="id"
@@ -169,9 +168,8 @@ export default function FormLevels() {
             <Dropdown
               name="gmax"
               label="Grado Max."
-              className="h-[50px]"
               placeholder="Seleccionar grado max"
-              options={[{ id: '', name: '' }, ...gradeOptions]} 
+              options={[{ id: '', name: '' }, ...gradeOptions]}
               displayKey="name"
               valueKey="id"
               register={register}
@@ -207,8 +205,12 @@ export default function FormLevels() {
           <div className="w-full min-h-[180px]">
             <Table data={rows} onDeleteRow={handleDeleteRow} />
           </div>
-          <div className="mx-auto w-full flex justify-end gap-4">
-            <Button label="Cancelar" variantColor="variant2" />
+          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+            <Button
+              label="Cancelar"
+              variantColor="variant2"
+              className="mt-5 md:mt-0"
+            />
             <Button
               label="Registrar"
               disabled={rows.length === 0 || isSubmitting}
@@ -217,19 +219,18 @@ export default function FormLevels() {
                   ? 'variantDesactivate'
                   : 'variant1'
               }
-              onClick={() => setIsModalOpen(true)} 
+              onClick={() => setIsModalOpen(true)}
             />
           </div>
-        </form>
-      </div>
-
+        </div>
+      </form>
       {isModalOpen && (
         <Modal
           text="¿Está seguro de registrar los niveles?"
-          onClose={() => setIsModalOpen(false)} 
+          onClose={() => setIsModalOpen(false)}
           onConfirm={async () => {
             setIsModalOpen(false);
-            await handleRegister(); 
+            await handleRegister();
           }}
         />
       )}

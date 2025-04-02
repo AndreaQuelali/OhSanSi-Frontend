@@ -10,14 +10,14 @@ export const Button = ({
   className = '',
 }: ButtonProps) => {
   const baseButton =
-    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center cursor-pointer whitespace-nowrap';
+    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center whitespace-nowrap';
 
   const varCol: Record<string, string> = {
-    variant1: 'text-white bg-primary hover:bg-secondary2',
+    variant1: 'text-white bg-primary hover:bg-secondary2 cursor-pointer',
     variant2:
-      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2',
+      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
     variant3: '',
-    variantDesactivate: 'bg-neutral2',
+    variantDesactivate: 'bg-primary text-white opacity-40',
   };
 
   return (
