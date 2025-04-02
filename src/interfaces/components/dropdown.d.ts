@@ -17,4 +17,5 @@ export interface DropdownProps<T extends FieldValues> {
   className?: string;
   isRequired?: boolean;
   disabled?: boolean;
+  value?: string | number;
 }
