@@ -51,6 +51,38 @@ export default function FormLevels() {
     }[]
   >(`${API_URL}/grados`);
 
+  const [areas, setAreas] = useState<{ id_area: number; nombre: string }[]>([]);
+  const [, setIdOlimpiada] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchOlimpiada = async () => {
+      const storedGestion = localStorage.getItem('gestion');
+      if (!storedGestion) {
+        alert('No se encontró una gestión en localStorage.');
+        return;
+      }
+
+      try {
+        // Obtener el id_olimpiada desde la API
+        const response = await axios.get(
+          `${API_URL}/olympiad/${storedGestion}`,
+        );
+        setIdOlimpiada(response.data.id_olimpiada);
+
+        // Obtener las áreas asociadas al id_olimpiada
+        const areasResponse = await axios.get(
+          `${API_URL}/olimpiada/${response.data.id_olimpiada}/areas`,
+        );
+        setAreas(areasResponse.data.areas);
+      } catch (error) {
+        console.error('Error al obtener las áreas:', error);
+        alert('No se pudieron obtener las áreas.');
+      }
+    };
+
+    fetchOlimpiada();
+  }, []);
+
   useEffect(() => {
     if (minGrade) {
       trigger('gmax');
@@ -147,6 +179,7 @@ export default function FormLevels() {
       alert('Niveles registrados correctamente');
       setRows([]);
       window.location.reload();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error al registrar los niveles:', error);
       alert('Ocurrió un error al registrar los niveles.');
@@ -171,23 +204,18 @@ export default function FormLevels() {
               label="Área"
               className="w-[340px] h-[50px]"
               placeholder="Seleccionar área"
-              options={
-                areasData
-                  ? areasData.map((area) => ({
-                      id: area.id_area.toString(),
-                      name: area.nombre_area,
-                    }))
-                  : []
-              }
+              options={areas.map((area) => ({
+                id: area.id_area.toString(),
+                name: area.nombre,
+              }))}
               displayKey="name"
               valueKey="id"
               register={register}
               validationRules={{
-                required: 'Debe seleccionar el área',
+                required: 'Debe seleccionar un área',
               }}
               errors={errors}
             />
-
             <InputText
               label="Nivel/Categoría"
               className="w-[340px]"
@@ -205,7 +233,8 @@ export default function FormLevels() {
                 },
                 maxLength: {
                   value: 50,
-                  message: 'El nivel/categoría no puede exceder los 50 caracteres',
+                  message:
+                    'El nivel/categoría no puede exceder los 50 caracteres',
                 },
               }}
               errors={errors}
