@@ -8,7 +8,7 @@ export default function IconDown({ className }: { className?: string }) {
     >
       <path
         d="M7 10L12 15L17 10"
-        stroke="#d81a1a"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -36,7 +36,7 @@ export default function DesktopMenu({
       >
         <span
           className={`subtitle-sm p-1 cursor-pointer ${
-            location.pathname.startsWith('/') ||
+            location.pathname.startsWith('/register-info') ||
             location.pathname.startsWith('/register-areas') ||
             location.pathname.startsWith('/register-levels')
               ? 'text-red-500 border-b-[1px] border-b-red-500'
@@ -54,11 +54,13 @@ export default function DesktopMenu({
           <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md mt-2 w-48">
             <li
               className={`hover:bg-gray-100 ${
-                location.pathname === '/' ? 'text-red-500' : 'text-primary'
+                location.pathname === '/register-info'
+                  ? 'text-red-500'
+                  : 'text-primary'
               }`}
             >
               <Link
-                to="/"
+                to="/register-info"
                 className="block px-4 py-2 text-sm hover:text-secondary"
               >
                 Registro General
