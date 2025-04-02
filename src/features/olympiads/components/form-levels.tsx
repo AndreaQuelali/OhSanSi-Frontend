@@ -220,21 +220,19 @@ export default function FormLevels() {
               label="Nivel/Categoría"
               className="w-[340px]"
               name="level"
-              placeholder="Ingresar nivel/categoria"
+              placeholder="Ingresar nivel/categoría"
               type="text"
               register={register}
               validationRules={{
                 required: 'El nivel/categoría es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?(?: [A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?)*(?<! )$/,
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ0-9]+(?: *(?:- *)[A-ZÑÁÉÍÓÚ0-9]+)?(?: [A-ZÑÁÉÍÓÚ0-9]+(?: *(?:- *)[A-ZÑÁÉÍÓÚ0-9]+)?)*(?<! )$/,
                   message:
-                    'Solo se permiten letras, números, guion en medio y un solo espacio entre palabras',
+                    'Solo se permiten letras mayúsculas, números, guion en medio y un solo espacio entre palabras',
                 },
                 maxLength: {
                   value: 50,
-                  message:
-                    'El nivel/categoría no puede exceder los 50 caracteres',
+                  message: 'El nivel/categoría no puede exceder los 50 caracteres',
                 },
               }}
               errors={errors}

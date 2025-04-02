@@ -181,13 +181,17 @@ export default function FormInfo() {
               register={register}
               validationRules={{
                 pattern: {
-                  value: /^\d+$/,
+                  value: /^[1-9]\d*$/, 
                   message: 'El límite debe ser un número entero positivo',
                 },
                 required: 'Se debe ingresar un valor mayor a 0',
                 min: {
                   value: 1,
                   message: 'Se debe ingresar un valor mayor o igual a 1',
+                },
+                max: {
+                  value: 5,
+                  message: 'El límite no puede ser mayor a 5',
                 },
               }}
               errors={errors}

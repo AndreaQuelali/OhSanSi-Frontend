@@ -91,10 +91,8 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*(?<! )$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -108,10 +106,8 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El apellido es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*(?<! )$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -206,10 +202,8 @@ export default function FormDataPart() {
               errors={errors}
               validationRules={{
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras, números y un solo espacio entre palabras',
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ0-9]+(?: [A-ZÑÁÉÍÓÚ0-9]+)*(?<! )$/,
+                  message: 'Solo se permiten letras mayúsculas, números y un solo espacio entre palabras',
                 },
                 required: 'La unidad educativa es obligatoria',
               }}

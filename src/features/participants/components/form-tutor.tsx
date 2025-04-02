@@ -24,10 +24,8 @@ export default function FormTutor() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*(?<! )$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -41,10 +39,8 @@ export default function FormTutor() {
               validationRules={{
                 required: 'El apellido es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^(?! )[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*(?<! )$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
