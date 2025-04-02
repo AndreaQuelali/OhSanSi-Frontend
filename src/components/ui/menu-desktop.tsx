@@ -96,7 +96,7 @@ export default function DesktopMenu({
         )}
       </li>
       <li>
-        <IconUser className="w-8 h-8 cursor-pointer" />
+        <IconUser className="w-8 h-8 opacity-40 text-white" />
       </li>
     </ul>
   );

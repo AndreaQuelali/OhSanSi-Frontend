@@ -15,13 +15,12 @@ export default function AppRoutes() {
           <Route index element={<RegisterInfoPage />} />
           <Route path="/register-areas" element={<RegisterAreas />} />
           <Route path="/register-levels" element={<RegisterLevelsPage />} />
+          <Route
+            path="register-applicants"
+            index
+            element={<RegisterParticipant />}
+          />
         </Route>
-
-        <Route
-          path="register-applicants"
-          index
-          element={<RegisterParticipant />}
-        />
       </Routes>
     </BrowserRouter>
   );
