@@ -77,7 +77,7 @@ export default function NavbarLayout() {
                   </li>
                   <li>
                     <Link
-                      to="/"
+                      to="/register-info"
                       className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
                       Registro General

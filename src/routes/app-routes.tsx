@@ -3,6 +3,7 @@ import {
   RegisterInfoPage,
   RegisterLevelsPage,
 } from '@/features';
+import { Home } from '@/features/olympiads/pages/home';
 import RegisterParticipant from '@/features/participants/pages/register-participant';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
@@ -12,7 +13,8 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route element={<NavbarLayout />}>
-          <Route index element={<RegisterInfoPage />} />
+          <Route index element={<Home />} />
+          <Route path="/register-info" element={<RegisterInfoPage />} />
           <Route path="/register-areas" element={<RegisterAreas />} />
           <Route path="/register-levels" element={<RegisterLevelsPage />} />
           <Route
