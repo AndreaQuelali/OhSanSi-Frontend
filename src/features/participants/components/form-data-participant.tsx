@@ -8,11 +8,14 @@ import {
   Grado,
   Provincia,
 } from '../interfaces/register-participants';
+import axios from 'axios';
 
 export default function FormDataPart() {
   const {
     register,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors },
     watch,
   } = useFormContext();
@@ -26,16 +29,65 @@ export default function FormDataPart() {
 
   const selectedDepartment = watch('olimpista.depa');
 
+  const ci = watch('olimpista.ci'); // Observar el campo CI
+  const email = watch('olimpista.email'); // Observar el campo Email
+
+  const checkCi = async () => {
+    if (!ci) {
+      clearErrors('olimpista.ci'); // Limpiar el error si el campo está vacío
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/olimpistas/cedula/${ci}`,
+      );
+      if (response.data) {
+        setError('olimpista.ci', {
+          type: 'manual',
+          message: 'Este número de cédula ya está registrado.',
+        });
+      } else {
+        clearErrors('olimpista.ci'); // Limpiar el error si no existe
+      }
+    } catch (error) {
+      console.error('Error al verificar el CI:', error);
+      clearErrors('olimpista.ci'); // No mostrar error si ocurre un problema en la verificación
+    }
+  };
+
+  const checkEmail = async () => {
+    if (!email) {
+      clearErrors('olimpista.email'); // Limpiar el error si el campo está vacío
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/olimpistas/email/${email}`,
+      );
+      if (response.data) {
+        setError('olimpista.email', {
+          type: 'manual',
+          message: 'Este correo electrónico ya está registrado.',
+        });
+      } else {
+        clearErrors('olimpista.email'); // Limpiar el error si no existe
+      }
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+      clearErrors('olimpista.email'); // No mostrar error si ocurre un problema en la verificación
+    }
+  };
   useEffect(() => {
     if (selectedDepartment) {
       const fetchProvincias = async () => {
         setLoadingProvincias(true);
         try {
-          const response = await fetch(
+          const response = await axios.get(
             `${API_URL}/provincias/${selectedDepartment}`,
           );
-          const data = await response.json();
-          setProvincias(data);
+          setProvincias(response.data);
         } catch (error) {
           console.error('Error al cargar las provincias:', error);
           setProvincias([]);
@@ -136,6 +188,7 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
+                onBlur: checkCi, // Verificar CI al salir del campo
               }}
               errors={errors}
             />
@@ -151,9 +204,11 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El correo electrónico es obligatorio',
                 pattern: {
-                  value: /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+                  value:
+                    /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
                   message: 'Correo electrónico no válido',
                 },
+                onBlur: checkEmail, // Verificar correo al salir del campo
               }}
               errors={errors}
             />
@@ -188,9 +243,13 @@ export default function FormDataPart() {
                   const age = today.getFullYear() - birthDate.getFullYear();
                   const hasBirthdayPassed =
                     today.getMonth() > birthDate.getMonth() ||
-                    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+                    (today.getMonth() === birthDate.getMonth() &&
+                      today.getDate() >= birthDate.getDate());
                   const exactAge = hasBirthdayPassed ? age : age - 1;
-                  return exactAge >= 6 && exactAge <= 20 || 'Debe tener entre 6 y 20 años';
+                  return (
+                    (exactAge >= 6 && exactAge <= 20) ||
+                    'Debe tener entre 6 y 20 años'
+                  );
                 },
               }}
               errors={errors}

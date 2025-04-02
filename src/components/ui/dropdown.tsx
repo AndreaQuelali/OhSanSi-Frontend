@@ -15,6 +15,7 @@ export const Dropdown = <T extends FieldValues>({
   className = '',
   isRequired = true,
   disabled = false,
+  value,
 }: DropdownProps<T> & { disabled?: boolean }) => {
   return (
     <div className="flex flex-col">
@@ -25,6 +26,7 @@ export const Dropdown = <T extends FieldValues>({
       )}
       <select
         id={name}
+        value={value}
         className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
           errors[name] ? "border-error" : ""
         }`} 
