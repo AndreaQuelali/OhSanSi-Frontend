@@ -1,6 +1,6 @@
 import { Button, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import CardUploadImage from './card-upload-image';
 import { TableAreas } from './table-areas';
 import axios from 'axios';
@@ -33,6 +33,7 @@ const FormAreas = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gestion, setGestion] = useState<number | null>(null);
   const [idOlimpiada, setIdOlimpiada] = useState<number | null>(null);
+  const uploadImageRef = useRef<{ resetImage: () => void } | null>(null);
 
   useEffect(() => {
     const storedGestion = localStorage.getItem('gestion');
@@ -59,11 +60,11 @@ const FormAreas = () => {
 
   const onSubmit = async (data: FormData) => {
     clearErrors('inputArea');
-
+  
     const isDuplicateInTable = rows.some(
       (row) => row.area.toLowerCase() === data.inputArea.toLowerCase(),
     );
-
+  
     if (isDuplicateInTable) {
       setError('inputArea', {
         type: 'manual',
@@ -71,17 +72,17 @@ const FormAreas = () => {
       });
       return;
     }
-
+  
     try {
       const response = await axios.get(`${API_URL}/areas`);
       const areas = response.data;
-
+  
       const isDuplicateInDatabase = areas.some(
         (area: { id_olimpiada: number; nombre: string }) =>
           area.id_olimpiada === idOlimpiada &&
           area.nombre.toLowerCase() === data.inputArea.toLowerCase(),
       );
-
+  
       if (isDuplicateInDatabase) {
         setError('inputArea', {
           type: 'manual',
@@ -94,13 +95,18 @@ const FormAreas = () => {
       alert('No se pudo verificar si el área ya existe. Intente nuevamente.');
       return;
     }
-
+  
     const newRow: TableRow = {
       id: Date.now(),
       area: data.inputArea,
     };
     setRows([...rows, newRow]);
+  
+    reset();
+    setImage(null);
+    uploadImageRef.current?.resetImage();
   };
+
   const handleDeleteRow = (id: number) => {
     setRows(rows.filter((row) => row.id !== id));
   };
@@ -185,6 +191,7 @@ const FormAreas = () => {
             </div>
             <div className="md:w-[350px] lg:w-[450px]">
               <CardUploadImage
+                ref={uploadImageRef}
                 onChange={(file) => {
                   if (rows.length > 0) {
                     setImage(file || image);
