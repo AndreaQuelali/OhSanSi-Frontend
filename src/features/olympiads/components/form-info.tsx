@@ -38,6 +38,7 @@ export default function FormInfo() {
       max_categorias_olimpista: Number(formData.limitAreas),
     };
 
+
     try {
       const response = await submitForm(payload);
       if (response) {
@@ -67,22 +68,18 @@ export default function FormInfo() {
   };
 
   return (
-    <div className="flex flex-col h-[87vh]">
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="max-w-9/12 mx-auto w-full mb-20"
-        >
-          <h1 className="text-center text-primary mb-10 headline-lg">
+    <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0  ">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
+        <div className="flex flex-col">
+          <h1 className="text-center text-primary mb-8 headline-lg">
             Registro de Información General de la Olimpiada
           </h1>
-
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
             <Dropdown
               name="year"
               label="Año/Gestión"
               placeholder="Seleccionar año o gestión"
-              className="w-[480px] h-[50px]"
+              className="w-full  lg:w-[480px]"
               options={[
                 { id: '2024', name: '2024' },
                 { id: '2025', name: '2025' },
@@ -94,14 +91,16 @@ export default function FormInfo() {
               valueKey="id"
               register={register}
               errors={errors}
-              validationRules={{ required: 'Debe seleccionar un año/gestión' }}
+              validationRules={{
+                required: 'Debe seleccionar un año/gestión',
+              }}
             />
             <InputText
               label="Costo de Inscripción"
               name="cost"
               placeholder="0.00"
               type="text"
-              className="w-[480px]"
+              className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 pattern: {
@@ -119,13 +118,13 @@ export default function FormInfo() {
             />
           </div>
 
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
             <InputText
               label="Fecha de Inicio"
               name="dateIni"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[480px]"
+              className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 required: 'Debe ingresar una fecha de inicio',
@@ -148,7 +147,7 @@ export default function FormInfo() {
               name="dateEnd"
               placeholder="DD/MM/YY"
               type="date"
-              className="w-[480px]"
+              className="w-full  lg:w-[480px]"
               register={register}
               validationRules={{
                 required: 'Debe ingresar una fecha de cierre',
@@ -171,13 +170,13 @@ export default function FormInfo() {
               errors={errors}
             />
           </div>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-5">
+          <div className="grid grid-cols-1 gap-9 mb-6">
             <InputText
               label="Límite de Áreas por Estudiante"
               name="limitAreas"
               placeholder="0"
               type="number"
-              className="w-[480px]"
+              className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 pattern: {
@@ -194,8 +193,12 @@ export default function FormInfo() {
             />
           </div>
 
-          <div className="flex flex-row mt-10 justify-end gap-4">
-            <Button label="Cancelar" variantColor="variant2" />
+          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+            <Button
+              label="Cancelar"
+              variantColor="variant2"
+              className="mt-5 md:mt-0"
+            />
             <Button
               type="submit"
               label="Registrar"
@@ -203,8 +206,8 @@ export default function FormInfo() {
               variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
             />
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
       {showModal && (
         <Modal
           onClose={onCloseModal}

@@ -76,17 +76,17 @@ export default function FormDataPart() {
 
   return (
     <div className="flex flex-col my-6">
-      <div className="flex flex-col flex-grow">
-        <form className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0 lg:px-0">
+      <div className="flex flex-col items-center flex-grow">
+        <form>
           <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center sm:text-left">
             Registro de Datos de Olimpista
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
             <InputText
               label="Nombre(s)"
               name="olimpista.name"
-              placeholder="Lucia Damaris"
-              className="w-full md:w-2xs"
+              placeholder="LUCIA DAMARIS"
+              className="w-full"
               register={register}
               validationRules={{
                 required: 'El nombre es obligatorio',
@@ -102,8 +102,8 @@ export default function FormDataPart() {
             <InputText
               label="Apellido(s)"
               name="olimpista.lastname"
-              placeholder="Quiroz Lopez"
-              className="w-full md:w-2xs"
+              placeholder="QUIROZ LOPEZ"
+              className="w-full"
               register={register}
               validationRules={{
                 required: 'El apellido es obligatorio',
@@ -120,7 +120,7 @@ export default function FormDataPart() {
               label="Número de cédula de identidad"
               name="olimpista.ci"
               placeholder="1234567"
-              className="w-full md:w-2xs"
+              className="w-full "
               register={register}
               validationRules={{
                 required: 'El número de cédula es obligatorio',
@@ -140,13 +140,13 @@ export default function FormDataPart() {
               errors={errors}
             />
           </div>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
             <InputText
               label="Correo electrónico"
               name="olimpista.email"
-              placeholder="lucia@gmail.com"
+              placeholder="luciaquiroz@gmail.com"
               type="email"
-              className="w-full md:w-2xs"
+              className="w-full"
               register={register}
               validationRules={{
                 required: 'El correo electrónico es obligatorio',
@@ -161,7 +161,7 @@ export default function FormDataPart() {
               label="Número de celular"
               name="olimpista.phone"
               placeholder="77777777"
-              className="w-full md:w-2xs"
+              className="w-full "
               register={register}
               validationRules={{
                 required: 'El número de celular es obligatorio',
@@ -177,7 +177,7 @@ export default function FormDataPart() {
               name="olimpista.birthday"
               placeholder="DD/MM/AAAA"
               type="date"
-              className="w-full md:w-2xs"
+              className="w-full"
               register={register}
               validationRules={{
                 required: 'La fecha de nacimiento es obligatoria',
@@ -196,12 +196,12 @@ export default function FormDataPart() {
               errors={errors}
             />
           </div>
-          <div className="px-10 md:px-3 lg:px-0 flex flex-col md:flex-row justify-between mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
             <InputText
               label="Unidad educativa"
               name="olimpista.school"
               placeholder="Seleccionar unidad educativa"
-              className="w-full md:w-2xs"
+              className="w-full"
               register={register}
               errors={errors}
               validationRules={{
