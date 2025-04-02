@@ -1,9 +1,8 @@
 import { Button, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CardUploadImage from './card-upload-image';
 import { TableAreas } from './table-areas';
-import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 
@@ -32,14 +31,33 @@ const FormAreas = () => {
   const [image, setImage] = useState<File | null>(null);
   const [rows, setRows] = useState<TableRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: apiAreas } = useFetchData<TableRow[]>('/areas');
+  const [gestion, setGestion] = useState<number | null>(null);
+  const [idOlimpiada, setIdOlimpiada] = useState<number | null>(null);
 
-  const areas = (apiAreas || []).map((area) => ({
-    id: area.id,
-    area: String(area.area || area.nombre),
-  }));
+  useEffect(() => {
+    const storedGestion = localStorage.getItem('gestion');
+    if (storedGestion) {
+      setGestion(Number(storedGestion));
+    }
+  }, []);
 
-  const onSubmit = (data: FormData) => {
+  useEffect(() => {
+    if (!gestion) return;
+
+    const fetchOlimpiada = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/olympiad/${gestion}`);
+        setIdOlimpiada(response.data.id_olimpiada);
+      } catch (error) {
+        console.error('Error al obtener la olimpiada:', error);
+        alert('No se pudo obtener la información de la olimpiada.');
+      }
+    };
+
+    fetchOlimpiada();
+  }, [gestion]);
+
+  const onSubmit = async (data: FormData) => {
     clearErrors('inputArea');
 
     const isDuplicateInTable = rows.some(
@@ -54,15 +72,26 @@ const FormAreas = () => {
       return;
     }
 
-    const isDuplicateInDatabase = areas.some(
-      (area) => area.area.toLowerCase() === data.inputArea.toLowerCase(),
-    );
+    try {
+      const response = await axios.get(`${API_URL}/areas`);
+      const areas = response.data;
 
-    if (isDuplicateInDatabase) {
-      setError('inputArea', {
-        type: 'manual',
-        message: 'Esta área ya existe en la base de datos.',
-      });
+      const isDuplicateInDatabase = areas.some(
+        (area: { id_olimpiada: number; nombre: string }) =>
+          area.id_olimpiada === idOlimpiada &&
+          area.nombre.toLowerCase() === data.inputArea.toLowerCase(),
+      );
+
+      if (isDuplicateInDatabase) {
+        setError('inputArea', {
+          type: 'manual',
+          message: 'Esta área ya existe en la base de datos.',
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Error al verificar las áreas en la base de datos:', error);
+      alert('No se pudo verificar si el área ya existe. Intente nuevamente.');
       return;
     }
 
@@ -72,7 +101,6 @@ const FormAreas = () => {
     };
     setRows([...rows, newRow]);
   };
-
   const handleDeleteRow = (id: number) => {
     setRows(rows.filter((row) => row.id !== id));
   };
@@ -91,8 +119,13 @@ const FormAreas = () => {
 
     try {
       const formData = new FormData();
-      formData.append('id_olimpiada', '1');
-      formData.append('imagen', image); 
+      if (idOlimpiada) {
+        formData.append('id_olimpiada', idOlimpiada.toString());
+      } else {
+        alert('No se pudo obtener el ID de la olimpiada.');
+        return;
+      }
+      formData.append('imagen', image);
       formData.append(
         'areas',
         JSON.stringify(rows.map((row) => ({ nombre: row.area }))),
@@ -101,8 +134,8 @@ const FormAreas = () => {
       await axios.post(`${API_URL}/areas`, formData);
 
       alert('Áreas registradas correctamente');
-      setRows([]); 
-      setImage(null); 
+      setRows([]);
+      setImage(null);
       reset();
       window.location.reload();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,7 +155,9 @@ const FormAreas = () => {
           <h1 className="text-center headline-lg text-primary">
             Registro de Áreas de Competencia de Olimpiada
           </h1>
-          <h1 className="text-center headline-md text-primary">Gestión 2025</h1>
+          <h1 className="text-center headline-md text-primary">
+            Gestión {gestion}
+          </h1>
           <div className="flex flex-col md:flex-row md:justify-between my-7 md:gap-9">
             <div>
               <InputText

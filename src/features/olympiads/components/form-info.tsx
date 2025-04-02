@@ -4,7 +4,6 @@ import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useApiForm } from '@/hooks/use-api-form';
 import { FormData } from '../interfaces/form-info';
 
-
 export default function FormInfo() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
@@ -12,6 +11,7 @@ export default function FormInfo() {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isValid },
     getValues,
   } = useForm<FormData>({
@@ -38,14 +38,25 @@ export default function FormInfo() {
       max_categorias_olimpista: Number(formData.limitAreas),
     };
 
-    const response = await submitForm(payload);
-
-    if (response) {
-      console.log('Registro exitoso:', response);
-      alert('Registro exitoso');
-      reset(); 
-    } else {
-      alert('Error en el registro. Intente nuevamente.');
+    try {
+      const response = await submitForm(payload);
+      if (response) {
+        console.log('Registro exitoso:', response);
+        alert('Registro exitoso');
+        localStorage.setItem('gestion', formData.year);
+        reset(); 
+      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error.data?.errors) {
+        const messages = Object.values(error.data.errors).flat().join('\n');
+        setError('year', { message: messages });
+        alert(messages);
+      } else {
+        alert(
+          error.data?.message || 'Error en el registro. Intente nuevamente.',
+        );
+      }
     }
 
     setShowModal(false);
@@ -75,6 +86,9 @@ export default function FormInfo() {
               options={[
                 { id: '2024', name: '2024' },
                 { id: '2025', name: '2025' },
+                { id: '2026', name: '2026' },
+                { id: '2027', name: '2027' },
+                { id: '2028', name: '2028' },
               ]}
               displayKey="name"
               valueKey="id"
