@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useApiForm } from '@/hooks/use-api-form';
 import { FormData } from '../interfaces/form-info';
+import { useNavigate } from 'react-router-dom';
 
 export default function FormInfo() {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
   const {
@@ -198,6 +200,7 @@ export default function FormInfo() {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
+              onClick={() => navigate('/')}
             />
             <Button
               type="submit"

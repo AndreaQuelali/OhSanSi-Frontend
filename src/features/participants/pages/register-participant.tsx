@@ -8,6 +8,7 @@ import { Button, ButtonIcon } from '@/components';
 import FormAreaPart from '../components/form-areas-participant';
 import FooterDesign from '@/components/ui/footer-design';
 import IconClose from '@/components/icons/icon-close';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterParticipant() {
   const [step, setStep] = useState(0);
@@ -64,6 +65,7 @@ export default function RegisterParticipant() {
     }
   };
 
+  const navigate = useNavigate();
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
   return (
@@ -72,7 +74,7 @@ export default function RegisterParticipant() {
         <main className="flex-grow">
           <div className="w-full mx-auto mt-2 p-6">
             <div className="flex flex-row justify-end mx-10">
-              <ButtonIcon icon={IconClose} />
+              <ButtonIcon icon={IconClose} onClick={() => navigate('/')} />
             </div>
             <h1 className="text-center text-primary headline-lg">
               Registro de Olimpista
