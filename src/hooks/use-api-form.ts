@@ -7,10 +7,6 @@ export const useApiForm = (endpoint: string) => {
   const [success, setSuccess] = useState<boolean>(false);
 
   const submitForm = async (data: object) => {
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-
     try {
       const response = await postData(endpoint, data);
       setSuccess(true);
@@ -18,7 +14,7 @@ export const useApiForm = (endpoint: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
-      return null;
+      throw err;
     } finally {
       setLoading(false);
     }

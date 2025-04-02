@@ -124,6 +124,14 @@ export default function FormDataPart() {
               register={register}
               validationRules={{
                 required: 'El número de cédula es obligatorio',
+                minLength: {
+                  value: 4,
+                  message: 'Debe tener al menos 4 dígitos',
+                },
+                maxLength: {
+                  value: 8,
+                  message: 'No puede tener más de 8 dígitos',
+                },
                 pattern: {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
@@ -143,7 +151,7 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El correo electrónico es obligatorio',
                 pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  value: /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
                   message: 'Correo electrónico no válido',
                 },
               }}
@@ -173,6 +181,17 @@ export default function FormDataPart() {
               register={register}
               validationRules={{
                 required: 'La fecha de nacimiento es obligatoria',
+                validate: (value: string) => {
+                  if (!value) return 'La fecha de nacimiento es obligatoria';
+                  const today = new Date();
+                  const birthDate = new Date(value);
+                  const age = today.getFullYear() - birthDate.getFullYear();
+                  const hasBirthdayPassed =
+                    today.getMonth() > birthDate.getMonth() ||
+                    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+                  const exactAge = hasBirthdayPassed ? age : age - 1;
+                  return exactAge >= 6 && exactAge <= 20 || 'Debe tener entre 6 y 20 años';
+                },
               }}
               errors={errors}
             />

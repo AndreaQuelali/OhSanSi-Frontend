@@ -15,7 +15,10 @@ export const postData = async (endpoint: string, data: object) => {
     return response.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new Error(error.response?.data || error.message);
+    if (error.response) {
+      throw error.response;
+    }
+    throw error;
   }
 };
 
@@ -23,7 +26,7 @@ export const getData = async (endpoint: string) => {
   try {
     const response = await apiClient.get(endpoint);
     return response.data;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new Error(error.response?.data || error.message);
   }
