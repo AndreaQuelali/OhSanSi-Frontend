@@ -4,8 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { NumberCircle } from '../components/number';
 import FormDataPart from '../components/form-data-participant';
 import FormTutor from '../components/form-tutor';
-import { Button } from '@/components';
+import { Button, ButtonIcon } from '@/components';
 import FormAreaPart from '../components/form-areas-participant';
+import FooterDesign from '@/components/ui/footer-design';
+import IconClose from '@/components/icons/icon-close';
 
 export default function RegisterParticipant() {
   const [step, setStep] = useState(0);
@@ -53,13 +55,12 @@ export default function RegisterParticipant() {
   ];
 
   const nextStep = async () => {
-    const isStepValid = await trigger(); // Valida el formulario actual
+    const isStepValid = await trigger();
     if (isStepValid) {
-      // Guarda los datos actuales en localStorage
-      const formData = methods.getValues(); // Obtiene los valores actuales del formulario
+      const formData = methods.getValues();
       localStorage.setItem('participantData', JSON.stringify(formData));
 
-      setStep((prev) => Math.min(prev + 1, tabs.length - 1)); // Avanza al siguiente paso
+      setStep((prev) => Math.min(prev + 1, tabs.length - 1));
     }
   };
 
@@ -67,9 +68,12 @@ export default function RegisterParticipant() {
 
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col min-h-screen z-10">
+      <div className="flex flex-col min-h-screen mb-28">
         <main className="flex-grow">
           <div className="w-full mx-auto mt-2 p-6">
+            <div className="flex flex-row justify-end mx-10">
+              <ButtonIcon icon={IconClose} />
+            </div>
             <h1 className="text-center text-primary headline-lg">
               Registro de Olimpista
             </h1>
@@ -104,11 +108,14 @@ export default function RegisterParticipant() {
               </TabsContent>
             </Tabs>
 
-            <div className="flex flex-col-reverse md:flex-row justify-center md:justify-between px-4 md:px-10 gap-4">
-              {step === tabs.length - 1 ? null : ( 
+            <div
+              className={`flex flex-col-reverse md:flex-row px-4 md:px-10 gap-4 
+              ${step === 0 ? 'justify-end' : 'justify-between'}`}
+            >
+              {' '}
+              {step > 0 && (
                 <Button
                   onClick={prevStep}
-                  disabled={step === 0}
                   variantColor="variant2"
                   label="Anterior"
                 />
@@ -124,7 +131,6 @@ export default function RegisterParticipant() {
             </div>
           </div>
         </main>
-        <div className="z-0"></div>
       </div>
     </FormProvider>
   );

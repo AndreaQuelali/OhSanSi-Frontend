@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import CardUploadImage from './card-upload-image';
 import { TableAreas } from './table-areas';
 import axios from 'axios';
+import AddIcon from '../icons/add';
 import { API_URL } from '@/config/api-config';
+
 
 type FormData = {
   inputArea: string;
@@ -139,6 +141,7 @@ const FormAreas = () => {
       reset();
       window.location.reload();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
       console.error('Error al enviar los datos:', error);
       alert(
@@ -149,23 +152,25 @@ const FormAreas = () => {
   };
 
   return (
-    <div className="my-5 mx-10 md:mx-0 lg:mx-0 flex flex-col items-center justify-center h-full">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className=" mx-10 md:mx-0 lg:mx-0 flex flex-col items-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
         <div className="flex flex-col">
-          <h1 className="text-center headline-lg text-primary">
+          <h1 className="text-center headline-lg text-primary ">
             Registro de Áreas de Competencia de Olimpiada
           </h1>
-          <h1 className="text-center headline-md text-primary">
+
+          <h1 className="text-center headline-md text-primary mb-8">
             Gestión {gestion}
           </h1>
-          <div className="flex flex-col md:flex-row md:justify-between my-7 md:gap-9">
+          <div className="grid grid-cols-1 sm:grid-cols-2  mb-6 gap-9">
+
             <div>
               <InputText
                 label="Nombre del Área"
                 name="inputArea"
-                placeholder="Ingrese nombre del área"
+                placeholder="MATEMÁTICAS"
                 type="text"
-                className="w-full md:w-[250px] lg:w-[580px]"
+                className="w-full lg:w-[480px]"
                 labelPadding="py-5"
                 register={register}
                 errors={errors}
@@ -184,7 +189,8 @@ const FormAreas = () => {
                 }}
               />
             </div>
-            <div className="md:w-[350px] lg:w-[450px]">
+
+            <div className="w-full  lg:w-[480px]">
               <CardUploadImage
                 onChange={(file) => {
                   if (rows.length > 0) {
@@ -194,11 +200,13 @@ const FormAreas = () => {
                   }
                 }}
               />
+
             </div>
           </div>
           <Button
             type="submit"
             label="Agregar"
+            icon={AddIcon}
             disabled={!isValid || !image}
             variantColor={
               !isValid || !image ? 'variantDesactivate' : 'variant1'
@@ -210,11 +218,17 @@ const FormAreas = () => {
                 No hay áreas agregadas.
               </p>
             ) : (
+
               <TableAreas data={rows} onDeleteRow={handleDeleteRow} />
+
             )}
           </div>
-          <div className="flex flex-col md:flex-row md:justify-end space-y-5 md:space-x-5">
-            <Button label="Cancelar" variantColor="variant2" />
+          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+            <Button
+              label="Cancelar"
+              variantColor="variant2"
+              className="mt-5 md:mt-0"
+            />
             <Button
               label="Registrar"
               disabled={rows.length === 0}

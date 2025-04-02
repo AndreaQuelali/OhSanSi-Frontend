@@ -36,11 +36,11 @@ export default function NavbarLayout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <nav className="sticky top-0 bg-surface h-[80px] flex items-center px-6 z-50">
+      <nav className="sticky top-0 bg-white h-[80px] flex items-center px-6 z-50">
         <div className="flex justify-between items-center w-full h-full">
           <Link to="/" className="flex items-center">
             <img
-              src="/assets/images/ohsansi.jpg"
+              src="/assets/images/ohsansi2.png"
               alt="Logo"
               className="w-12 h-12 md:w-16 md:h-16"
             />
@@ -64,7 +64,7 @@ export default function NavbarLayout() {
             {isMobileMenuOpen && (
               <div
                 className="absolute top-full left-0 w-full bg-white shadow-lg rounded-md z-50"
-                onClick={(e) => e.stopPropagation()} 
+                onClick={(e) => e.stopPropagation()}
               >
                 <ul>
                   <li>
