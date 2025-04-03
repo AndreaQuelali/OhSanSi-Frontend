@@ -15,7 +15,7 @@ export default function FormTutor() {
   const [loading, setLoading] = useState(false);
 
   const ci = watch('tutor.ci');
-  const rol = watch('tutor.rol'); 
+  const rol = watch('tutor.rol');
 
   const checkTutor = async () => {
     if (!ci) return;
@@ -32,9 +32,9 @@ export default function FormTutor() {
         setValue('tutor.lastname', tutor.apellidos);
         setValue('tutor.phone', tutor.celular.toString());
         setValue('tutor.email', tutor.correo_electronico);
-        setValue('tutor.rol', tutor.rol_parentesco); 
+        setValue('tutor.rol', tutor.rol_parentesco);
 
-        setTutorExists(true); 
+        setTutorExists(true);
       } else {
         setTutorExists(false);
       }
@@ -80,7 +80,7 @@ export default function FormTutor() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
-                onBlur: checkTutor, 
+                onBlur: checkTutor,
               }}
               errors={errors}
             />
@@ -101,6 +101,8 @@ export default function FormTutor() {
               }}
               errors={errors}
             />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
             <InputText
               label="Apellido(s)"
               name="tutor.lastname"
@@ -114,31 +116,6 @@ export default function FormTutor() {
                     /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
                   message:
                     'Solo se permiten letras y un solo espacio entre palabras',
-                },
-              }}
-              errors={errors}
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
-            <InputText
-              label="Número de cédula de identidad"
-              name="tutor.ci"
-              placeholder="1234567"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
                 },
               }}
               errors={errors}
@@ -194,7 +171,7 @@ export default function FormTutor() {
               validationRules={{
                 required: 'El rol/parentesco es obligatorio',
               }}
-              value={rol} 
+              value={rol}
               errors={errors}
             />
           </div>

@@ -4,13 +4,10 @@ import { CardArea } from './card-area';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { Area, FormAreaPartProps } from '../interfaces/register-participants';
+import { Area } from '../interfaces/register-participants';
 
-export default function FormAreaPart({
-  setStep,
-  currentStep,
-}: FormAreaPartProps) {
-  const { setValue, watch, trigger } = useFormContext();
+export default function FormAreaPart() {
+  const { setValue, watch } = useFormContext();
   const selectedAreas = watch('areas.selectedAreas', []);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,7 +20,7 @@ export default function FormAreaPart({
   const [error, setError] = useState<string | null>(null);
   const [niveles, setNiveles] = useState<
     { id_nivel: number; nombre: string }[]
-  >([]); // Niveles de un área
+  >([]);
   const [selectedNiveles, setSelectedNiveles] = useState<number[]>([]);
 
   useEffect(() => {
@@ -275,11 +272,6 @@ export default function FormAreaPart({
       )}
 
       <div className="flex justify-between items-center mt-6">
-        <Button
-          label="Anterior"
-          onClick={() => setStep(Math.max(0, currentStep - 1))}
-          variantColor="variant2"
-        />
         <Button
           label="Registrar"
           onClick={() => setConfirmationModalOpen(true)}

@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import DeleteIcon from '../icons/delete';
-import { Button, ButtonIcon } from '../../../components';
+import { ButtonIcon } from '../../../components';
 
 interface Table {
   id: number;
@@ -72,7 +72,6 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
           <h2 className="text-primary subtitle-md">
             Niveles/Categorías agregadas
           </h2>
-          <Button label="Ver todo" variantColor="variant2" />
         </div>
         <div className="max-h-[100px] overflow-y-auto">
           <DataTable
@@ -82,7 +81,11 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
             responsive
             highlightOnHover
             customStyles={customStyles}
-            noDataComponent={<span className="text-neutral2 body-lg">No hay niveles o categorías agregadas</span>}
+            noDataComponent={
+              <span className="text-neutral2 body-lg">
+                No hay niveles o categorías agregadas
+              </span>
+            }
           />
         </div>
       </div>

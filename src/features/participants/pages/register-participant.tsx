@@ -6,7 +6,6 @@ import FormDataPart from '../components/form-data-participant';
 import FormTutor from '../components/form-tutor';
 import { Button, ButtonIcon } from '@/components';
 import FormAreaPart from '../components/form-areas-participant';
-import FooterDesign from '@/components/ui/footer-design';
 import IconClose from '@/components/icons/icon-close';
 
 export default function RegisterParticipant() {
@@ -104,7 +103,7 @@ export default function RegisterParticipant() {
               </TabsContent>
 
               <TabsContent value="areas">
-                <FormAreaPart setStep={setStep} currentStep={step} />
+                <FormAreaPart />
               </TabsContent>
             </Tabs>
 
