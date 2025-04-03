@@ -6,6 +6,7 @@ import { TableAreas } from './table-areas';
 import axios from 'axios';
 import AddIcon from '../icons/add';
 import { API_URL } from '@/config/api-config';
+import { useNavigate } from 'react-router-dom';
 
 
 type FormData = {
@@ -30,6 +31,7 @@ const FormAreas = () => {
     mode: 'onChange',
   });
 
+  const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [rows, setRows] = useState<TableRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -228,6 +230,7 @@ const FormAreas = () => {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
+              onClick={() => navigate('/')}
             />
             <Button
               label="Registrar"

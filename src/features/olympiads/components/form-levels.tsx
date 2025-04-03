@@ -7,6 +7,7 @@ import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { FormData, TableRow } from '../interfaces/form-levels';
 import { API_URL } from '@/config/api-config';
+import { useNavigate } from 'react-router-dom';
 
 export default function FormLevels() {
   const {
@@ -26,6 +27,7 @@ export default function FormLevels() {
     },
   });
 
+  const navigate = useNavigate();
   const minGrade = watch('gmin');
   const [rows, setRows] = useState<TableRow[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -314,6 +316,7 @@ export default function FormLevels() {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
+              onClick={() => navigate('/')}
             />
             <Button
               label="Registrar"
