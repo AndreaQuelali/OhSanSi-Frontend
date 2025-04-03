@@ -6,7 +6,7 @@ import { TableAreas } from './table-areas';
 import axios from 'axios';
 import AddIcon from '../icons/add';
 import { API_URL } from '@/config/api-config';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 
 type FormData = {

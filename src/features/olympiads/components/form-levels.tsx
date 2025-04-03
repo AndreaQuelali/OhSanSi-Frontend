@@ -7,7 +7,7 @@ import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { FormData, TableRow } from '../interfaces/form-levels';
 import { API_URL } from '@/config/api-config';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export default function FormLevels() {
   const {

@@ -7,7 +7,7 @@ import FormTutor from '../components/form-tutor';
 import { Button, ButtonIcon } from '@/components';
 import FormAreaPart from '../components/form-areas-participant';
 import IconClose from '@/components/icons/icon-close';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export default function RegisterParticipant() {
   const [step, setStep] = useState(0);

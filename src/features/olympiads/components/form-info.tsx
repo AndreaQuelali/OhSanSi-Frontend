@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useApiForm } from '@/hooks/use-api-form';
 import { FormData } from '../interfaces/form-info';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export default function FormInfo() {
   const navigate = useNavigate();
