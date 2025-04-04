@@ -1,7 +1,5 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import DeleteIcon from '../icons/delete';
-import { ButtonIcon } from '../../../components';
 
 interface Table {
   id: number;
@@ -18,11 +16,10 @@ type TableRow = {
 };
 
 type TableProps = {
-  data: TableRow[]; // Recibe los datos de la tabla desde FormLevels
-  onDeleteRow: (id: number) => void; // Función para eliminar una fila
+  data: TableRow[];
 };
 
-export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
+export const Table: React.FC<TableProps> = ({ data }) => {
   const columns: TableColumn<TableRow>[] = [
     {
       name: 'Área',
@@ -42,16 +39,6 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
       sortable: true,
       cell: (row) => <span className="text-onBack body-lg">{row.grade}</span>,
     },
-    {
-      name: '',
-      cell: (row: TableRow) => (
-        <ButtonIcon
-          icon={DeleteIcon}
-          onClick={() => onDeleteRow(row.id)} // Llamamos la función para eliminar
-          variantColor="variant2"
-        />
-      ),
-    },
   ];
 
   const customStyles = {
@@ -70,20 +57,21 @@ export const Table: React.FC<TableProps> = ({ data, onDeleteRow }) => {
       <div className="w-full">
         <div className="flex justify-between">
           <h2 className="text-primary subtitle-md">
-            Niveles/Categorías agregadas
+            Niveles/Categorías registradas en área
           </h2>
         </div>
         <div className="max-h-[100px] overflow-y-auto">
           <DataTable
             title=""
             columns={columns}
-            data={data} // Ahora usa los datos pasados por prop
+            data={data}
+            pagination
             responsive
             highlightOnHover
             customStyles={customStyles}
             noDataComponent={
               <span className="text-neutral2 body-lg">
-                No hay niveles o categorías agregadas
+                No hay niveles o categorías registradas
               </span>
             }
           />

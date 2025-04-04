@@ -181,7 +181,7 @@ export default function FormLevels() {
       alert('Niveles registrados correctamente');
       setRows([]);
       window.location.reload();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error al registrar los niveles:', error);
       alert('Ocurrió un error al registrar los niveles.');
@@ -198,7 +198,7 @@ export default function FormLevels() {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
         <div className="flex flex-col">
           <h1 className="text-center text-primary mb-8 headline-lg">
-            Registro de Niveles/Categorías de Olimpiada
+            Registro de Niveles/Categorías en Áreas de Olimpiada
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-9 mb-6">
             <Dropdown
@@ -218,26 +218,20 @@ export default function FormLevels() {
               }}
               errors={errors}
             />
-            <InputText
+            <Dropdown
               label="Nivel/Categoría"
               className="w-full"
               name="level"
-              placeholder="Ingresar nivel/categoria"
-              type="text"
+              placeholder="Seleccionar nivel o categoría"
+              options={areas.map((area) => ({
+                id: area.id_area.toString(),
+                name: area.nombre,
+              }))}
+              displayKey="name"
+              valueKey="id"
               register={register}
               validationRules={{
-                required: 'El nivel/categoría es obligatorio',
-                pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?(?: [A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?: *(?:- *)[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)?)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras, números, guion en medio y un solo espacio entre palabras',
-                },
-                maxLength: {
-                  value: 50,
-                  message:
-                    'El nivel/categoría no puede exceder los 50 caracteres',
-                },
+                required: 'Debe seleccionar un área',
               }}
               errors={errors}
             />
@@ -253,7 +247,6 @@ export default function FormLevels() {
                     }))
                   : []
               }
-
               displayKey="name"
               valueKey="id"
               register={register}
@@ -266,7 +259,6 @@ export default function FormLevels() {
               name="gmax"
               label="Grado Max."
               placeholder="Seleccionar grado max"
-
               options={
                 grades
                   ? grades.map((grade) => ({
@@ -275,7 +267,6 @@ export default function FormLevels() {
                     }))
                   : []
               }
-
               displayKey="name"
               valueKey="id"
               register={register}
@@ -300,17 +291,6 @@ export default function FormLevels() {
               isRequired={false}
             />
           </div>
-          <Button
-            label="Agregar"
-            className="w-full"
-            icon={AddIcon}
-            type="submit"
-            disabled={!isValid}
-            variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
-          />
-          <div className="w-full min-h-[180px]">
-            <Table data={rows} onDeleteRow={handleDeleteRow} />
-          </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
             <Button
               label="Cancelar"
@@ -328,6 +308,9 @@ export default function FormLevels() {
               }
               onClick={() => setIsModalOpen(true)}
             />
+          </div>
+          <div className="w-full min-h-[180px]">
+            <Table data={rows} />
           </div>
         </div>
       </form>
