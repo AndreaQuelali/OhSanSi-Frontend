@@ -27,8 +27,8 @@ export const Button = ({
       disabled={disabled}
       className={`${baseButton} ${varCol[variantColor]} ${className} flex items-center justify-center`}
     >
-      {Icon && <Icon className="mr-2" />}
-      <p className="pl-2 text-center text-wrap">{label}</p>
+      {Icon && <Icon className="mr-0" />}
+      <p className="pl-1 text-center text-wrap">{label}</p>
     </button>
   );
 };

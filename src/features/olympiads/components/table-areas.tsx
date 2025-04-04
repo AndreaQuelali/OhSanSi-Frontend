@@ -1,73 +1,63 @@
-import React from 'react';
-import DataTable, { TableColumn } from 'react-data-table-component';
-import DeleteIcon from '../icons/delete';
-import { ButtonIcon } from '../../../components';
+import React, { useState } from 'react';
+import { Button } from '@/components'; // Asegurate de que esta ruta sea correcta
 
-interface TableAreas {
+interface TableRow {
   id: number;
   area: string;
 }
 
-type TableRow = {
-  id: number;
-  area: string;
-};
-
 type TableProps = {
-  data: TableRow[]; // Recibe los datos de la tabla desde FormLevels
-  onDeleteRow: (id: number) => void; // Función para eliminar una fila
+  data: TableRow[];
 };
 
-export const TableAreas: React.FC<TableProps> = ({ data, onDeleteRow }) => {
-  const columns: TableColumn<TableRow>[] = [
-    {
-      name: 'Área',
-      selector: (row: TableRow) => row.area,
-      sortable: true,
-      cell: (row) => <span className="text-onBack body-lg">{row.area}</span>,
-    },
-    {
-      name: '',
-      cell: (row: TableRow) => (
-        <ButtonIcon
-          icon={DeleteIcon}
-          onClick={() => onDeleteRow(row.id)} // Llamamos la función para eliminar
-          variantColor="variant2"
-        />
-      ),
-    },
-  ];
-
-  const customStyles = {
-    headCells: {
-      style: {
-        fontFamily: 'Lato, sans-serif',
-        fontSize: '16px',
-        fontWeight: '500',
-        color: '#0e1217',
-      },
-    },
-  };
+export const TableAreas: React.FC<TableProps> = ({ data }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // 3 columnas x 2 filas
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="w-full flex items-center justify-center">
-      <div className="w-full">
-        <div className="flex justify-between">
-          <h2 className="text-primary subtitle-md">
-            Áreas agregadas
-          </h2>
-        </div>
-        <div className="max-h-[110px] overflow-y-auto">
-          <DataTable
-            title=""
-            columns={columns}
-            data={data} // Ahora usa los datos pasados por prop
-            responsive
-            highlightOnHover
-            customStyles={customStyles}
+    <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 border-y border-neutral overflow-hidden rounded-lg">
+        {paginatedData.map((row) => (
+          <div
+            key={row.id}
+            className="bg-white border-neutral p-4 text-onBack body-lg text-center"
+          >
+            {row.area}
+          </div>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-10 flex-wrap gap-2">
+          <Button
+            label="Anterior"
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+            variantColor={currentPage === 1 ? 'variantDesactivate' : 'variant2'}
+          />
+
+          {[...Array(totalPages)].map((_, i) => (
+            <Button
+              key={i + 1}
+              label={`${i + 1}`}
+              onClick={() => setCurrentPage(i + 1)}
+              variantColor={currentPage === i + 1 ? 'variant1' : 'variant2'}
+            />
+          ))}
+
+          <Button
+            label="Siguiente"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage === totalPages}
+            variantColor={
+              currentPage === totalPages ? 'variantDesactivate' : 'variant2'
+            }
           />
         </div>
-      </div>
+      )}
     </div>
   );
 };
