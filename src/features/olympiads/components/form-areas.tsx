@@ -125,10 +125,8 @@ const FormAreas = () => {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value:
-                    /^(?!-)(?! )[A-Za-zÑñÁÉÍÓÚáéíóú-]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú-]+)*(?<!-)(?<! )$/,
-                  message:
-                    'Solo se permiten letras, guion en medio y un solo espacio entre palabras',
+                  value: /^[A-ZÑÁÉÍÓÚ]+(?: ?-? ?[A-ZÑÁÉÍÓÚ]+)*$/,
+                  message: 'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
                 },
                 maxLength: {
                   value: 50,
