@@ -92,7 +92,7 @@ export default function FormInfo() {
   useEffect(() => {
     const subscription = watch((_value, { name }) => {
       if (name === 'dateIni') {
-        trigger('dateEnd'); // 👈 vuelve a validar fecha de cierre
+        trigger('dateEnd');
       }
     });
 
