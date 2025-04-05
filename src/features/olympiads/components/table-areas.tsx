@@ -20,7 +20,7 @@ export const TableAreas: React.FC<TableProps> = ({ data }) => {
   return (
     <div className="w-full">
       {data.length === 0 ? (
-        <div className="text-center subtitle-md text-neutral p-4">
+        <div className="text-center text-neutral2 body-lg p-4">
           Aún no hay áreas registradas.
         </div>
       ) : (
