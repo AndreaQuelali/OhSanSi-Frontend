@@ -12,7 +12,7 @@ export default function FormTutor() {
   } = useFormContext();
 
   const [tutorExists, setTutorExists] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const ci = watch('tutor.ci');
   const rol = watch('tutor.rol');
