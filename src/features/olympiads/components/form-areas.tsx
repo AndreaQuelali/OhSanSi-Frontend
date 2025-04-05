@@ -72,7 +72,7 @@ const FormAreas = () => {
       if (isDuplicate) {
         setError('inputArea', {
           type: 'manual',
-          message: 'Esta área ya existe en la base de datos.',
+          message: 'Esta área ya se encuentra registrada.',
         });
         return;
       }
