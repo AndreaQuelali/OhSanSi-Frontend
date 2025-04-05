@@ -16,6 +16,9 @@ type TableRow = {
   area: string;
 };
 
+const removeAccents = (str: string) =>
+  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 const FormAreas = () => {
   const {
     register,
@@ -63,7 +66,7 @@ const FormAreas = () => {
 
       const isDuplicate = areas.some(
         (area: { nombre: string }) =>
-          area.nombre.toLowerCase() === inputArea.toLowerCase()
+          removeAccents(area.nombre.toLowerCase()) === removeAccents(inputArea.toLowerCase())
       );
 
       if (isDuplicate) {
@@ -106,7 +109,7 @@ const FormAreas = () => {
 
   return (
     <div className="flex flex-col items-center w-full">
-      <form onSubmit={handleSubmit(onSubmit)} className="mx-10 mt-10 mb-32 md:w-9/12 lg:w-7/12">
+      <form onSubmit={handleSubmit(onSubmit)} className="mx-5 mt-10 mb-32 md:w-9/12 lg:w-7/12">
         <div className="flex flex-col">
           <h1 className="text-center headline-lg text-primary">
             Registro de Áreas de Competencia
