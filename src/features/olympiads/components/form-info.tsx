@@ -113,7 +113,6 @@ export default function FormInfo() {
               placeholder="Seleccionar año o gestión"
               className="w-full  lg:w-[480px]"
               options={[
-                { id: '', name: 'Seleccionar año o gestión' },
                 { id: '2025', name: '2025' },
                 { id: '2026', name: '2026' },
                 { id: '2027', name: '2027' },
@@ -161,18 +160,15 @@ export default function FormInfo() {
               validationRules={{
                 required: 'Debe ingresar una fecha de inicio',
                 validate: (value: string) => {
-                  const inputDate = new Date(value);
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  inputDate.setHours(0, 0, 0, 0);
+                  const selectedYear = getValues('year');
 
-                  if (inputDate < today) {
-                    return 'La fecha de inicio debe ser posterior a la fecha actual';
+                  if (!selectedYear) {
+                    return 'Debe seleccionar un año/gestión primero';
                   }
 
-                  const selectedYear = getValues('year');
-                  const inputYear = inputDate.getFullYear();
-                  if (selectedYear && inputYear !== parseInt(selectedYear)) {
+                  const inputYear = value.split('-')[0]; 
+
+                  if (inputYear !== selectedYear) {
                     return `La fecha de inicio debe estar dentro del año ${selectedYear}`;
                   }
 
@@ -192,9 +188,7 @@ export default function FormInfo() {
               validationRules={{
                 required: 'Debe ingresar una fecha de cierre',
                 validate: (value: string) => {
-                  if (!value) return true;
-
-                  const dateEnd = new Date(value);
+                  const selectedYear = getValues('year');
                   const dateIniValue = getValues('dateIni');
 
                   if (!dateIniValue) {
@@ -202,13 +196,18 @@ export default function FormInfo() {
                   }
 
                   const dateIni = new Date(dateIniValue);
+                  const dateEnd = new Date(value);
+
                   if (dateEnd <= dateIni) {
                     return 'La fecha de cierre debe ser posterior a la fecha de inicio';
                   }
 
-                  const selectedYear = getValues('year');
-                  const endYear = dateEnd.getFullYear();
-                  if (selectedYear && endYear !== parseInt(selectedYear)) {
+                  if (!selectedYear) {
+                    return 'Debe seleccionar un año/gestión primero';
+                  }
+
+                  const inputYear = value.split('-')[0];
+                  if (inputYear !== selectedYear) {
                     return `La fecha de cierre debe estar dentro del año ${selectedYear}`;
                   }
 
@@ -223,13 +222,14 @@ export default function FormInfo() {
               label="Límite de Áreas por Estudiante"
               name="limitAreas"
               placeholder="0"
-              type="number"
+              type="text"
               className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 pattern: {
-                  value: /^\d+$/,
-                  message: 'El límite debe ser un número entero positivo',
+                  value: /^[0-9]+$/,
+                  message:
+                    'El límite debe ser un número entero positivo sin comas ni puntos',
                 },
                 required: 'Se debe ingresar un valor mayor a 0',
                 min: {
@@ -243,6 +243,10 @@ export default function FormInfo() {
                 },
               }}
               errors={errors}
+              onInput={(e) => {
+                const input = e.target as HTMLInputElement;
+                input.value = input.value.replace(/[^0-9]/g, '');
+              }}
             />
           </div>
 

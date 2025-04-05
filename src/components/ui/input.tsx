@@ -12,6 +12,7 @@ export const InputText = <T extends FieldValues>({
   errors,
   validationRules = {},
   isRequired = true,
+  onInput,
 }: InputProps<T>) => {
   return (
     <div className="flex flex-col">
@@ -28,14 +29,28 @@ export const InputText = <T extends FieldValues>({
           type={type}
           className={`h-[50px] body-lg placeholder-neutral border-b-[1px] border-neutral rounded p-2 ${className}`}
           {...(register ? register(name, validationRules) : {})}
+          onInput={onInput}
         />
       </div>
       <div className="min-h-[25px]">
-        {errors && name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors) && (
-          <span className="text-error subtitle-sm text-wrap text-center">
-            {String(name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors)?.message)}
-          </span>
-        )}
+        {errors &&
+          name
+            .split('.')
+            .reduce(
+              (acc: Record<string, any>, key: string) => acc?.[key],
+              errors,
+            ) && (
+            <span className="text-error subtitle-sm text-wrap text-center">
+              {String(
+                name
+                  .split('.')
+                  .reduce(
+                    (acc: Record<string, any>, key: string) => acc?.[key],
+                    errors,
+                  )?.message,
+              )}
+            </span>
+          )}
       </div>
     </div>
   );
