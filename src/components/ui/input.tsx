@@ -30,7 +30,7 @@ export const InputText = <T extends FieldValues>({
           {...(register ? register(name, validationRules) : {})}
         />
       </div>
-      <div className="h-[25px]">
+      <div className="min-h-[25px]">
         {errors && name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors) && (
           <span className="text-error subtitle-sm text-wrap text-center">
             {String(name.split('.').reduce((acc: Record<string, any>, key: string) => acc?.[key], errors)?.message)}

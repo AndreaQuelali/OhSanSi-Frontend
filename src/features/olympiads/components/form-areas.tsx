@@ -153,7 +153,7 @@ const FormAreas = () => {
               variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
             />
           </div>
-          <h2 className="text-primary subtitle-md mb-5 mt-5">Áreas registradas</h2>
+          <h2 className="text-primary subtitle-md mb-5 mt-7 md:mt-5">Áreas registradas</h2>
           <div className="mt-2 md:w-11/12 mx-auto">
             <TableAreas data={areasRegistradas} />
           </div>
