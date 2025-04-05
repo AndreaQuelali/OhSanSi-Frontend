@@ -16,6 +16,12 @@ type TableRow = {
   area: string;
 };
 
+const normalizeAreaName = (str: string) =>
+  removeAccents(str.toUpperCase())
+    .replace(/ ?- ?/g, ' ') 
+    .replace(/\s+/g, ' ')    
+    .trim();   
+
 const removeAccents = (str: string) =>
   str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -66,7 +72,7 @@ const FormAreas = () => {
 
       const isDuplicate = areas.some(
         (area: { nombre: string }) =>
-          removeAccents(area.nombre.toLowerCase()) === removeAccents(inputArea.toLowerCase())
+          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea)
       );
 
       if (isDuplicate) {
@@ -128,7 +134,7 @@ const FormAreas = () => {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?: ?-? ?[A-ZÑÁÉÍÓÚ]+)*$/,
+                  value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
                   message: 'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
                 },
                 maxLength: {
