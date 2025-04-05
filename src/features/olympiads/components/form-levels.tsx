@@ -159,14 +159,16 @@ export default function FormLevels() {
         className="mt-10 mb-32"
       >
         <div className="flex flex-col">
-          <div className='flex justify-between items-center mb-8'>
-            <h1 className="text-center text-primary mb-8 headline-lg">
-              Registro de Niveles/Categorías en Áreas de Olimpiada
-            </h1>
+          <h1 className="text-center text-primary mb-8 headline-lg">
+            Registro de Niveles/Categorías en Áreas de Olimpiada
+          </h1>
+
+          <div className="flex md:flex-row md:justify-end">
             <Dropdown
               name="year"
               label="Año"
               placeholder="Seleccionar año"
+              className="w-full"
               options={
                 olympiads?.map((olympiad) => ({
                   id: olympiad.gestion.toString(),
@@ -298,15 +300,12 @@ export default function FormLevels() {
               }
             />
           </div>
-          <div className="w-full min-h-[180px]">
-            <Table
-              data={tableData}
-              columns={[
-                { header: 'Área', accessor: 'area' },
-                { header: 'Nivel/Categoría', accessor: 'level' },
-                { header: 'Grados', accessor: 'grade' },
-              ]}
-            />
+
+          <h2 className="text-primary subtitle-md mt-7 md:mt-5">
+            Niveles/Categorías registradas en Áreas
+          </h2>
+          <div className="mt-2 md:w-11/12 mx-auto">
+            <Table data={tableData} />
           </div>
         </div>
       </form>
