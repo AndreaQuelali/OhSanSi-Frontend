@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useApiForm } from '@/hooks/use-api-form';
@@ -12,10 +12,11 @@ export default function FormInfo() {
   const {
     register,
     handleSubmit,
-    reset,
     setError,
     formState: { errors, isValid },
     getValues,
+    watch,
+    trigger,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -23,6 +24,9 @@ export default function FormInfo() {
     },
   });
   const { submitForm } = useApiForm('olympiad-registration');
+  const [justReset, setJustReset] = useState(false);
+
+  const selectedYear = watch('year');
 
   const onSubmit = async (data: FormData) => {
     setFormData(data);
@@ -40,16 +44,14 @@ export default function FormInfo() {
       max_categorias_olimpista: Number(formData.limitAreas),
     };
 
-
     try {
       const response = await submitForm(payload);
       if (response) {
-        console.log('Registro exitoso:', response);
         alert('Registro exitoso');
         localStorage.setItem('gestion', formData.year);
-        reset(); 
+        window.location.reload();
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.data?.errors) {
         const messages = Object.values(error.data.errors).flat().join('\n');
@@ -69,6 +71,34 @@ export default function FormInfo() {
     setShowModal(false);
   };
 
+  useEffect(() => {
+    if (justReset) {
+      setJustReset(false);
+    }
+
+    const dateIni = getValues('dateIni');
+    const dateEnd = getValues('dateEnd');
+
+    if (dateIni) {
+      trigger('dateIni');
+    }
+
+    if (dateEnd) {
+      trigger('dateEnd');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedYear]);
+
+  useEffect(() => {
+    const subscription = watch((_value, { name }) => {
+      if (name === 'dateIni') {
+        trigger('dateEnd');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, trigger]);
+
   return (
     <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0  ">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
@@ -83,7 +113,7 @@ export default function FormInfo() {
               placeholder="Seleccionar año o gestión"
               className="w-full  lg:w-[480px]"
               options={[
-                { id: '2024', name: '2024' },
+                { id: '', name: 'Seleccionar año o gestión' },
                 { id: '2025', name: '2025' },
                 { id: '2026', name: '2026' },
                 { id: '2027', name: '2027' },
@@ -124,48 +154,64 @@ export default function FormInfo() {
             <InputText
               label="Fecha de Inicio"
               name="dateIni"
-              placeholder="DD/MM/YY"
+              placeholder="DD/MM/YYYY"
               type="date"
               className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 required: 'Debe ingresar una fecha de inicio',
                 validate: (value: string) => {
+                  const inputDate = new Date(value);
                   const today = new Date();
-                  const [day, month, year] = value.split('/');
-                  const inputDate = new Date(`${year}-${month}-${day}`);
                   today.setHours(0, 0, 0, 0);
                   inputDate.setHours(0, 0, 0, 0);
+
                   if (inputDate < today) {
-                    return 'La fecha de inicio debe ser igual o posterior a la fecha actual';
+                    return 'La fecha de inicio debe ser posterior a la fecha actual';
                   }
+
+                  const selectedYear = getValues('year');
+                  const inputYear = inputDate.getFullYear();
+                  if (selectedYear && inputYear !== parseInt(selectedYear)) {
+                    return `La fecha de inicio debe estar dentro del año ${selectedYear}`;
+                  }
+
                   return true;
                 },
               }}
               errors={errors}
             />
+
             <InputText
               label="Fecha de Cierre"
               name="dateEnd"
-              placeholder="DD/MM/YY"
+              placeholder="DD/MM/YYYY"
               type="date"
-              className="w-full  lg:w-[480px]"
+              className="w-full lg:w-[480px]"
               register={register}
               validationRules={{
                 required: 'Debe ingresar una fecha de cierre',
                 validate: (value: string) => {
-                  const [dayEnd, monthEnd, yearEnd] = value.split('/');
-                  const dateEnd = new Date(`${yearEnd}-${monthEnd}-${dayEnd}`);
+                  if (!value) return true;
+
+                  const dateEnd = new Date(value);
                   const dateIniValue = getValues('dateIni');
-                  if (!dateIniValue)
+
+                  if (!dateIniValue) {
                     return 'Debe ingresar la fecha de inicio primero';
+                  }
 
-                  const [dayIni, monthIni, yearIni] = dateIniValue.split('/');
-                  const dateIni = new Date(`${yearIni}-${monthIni}-${dayIni}`);
-
+                  const dateIni = new Date(dateIniValue);
                   if (dateEnd <= dateIni) {
                     return 'La fecha de cierre debe ser posterior a la fecha de inicio';
                   }
+
+                  const selectedYear = getValues('year');
+                  const endYear = dateEnd.getFullYear();
+                  if (selectedYear && endYear !== parseInt(selectedYear)) {
+                    return `La fecha de cierre debe estar dentro del año ${selectedYear}`;
+                  }
+
                   return true;
                 },
               }}
@@ -189,6 +235,11 @@ export default function FormInfo() {
                 min: {
                   value: 1,
                   message: 'Se debe ingresar un valor mayor o igual a 1',
+                },
+                max: {
+                  value: 5,
+                  message:
+                    'Solo se permite un máximo de 5 áreas por estudiante',
                 },
               }}
               errors={errors}
