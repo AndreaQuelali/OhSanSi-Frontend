@@ -11,4 +11,5 @@ export * from './ui/button';
 export * from './ui/dropdown';
 export * from './ui/footer-design';
 export * from './ui/input';
+export * from './ui/radio-group';
 export * from './ui/modal';

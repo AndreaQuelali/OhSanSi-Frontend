@@ -1,93 +1,74 @@
 import axios from 'axios';
-import { Dropdown, InputText } from '../../../components';
-import { useFormContext } from 'react-hook-form';
+import { Button, Dropdown, InputText, RadioGroup } from '../../../components';
 import { useState } from 'react';
+import { FormData } from '../interfaces/form-tutor';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 
 export default function FormTutor() {
   const {
     register,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
-  } = useFormContext();
+  } = useForm<FormData>({
+    mode: 'onChange',
+    defaultValues: {
+      
+    },
+  });
 
-  const [tutorExists, setTutorExists] = useState(false);
-  const [, setLoading] = useState(false);
-
-  const ci = watch('tutor.ci');
-  const rol = watch('tutor.rol');
-
-  const checkTutor = async () => {
-    if (!ci) return;
-
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/tutores?ci=${ci}`,
-      );
-      if (response.data.tutor) {
-        const tutor = response.data.tutor;
-
-        setValue('tutor.name', tutor.nombres);
-        setValue('tutor.lastname', tutor.apellidos);
-        setValue('tutor.phone', tutor.celular.toString());
-        setValue('tutor.email', tutor.correo_electronico);
-        setValue('tutor.rol', tutor.rol_parentesco);
-
-        setTutorExists(true);
-      } else {
-        setTutorExists(false);
-      }
-    } catch (error) {
-      console.error('Error al verificar el tutor:', error);
-      setTutorExists(false);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col my-6">
-      <div className="flex flex-col items-center flex-grow">
-        <form>
-          <h1 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center sm:text-left">
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col items-center">
+        <form className='md:w-9/12 lg:w-9/12'>
+          <h1 className="text-center text-primary mb-8 headline-lg">
             Registro de Datos de Tutor
           </h1>
-          {tutorExists && (
-            <p className="text-success text-sm">
-              Este tutor ya está registrado. Los campos se han completado
-              automáticamente.
-            </p>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <InputText
-              label="Número de cédula de identidad"
-              name="tutor.ci"
-              placeholder="1234567"
-              className="w-full md:w-[400px]"
+          <div className='mb-5'>
+            <RadioGroup
+              name="rol"
+              label="Tipo de tutor"
+              options={[
+                { label: 'Tutor legal', value: 'legal' },
+                { label: 'Tutor académico', value: 'académico' },
+              ]}
               register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
-                },
-                onBlur: checkTutor,
-              }}
               errors={errors}
+              validationRules={{ required: 'El tipo de tutor es obligatorio' }}
+              direction="row"
+            />
+          </div>
+          <div className='grid grid-cols-3 gap-10 mb-5'>
+            <InputText
+                label="Número de cédula de identidad"
+                name="ci"
+                placeholder="Ingresar cédula de identidad"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El número de cédula es obligatorio',
+                  minLength: {
+                    value: 4,
+                    message: 'Debe tener al menos 4 dígitos',
+                  },
+                  maxLength: {
+                    value: 8,
+                    message: 'No puede tener más de 8 dígitos',
+                  },
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Solo se permiten números',
+                  },
+                }}
+                errors={errors}
             />
             <InputText
               label="Nombre(s)"
-              name="tutor.name"
-              placeholder="CARLOS SANTIAGO"
+              name="name"
+              placeholder="Ingresar nombre(s)"
               className="w-full"
               register={register}
               validationRules={{
@@ -101,12 +82,10 @@ export default function FormTutor() {
               }}
               errors={errors}
             />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
             <InputText
               label="Apellido(s)"
-              name="tutor.lastname"
-              placeholder="PAREDES ZURITA"
+              name="lastname"
+              placeholder="Ingresar apellido(s)"
               className="w-full"
               register={register}
               validationRules={{
@@ -120,59 +99,53 @@ export default function FormTutor() {
               }}
               errors={errors}
             />
-            <InputText
-              label="Número de celular"
-              name="tutor.phone"
-              placeholder="77777777"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El número de celular es obligatorio',
-                pattern: {
-                  value: /^[0-9]{8,}$/,
-                  message: 'Debe contener solo números y al menos 8 dígitos',
-                },
-              }}
-              errors={errors}
-            />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <div className='grid grid-cols-2 gap-10 mb-5'>
             <InputText
-              label="Correo electrónico"
-              name="tutor.email"
-              placeholder="carlosparedes@gmail.com"
-              type="email"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El correo electrónico es obligatorio',
-                pattern: {
-                  value:
-                    /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
-                  message: 'Correo electrónico no válido',
-                },
-              }}
-              errors={errors}
+                label="Número de celular"
+                name="phone"
+                placeholder="Ingresar número de celular"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El número de celular es obligatorio',
+                  pattern: {
+                    value: /^[0-9]{8,}$/,
+                    message: 'Debe contener solo números y al menos 8 dígitos',
+                  },
+                }}
+                errors={errors}
+              />
+              <InputText
+                label="Correo electrónico"
+                name="email"
+                placeholder="Ingresar correo electrónico"
+                type="email"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El correo electrónico es obligatorio',
+                  pattern: {
+                    value:
+                      /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+                    message: 'Correo electrónico no válido',
+                  },
+                }}
+                errors={errors}
+              />
+          </div>
+          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+            <Button
+              label="Cancelar"
+              variantColor="variant2"
+              className="mt-5 md:mt-0"
+              onClick={() => navigate('/')}
             />
-            <Dropdown
-              label="Rol/Parentesco"
-              placeholder="Seleccionar rol o parentesco"
-              className="w-full"
-              options={[
-                { id: 1, rol_parentesco: 'Padre' },
-                { id: 2, rol_parentesco: 'Madre' },
-                { id: 3, rol_parentesco: 'Apoderado' },
-                { id: 4, rol_parentesco: 'Tutor' },
-              ]}
-              displayKey="rol_parentesco"
-              valueKey="rol_parentesco"
-              register={register}
-              name="tutor.rol"
-              validationRules={{
-                required: 'El rol/parentesco es obligatorio',
-              }}
-              value={rol}
-              errors={errors}
+            <Button
+              type="submit"
+              label="Registrar"
+              disabled={!isValid}
+              variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
             />
           </div>
         </form>
