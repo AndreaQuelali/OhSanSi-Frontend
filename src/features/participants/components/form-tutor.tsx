@@ -23,11 +23,11 @@ export default function FormTutor() {
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
-        <form className='md:w-9/12 lg:w-9/12'>
+        <form className='mx-5 mt-10 mb-32 md:w-9/12 lg:w-9/12'>
           <h1 className="text-center text-primary mb-8 headline-lg">
             Registro de Datos de Tutor
           </h1>
-          <div className='mb-5'>
+          <div className='lg:mb-5'>
             <RadioGroup
               name="rol"
               label="Tipo de tutor"
@@ -41,7 +41,7 @@ export default function FormTutor() {
               direction="row"
             />
           </div>
-          <div className='grid grid-cols-3 gap-10 mb-5'>
+          <div className='grid lg:grid-cols-3 lg:gap-12 lg:mb-5'>
             <InputText
                 label="Número de cédula de identidad"
                 name="ci"
@@ -100,7 +100,7 @@ export default function FormTutor() {
               errors={errors}
             />
           </div>
-          <div className='grid grid-cols-2 gap-10 mb-5'>
+          <div className='grid md:grid-cols-2 md:gap-12 mb-5'>
             <InputText
                 label="Número de celular"
                 name="phone"
