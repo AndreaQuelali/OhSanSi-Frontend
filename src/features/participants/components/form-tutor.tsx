@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 export default function FormTutor() {
   const {
     register,
+    handleSubmit,
     setValue,
     formState: { errors, isValid },
     watch,
@@ -20,10 +21,13 @@ export default function FormTutor() {
 
   const navigate = useNavigate();
 
+  const onSubmit = async () => {
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
-        <form className='mx-5 mt-10 mb-32 md:w-9/12 lg:w-9/12'>
+        <form onSubmit={handleSubmit(onSubmit)} className='mx-5 mt-10 mb-32 md:w-9/12 lg:w-9/12'>
           <h1 className="text-center text-primary mb-8 headline-lg">
             Registro de Datos de Tutor
           </h1>
