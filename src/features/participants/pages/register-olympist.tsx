@@ -1,12 +1,12 @@
 import { useForm, FormProvider } from 'react-hook-form';
-import FormTutor from '../components/form-tutor';
+import FormDataPart from '../components/form-data-participant';
 
-export default function RegisterTutorPage() {
+export default function RegisterOlympistPage() {
   const methods = useForm();
 
   return (
     <FormProvider {...methods}>
-      <FormTutor />
+      <FormDataPart />
     </FormProvider>
   );
 }

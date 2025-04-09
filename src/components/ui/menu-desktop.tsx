@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import IconUser from '@/components/icons/icon-user';
-import IconDown from '@/components/icons/icon-down';
+import DropdownMenu from './dropdown-menu';
+import IconDown from '../icons/icon-down';
 
 type DesktopMenuProps = {
   isAdminMenuOpen: boolean;
@@ -17,18 +18,14 @@ export default function DesktopMenu({
 
   return (
     <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
-      <li>
-        <Link
-          to="/register-applicants"
-          className={`subtitle-sm p-1 ${
-            location.pathname === '/register-applicants'
-              ? 'text-red-500 border-b-[1px] border-b-red-500'
-              : 'text-primary hover:text-secondary'
-          }`}
-        >
-          Postulante
-        </Link>
-      </li>
+      <DropdownMenu
+        label="Postulante"
+        options={[
+          { label: 'Registro Olimpista', path: '/register-olimpists' },
+          { label: 'Registro Tutor', path: '/register-tutor' },
+          { label: 'Registro de Áreas', path: '/register-selected-areas' },
+        ]}
+      />
       <li
         ref={adminMenuRef}
         className="relative"

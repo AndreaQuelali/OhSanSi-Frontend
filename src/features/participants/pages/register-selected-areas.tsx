@@ -1,12 +1,12 @@
 import { useForm, FormProvider } from 'react-hook-form';
-import FormTutor from '../components/form-tutor';
+import FormAreaPart from '../components/form-areas-participant';
 
-export default function RegisterTutorPage() {
+export default function RegisterSelectedAreasPage() {
   const methods = useForm();
 
   return (
     <FormProvider {...methods}>
-      <FormTutor />
+      <FormAreaPart />
     </FormProvider>
   );
 }
