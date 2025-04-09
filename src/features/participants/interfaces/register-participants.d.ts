@@ -1,8 +1,7 @@
 export type Area = {
   id_area: number;
-  id_olimpiada: number;
   nombre: string;
-  imagen: string;
+  grades: string
 };
 
 export type FormAreaPartProps = {
@@ -13,8 +12,6 @@ export type FormAreaPartProps = {
 export type Grado = {
   id_grado: number;
   nombre_grado: string;
-  nivel_academico: string;
-  orden: number;
 };
 
 export type Departamento = {
