@@ -1,17 +1,16 @@
-import axios from 'axios';
-import { Button, Dropdown, InputText, RadioGroup } from '../../../components';
+import { Button, InputText, Modal, RadioGroup } from '../../../components';
 import { useState } from 'react';
 import { FormData } from '../interfaces/form-tutor';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
+import { useApiForm } from '@/hooks/use-api-form';
+
 
 export default function FormTutor() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isValid },
-    watch,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -20,8 +19,47 @@ export default function FormTutor() {
   });
 
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState<FormData | null>(null);
+  const { submitForm } = useApiForm('/tutores');
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
+    setFormData(data);
+    setShowModal(true);
+  };
+
+  const onCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const onConfirm = async () => {
+    if (!formData) return;
+
+    const payload = {
+      nombres: formData.name,
+      apellidos: formData.lastname,
+      ci: formData.ci,
+      celular: formData.phone,
+      correo_electronico: formData.email,
+      rol_parentesco: formData.rol,
+    };
+
+    try {
+      const response = await submitForm(payload);
+      if (response) {
+        alert('Registro exitoso del tutor');
+        window.location.reload();
+      }
+    } catch (error: any) {
+      if (error.data?.errors) {
+        const messages = Object.values(error.data.errors).flat().join('\n');
+        alert(messages);
+      } else {
+        alert(error.data?.message || 'Ocurrió un error. Intenta de nuevo.');
+      }
+    }
+  
+    setShowModal(false);
   };
 
   return (
@@ -36,8 +74,8 @@ export default function FormTutor() {
               name="rol"
               label="Tipo de tutor"
               options={[
-                { label: 'Tutor legal', value: 'legal' },
-                { label: 'Tutor académico', value: 'académico' },
+                { label: 'Tutor legal', value: 'Tutor Legal' },
+                { label: 'Tutor académico', value: 'Tutor Academico' },
               ]}
               register={register}
               errors={errors}
@@ -149,6 +187,13 @@ export default function FormTutor() {
             />
           </div>
         </form>
+          {showModal && (
+            <Modal
+              onClose={onCloseModal}
+              text="¿Estás seguro de registrar los datos del tutor?"
+              onConfirm={onConfirm}
+            />
+          )}
       </div>
     </div>
   );
