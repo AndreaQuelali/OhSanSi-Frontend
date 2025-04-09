@@ -50,6 +50,10 @@ export default function FormTutor() {
                 register={register}
                 validationRules={{
                   required: 'El número de cédula es obligatorio',
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Solo se permiten números',
+                  },
                   minLength: {
                     value: 4,
                     message: 'Debe tener al menos 4 dígitos',
@@ -57,10 +61,6 @@ export default function FormTutor() {
                   maxLength: {
                     value: 8,
                     message: 'No puede tener más de 8 dígitos',
-                  },
-                  pattern: {
-                    value: /^[0-9]+$/,
-                    message: 'Solo se permiten números',
                   },
                 }}
                 errors={errors}
@@ -74,10 +74,8 @@ export default function FormTutor() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -91,10 +89,8 @@ export default function FormTutor() {
               validationRules={{
                 required: 'El apellido es obligatorio',
                 pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
+                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  message: 'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -127,9 +123,9 @@ export default function FormTutor() {
                   required: 'El correo electrónico es obligatorio',
                   pattern: {
                     value:
-                      /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](\-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
                     message: 'Correo electrónico no válido',
-                  },
+                  }
                 }}
                 errors={errors}
               />
