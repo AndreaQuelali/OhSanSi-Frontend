@@ -7,3 +7,4 @@ export * from './interfaces/register-participants.d';
 export * from './pages/register-olympist';
 export * from './pages/register-selected-areas';
 export * from './pages/register-tutor';
+export * from './pages/register-data-excel';
