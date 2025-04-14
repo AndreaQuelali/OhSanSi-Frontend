@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { InputText } from '@/components';
+import { Button, InputText } from '@/components';
 import { API_URL } from '@/config/api-config';
+import CardArea from './card-area';
+import IconClose from '@/components/icons/icon-close';
 
 export default function FormAreaPart() {
   const {
@@ -14,6 +16,11 @@ export default function FormAreaPart() {
   const [areasDisponibles, setAreasDisponibles] = useState<
     Record<string, { id_nivel: number; nombre_nivel: string }[]>
   >({});
+  const [nivelesSeleccionados, setNivelesSeleccionados] = useState<
+    Record<string, { id_nivel: number; nombre_nivel: string }[]>
+  >({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +37,7 @@ export default function FormAreaPart() {
             params: { ci_tutor: ciTutor, ci_olimpista: ciOlimpista },
           });
           setAreasDisponibles(response.data.areas_disponibles || {});
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
           setError('Error al cargar las áreas disponibles.');
         } finally {
@@ -41,28 +49,42 @@ export default function FormAreaPart() {
     fetchAreasDisponibles();
   }, [ciTutor, ciOlimpista]);
 
+  const handleAreaClick = (area: string) => {
+    setSelectedArea(area);
+    setModalVisible(true);
+  };
+
+  const handleNivelSeleccionado = (
+    area: string,
+    nivel: { id_nivel: number; nombre_nivel: string },
+  ) => {
+    setNivelesSeleccionados((prev) => {
+      const nivelesEnArea = prev[area] || [];
+      const nivelYaSeleccionado = nivelesEnArea.some(
+        (n) => n.id_nivel === nivel.id_nivel,
+      );
+
+      if (nivelYaSeleccionado) {
+        return {
+          ...prev,
+          [area]: nivelesEnArea.filter((n) => n.id_nivel !== nivel.id_nivel),
+        };
+      } else {
+        return {
+          ...prev,
+          [area]: [...nivelesEnArea, nivel],
+        };
+      }
+    });
+  };
+
   return (
     <div className="my-6">
       <div className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0">
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
-          Registro de Olimpista con tutor en una o varias áreas.
+          Registro de Olimpista en una o varias áreas de competencia
         </h2>
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 mt-10">
-          <InputText
-            label="Cédula de identidad del tutor"
-            name="tutor.ci"
-            placeholder="Ingrese su número de cédula"
-            className="w-full"
-            register={register}
-            validationRules={{
-              required: 'La cédula es obligatoria',
-              pattern: {
-                value: /^(?! )[0-9]+(?<! )$/,
-                message: 'Solo se permiten números y no puede haber espacios',
-              },
-            }}
-            errors={errors}
-          />
           <InputText
             label="Cédula de identidad del olimpista"
             name="olimpista.ci"
@@ -78,38 +100,96 @@ export default function FormAreaPart() {
             }}
             errors={errors}
           />
+          <InputText
+            label="Cédula de identidad del tutor académico (Opcional)"
+            name="tutor.ci"
+            placeholder="Ingrese su número de cédula"
+            className="w-full"
+            register={register}
+            validationRules={{
+              pattern: {
+                value: /^(?! )[0-9]+(?<! )$/,
+                message: 'Solo se permiten números y no puede haber espacios',
+              },
+            }}
+            errors={errors}
+          />
         </section>
-        <section>
-          <h2 className="text-primary subtitle-lg">Áreas Disponibles</h2>
+        <section className="min-h-[200px]">
+          <h2 className="text-primary subtitle-lg text-center">
+            Áreas Disponibles
+          </h2>
           {loading ? (
-            <p>Cargando áreas disponibles...</p>
+            <p className="text-center">Cargando áreas disponibles...</p>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <p className="text-red-500 text-center">{error}</p>
+          ) : Object.keys(areasDisponibles).length === 0 ? (
+            <p className="text-center text-gray-500 mt-4">
+              No hay áreas disponibles aún. Por favor, ingrese la cédula del
+              olimpista.
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {Object.entries(areasDisponibles).map(([area, niveles]) => (
-                <div
+                <CardArea
                   key={area}
-                  className="relative flex flex-col justify-center items-center rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 shadow-lg border border-gray-100 w-full"
-                >
-                  <div className="absolute top-0 left-0 w-full h-3 bg-primary rounded-t-3xl"></div>
-                  <div className="flex flex-col items-center justify-center mt-6 p-4">
-                    <h3 className="text-primary font-semibold text-lg">
-                      {area}
-                    </h3>
-                    <ul className='mt-2'>
-                      {niveles.map((nivel) => (
-                        <li key={nivel.id_nivel} className="text-center">
-                          {nivel.nombre_nivel}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                  area={area}
+                  niveles={niveles}
+                  onClick={() => handleAreaClick(area)}
+                  nivelesSeleccionados={nivelesSeleccionados[area] || []}
+                />
               ))}
             </div>
           )}
         </section>
+
+        {modalVisible && selectedArea && (
+          <div className="fixed inset-0 bg-white bg-opacity-30 flex justify-center items-center z-50">
+            <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <div
+                className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-700"
+                onClick={() => setModalVisible(false)}
+              >
+                <IconClose className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-lg font-semibold mb-4">
+                Seleccione un nivel para el área: {selectedArea}
+              </h3>
+              <ul>
+                {areasDisponibles[selectedArea].map((nivel) => (
+                  <li
+                    key={nivel.id_nivel}
+                    className={`cursor-pointer p-2 rounded ${
+                      nivelesSeleccionados[selectedArea]?.some(
+                        (n) => n.id_nivel === nivel.id_nivel,
+                      )
+                        ? 'bg-gray-300 text-gray-500'
+                        : 'hover:bg-gray-200'
+                    }`}
+                    onClick={() => handleNivelSeleccionado(selectedArea, nivel)}
+                  >
+                    {nivel.nombre_nivel}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5 mt-10">
+          <Button
+            label="Cancelar"
+            variantColor="variant2"
+            className="mt-5 md:mt-0"
+            onClick={() => (window.location.href = '/')}
+          />
+          <Button
+            type="button"
+            label="Registrar"
+            variantColor="variant1"
+            onClick={() => alert('Registro exitoso')}
+          />
+        </div>
       </div>
     </div>
   );

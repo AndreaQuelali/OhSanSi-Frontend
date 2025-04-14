@@ -18,6 +18,14 @@ export default function DesktopMenu({
 
   return (
     <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
+      <li
+        className={`${location.pathname === '/' ? 'text-red-500' : 'text-primary'}`}
+        ref={adminMenuRef}
+      >
+        <Link to="/" className="hover:text-secondary">
+          Inicio
+        </Link>
+      </li>
       <DropdownMenu
         label="Postulante"
         options={[

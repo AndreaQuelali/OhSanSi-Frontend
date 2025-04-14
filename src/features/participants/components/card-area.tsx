@@ -1,36 +1,34 @@
-interface CardAreaProps {
-  label: string;
-  imageUrl: string;
-  selected?: boolean;
-  onClick: () => void;
+interface Nivel {
+  id_nivel: number;
+  nombre_nivel: string;
 }
 
-export const CardArea = ({
-  label,
-  imageUrl,
-  selected = false,
+interface AreaCardProps {
+  area: string;
+  niveles: Nivel[];
+  onClick: () => void;
+  nivelesSeleccionados: Nivel[];
+}
+
+export default function CardArea({
+  area,
   onClick,
-}: CardAreaProps) => {
+  nivelesSeleccionados,
+}: AreaCardProps) {
   return (
     <div
-      className="w-56 flex flex-col items-center cursor-pointer"
+      className="relative flex flex-col justify-center items-center rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 shadow-lg border border-gray-100 w-full"
       onClick={onClick}
     >
-      <div
-        className={`w-56 h-32 rounded-2xl border ${selected ? 'border-primary' : ''}`}
-      >
-        <img
-          src={imageUrl}
-          alt={label}
-          className="w-full h-full object-cover rounded-t-2xl"
-        />
-      </div>
-      <div
-        className={`flex items-center justify-center w-52 h-7 subtitle-sm 
-          ${selected ? ' text-primary' : ' text-onBack hover:text-primary'}`}
-      >
-        <p>{label}</p>
+      <div className="absolute top-0 left-0 w-full h-3 bg-secondary2 rounded-t-3xl"></div>
+      <div className="flex flex-col items-center justify-center mt-6 p-4">
+        <h3 className="text-primary font-semibold text-lg">{area}</h3>
+        {nivelesSeleccionados.length > 0 && (
+          <p className="mt-2 text-center text-gray-700">
+            {nivelesSeleccionados.map((nivel) => nivel.nombre_nivel).join(', ')}
+          </p>
+        )}
       </div>
     </div>
   );
-};
+}
