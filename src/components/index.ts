@@ -11,6 +11,7 @@ export * from './icons/icon-download';
 export * from './index';
 export * from './ui/button-icon';
 export * from './ui/button';
+export * from './ui/custom-pagination';
 export * from './ui/dropdown';
 export * from './ui/footer-design';
 export * from './ui/input';

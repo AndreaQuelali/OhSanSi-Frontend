@@ -8,21 +8,23 @@ export const ButtonIcon = ({
   icon: Icon,
 }: ButtonIconProps) => {
   const baseButton =
-    'button-lg rounded-[20px] h-10 w-10 text-center flex items-center cursor-pointer whitespace-nowrap';
+    'button-lg rounded-[20px] h-10 w-10 text-center flex items-center whitespace-nowrap';
 
   const varCol: Record<string, string> = {
-    variant1: 'text-white bg-primary hover:bg-secondary2',
-    variant2: 'text-primary  hover:bg-primary hover:text-white',
+    variant1: 'text-white bg-primary hover:bg-secondary2 transition',
+    variant2: 'text-primary hover:bg-primary hover:text-white transition',
     variant3: '',
-    variantDesactivate: 'bg-neutral2',
+    variantDesactivate: 'text-neutral2',
   };
+
+  const cursorClass = disabled ? 'cursor-default' : 'cursor-pointer';
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseButton} ${varCol[variantColor]} flex items-center justify-center`}
+      className={`${baseButton} ${cursorClass} ${varCol[variantColor]} flex items-center justify-center`}
     >
       {Icon && <Icon />}
     </button>
