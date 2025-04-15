@@ -41,7 +41,6 @@ export default function FormTutor() {
       ci: formData.ci,
       celular: formData.phone,
       correo_electronico: formData.email,
-      rol_parentesco: formData.rol,
     };
 
     try {
@@ -66,23 +65,9 @@ export default function FormTutor() {
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
         <form onSubmit={handleSubmit(onSubmit)} className='mx-5 mt-10 mb-32 md:w-9/12 lg:w-9/12'>
-          <h1 className="text-center text-primary mb-8 headline-lg">
+          <h1 className="text-center text-primary mb-8 md:mb-20 headline-lg">
             Registro de Datos de Tutor
           </h1>
-          <div className='lg:mb-5'>
-            <RadioGroup
-              name="rol"
-              label="Tipo de tutor"
-              options={[
-                { label: 'Tutor legal', value: 'Tutor Legal' },
-                { label: 'Tutor académico', value: 'Tutor Academico' },
-              ]}
-              register={register}
-              errors={errors}
-              validationRules={{ required: 'El tipo de tutor es obligatorio' }}
-              direction="row"
-            />
-          </div>
           <div className='grid lg:grid-cols-3 lg:gap-12 lg:mb-5'>
             <InputText
                 label="Número de cédula de identidad"

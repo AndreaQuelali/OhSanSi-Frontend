@@ -4,6 +4,5 @@ export type FormData = {
     lastname: string;
     phone: number;
     email: string;
-    rol: string;
   };
   
