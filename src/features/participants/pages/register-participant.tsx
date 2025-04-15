@@ -1,12 +1,12 @@
 import { useForm, FormProvider } from 'react-hook-form';
 import FormDataPart from '../components/form-data-participant';
 
-export default function RegisterOlympistPage() {
+export default function RegisterParticipantPage() {
   const methods = useForm();
 
   return (
-    <FormProvider {...methods}>
+    <main className="w-full min-h-screen flex flex-col items-center justify-center">
       <FormDataPart />
-    </FormProvider>
+    </main>
   );
 }

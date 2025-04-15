@@ -4,7 +4,7 @@ export * from './components/form-data-participant';
 export * from './components/form-tutor';
 export * from './components/number';
 export * from './interfaces/register-participants.d';
-export * from './pages/register-olympist';
+export * from './pages/register-participant';
 export * from './pages/register-selected-areas';
 export * from './pages/register-tutor';
 export * from './pages/register-data-excel';
