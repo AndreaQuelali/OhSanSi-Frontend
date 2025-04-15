@@ -11,7 +11,7 @@ export default function FormAreaPart() {
     register,
     formState: { errors },
     watch,
-  } = useForm();
+  } = useForm({ mode: 'onBlur' });
 
   const [areasDisponibles, setAreasDisponibles] = useState<
     Record<string, { id_nivel: number; nombre_nivel: string }[]>

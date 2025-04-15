@@ -43,7 +43,7 @@ export default function ModalAddOlympist({
   const {
     register,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: 'onBlur' });
   const [selectedAreas, setSelectedAreas] = useState<number[]>([]);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedNiveles, setSelectedNiveles] = useState<Nivel[]>([]);
