@@ -1,5 +1,5 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
-import { Button, Dropdown, InputText } from '../../../components';
+import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useFormContext } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { API_URL } from '@/config/api-config';
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router';
 export default function FormDataPart() {
   const {
     register,
+    handleSubmit,
     setValue,
     setError,
     clearErrors,
@@ -31,11 +32,11 @@ export default function FormDataPart() {
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [loadingProvincias, setLoadingProvincias] = useState(false);
 
-  const selectedDepartment = watch('olimpista.depa');
-  const selectedProv = watch('olimpista.prov');
-
   const [colegios, setColegios] = useState<UnidadEducativa[]>([]);
   const [loadingColegios, setLoadingColegios] = useState(false);
+
+  const selectedDepartment = watch('olimpista.depa');
+  const selectedProv = watch('olimpista.prov');
 
   const ci = watch('olimpista.ci'); // Observar el campo CI
   const email = watch('olimpista.email'); // Observar el campo Email
@@ -83,6 +84,7 @@ export default function FormDataPart() {
       clearErrors('olimpista.email'); // No mostrar error si ocurre un problema en la verificación
     }
   };
+
   useEffect(() => {
     if (selectedDepartment) {
       const fetchProvincias = async () => {
@@ -129,31 +131,16 @@ export default function FormDataPart() {
     }
   }, [selectedProv]);
 
-  useEffect(() => {
-    const fetchColegios = async () => {
-      setLoadingColegios(true);
-      try {
-        const response = await axios.get(`${API_URL}/colegios`);
-        setColegios(response.data);
-      } catch (error) {
-        console.error('Error al cargar los colegios:', error);
-        setColegios([]);
-      } finally {
-        setLoadingColegios(false);
-      }
-    };
-
-    fetchColegios();
-  }, []);
-
   const handleDepartamentoChange = (id_departamento: string) => {
     setValue('olimpista.depa', id_departamento, { shouldValidate: true });
+    setValue('olimpista.prov', '');
+    setValue('olimpista.colegio', '');
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
     formData.olimpista.depa = parseInt(id_departamento, 10);
+    formData.olimpista.prov = '';
+    formData.olimpista.colegio = '';
     localStorage.setItem('participantData', JSON.stringify(formData));
-    setValue('olimpista.prov', '');
-    setValue('olimpista.colegio', '');
   };
 
   const handleGradoChange = (id_grado: string) => {
@@ -166,11 +153,12 @@ export default function FormDataPart() {
 
   const handleProvinciaChange = (id_provincia: string) => {
     setValue('olimpista.prov', id_provincia, { shouldValidate: true });
+    setValue('olimpista.colegio', '');
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
     formData.olimpista.prov = parseInt(id_provincia, 10);
+    formData.olimpista.colegio = '';
     localStorage.setItem('participantData', JSON.stringify(formData));
-    setValue('olimpista.colegio', '');
   };
 
   const handleColegioChange = (id_colegio: string) => {
@@ -181,10 +169,35 @@ export default function FormDataPart() {
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
+  const handleRegister = async (data: any) => {
+    const payload = {
+      olimpista: {
+        ci: data.olimpista.ci,
+        name: data.olimpista.name,
+        lastname: data.olimpista.lastname,
+        birthday: data.olimpista.birthday,
+        email: data.olimpista.email,
+        citutor: data.olimpista.citutor,
+        school: data.olimpista.colegio, // o school si tu API lo espera así
+        grade: data.olimpista.grade,
+      },
+    };
+
+    // Aquí puedes ver qué estás enviando
+    console.log('Datos que se enviarán:', payload);
+
+    try {
+      const response = await axios.post(`${API_URL}/olimpistas`, payload);
+      console.log('Respuesta del backend:', response.data);
+    } catch (error) {
+      console.error('Error al registrar al olimpista:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col my-6">
       <div className="flex flex-col items-center flex-grow">
-        <form>
+        <form onSubmit={handleSubmit(() => setShowModal(true))}>
           <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
             Registro de Datos de Olimpista
           </h1>
@@ -297,7 +310,7 @@ export default function FormDataPart() {
             />
             <InputText
               label="Cédula de identidad del tutor legal"
-              name="tutor.ci"
+              name="olimpista.citutor"
               placeholder="Ingresar ci del tutor legal"
               className="w-full "
               register={register}
@@ -352,6 +365,7 @@ export default function FormDataPart() {
                 label="Provincia"
                 placeholder="Seleccionar provincia"
                 className="w-full lg:w-[480px]"
+                value={watch('olimpista.prov') ?? ''}
                 options={
                   provincias
                     ? provincias.map((provincia) => ({
@@ -388,10 +402,15 @@ export default function FormDataPart() {
                 label="Unidad educativa"
                 placeholder="Seleccionar unidad educativa"
                 className="w-full lg:w-[480px]"
-                options={colegios.map((colegio) => ({
-                  value: colegio.id_colegio.toString(),
-                  label: colegio.nombre_colegio,
-                }))}
+                value={watch('olimpista.colegio') ?? ''}
+                options={
+                  colegios
+                    ? colegios.map((colegio) => ({
+                        id: colegio.id_colegio.toString(),
+                        name: colegio.nombre_colegio,
+                      }))
+                    : []
+                }
                 displayKey="name"
                 valueKey="id"
                 register={register}
@@ -399,8 +418,11 @@ export default function FormDataPart() {
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleColegioChange(e.target.value),
                 })}
-                disabled={loading}
+                disabled={loadingColegios}
                 errors={errors}
+                validationRules={{
+                  required: 'La unidad educativa es obligatoria',
+                }}
               />
               <div>
                 {!selectedProv && (
@@ -450,9 +472,9 @@ export default function FormDataPart() {
         </form>
         {showModal && (
           <Modal
-            onClose={onCloseModal}
+            onClose={() => setShowModal(false)}
             text="¿Estás seguro de que deseas registrar esta información?"
-            onConfirm={onConfirm}
+            onConfirm={handleSubmit(handleRegister)}
           />
         )}
       </div>
