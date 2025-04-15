@@ -53,22 +53,34 @@ export default function ModalAddOlympist({
   };
 
   const handleNivelToggle = (nivel: Nivel) => {
-    setSelectedNiveles((prev) =>
-      prev.some((n) => n.id_nivel === nivel.id_nivel)
+    setSelectedNiveles((prev) => {
+      const updatedNiveles = prev.some((n) => n.id_nivel === nivel.id_nivel)
         ? prev.filter((n) => n.id_nivel !== nivel.id_nivel)
-        : [...prev, nivel],
-    );
+        : [...prev, nivel];
+
+      // Si no quedan niveles seleccionados, elimina el área
+      if (updatedNiveles.length === 0 && selectedArea) {
+        setSelectedAreas((prevAreas) =>
+          prevAreas.filter((id) => id !== selectedArea.id_area),
+        );
+        setSelectedArea(null); // Cierra el modal si no hay niveles seleccionados
+      }
+
+      return updatedNiveles;
+    });
   };
 
   const handleConfirmNiveles = () => {
-    if (selectedArea) {
+    if (selectedArea && selectedNiveles.length > 0) {
       setSelectedAreas((prev) =>
         prev.includes(selectedArea.id_area)
           ? prev
           : [...prev, selectedArea.id_area],
       );
+      setSelectedArea(null);
+    } else {
+      alert('Por favor selecciona al menos un nivel');
     }
-    setSelectedArea(null);
   };
 
   if (!isOpen) return null;
@@ -204,7 +216,10 @@ export default function ModalAddOlympist({
             name="olimpista.dep"
             placeholder="Seleccionar departamento"
             className="w-full"
-            options={[]}
+            options={[
+              { id: 1, name: 'La Paz' },
+              { id: 2, name: 'Cochabamba' },
+            ]}
             displayKey="name"
             valueKey="id"
             register={register}
@@ -217,7 +232,11 @@ export default function ModalAddOlympist({
             label="Provincia"
             placeholder="Seleccionar provincia"
             className="w-full"
-            options={[]}
+            options={[
+              { id: 1, name: 'Murillo' },
+              { id: 2, name: 'Cercado' },
+              { id: 3, name: 'Vallegrande' },
+            ]}
             displayKey="name"
             valueKey="id"
             register={register}
@@ -235,7 +254,11 @@ export default function ModalAddOlympist({
             validationRules={{
               required: 'La unidad educativa es obligatoria',
             }}
-            options={[]}
+            options={[
+              { id: 1, name: 'Unidad Educativa 1' },
+              { id: 2, name: 'Unidad Educativa 2' },
+              { id: 3, name: 'Unidad Educativa 3' },
+            ]}
             displayKey="name"
             valueKey="id"
             register={register}
@@ -246,7 +269,15 @@ export default function ModalAddOlympist({
             placeholder="Seleccionar grado"
             className="w-full"
             name="olimpista.grado"
-            options={[]}
+            options={[
+              { id: 1, name: 'Primero de primaria' },
+              { id: 2, name: 'Segundo de primaria' },
+              { id: 3, name: 'Tercero de primaria' },
+              { id: 4, name: 'Cuarto de primaria' },
+              { id: 5, name: 'Quinto de primaria' },
+              { id: 6, name: 'Sexto de primaria' },
+              { id: 7, name: 'Séptimo de secundaria' },
+            ]}
             displayKey="name"
             valueKey="id"
             register={register}
@@ -259,17 +290,17 @@ export default function ModalAddOlympist({
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           {areasSimuladas.map((area) => (
-            <button
+            <div
               key={area.id_area}
               onClick={() => handleAreaClick(area)}
-              className={`p-4 border rounded-lg ${
+              className={`flex cursor-pointer justify-center p-4 rounded-lg ${
                 selectedAreas.includes(area.id_area)
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-primary'
+                  ? 'bg-secondary2 text-black'
+                  : 'bg-primary border-2 text-white'
               }`}
             >
-              {area.nombre_area}
-            </button>
+              <p>{area.nombre_area}</p>
+            </div>
           ))}
         </div>
         {selectedArea && (
