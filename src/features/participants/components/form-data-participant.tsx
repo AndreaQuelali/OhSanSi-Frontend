@@ -11,6 +11,7 @@ import {
 } from '../interfaces/register-participants';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { useApiForm } from '@/hooks/use-api-form';
 
 export default function FormDataPart() {
   const {
@@ -25,6 +26,7 @@ export default function FormDataPart() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const { data: grados, loading } = useFetchData<Grado[]>('/grados');
+  const { submitForm } = useApiForm('/olimpistas');
 
   const { data: departamentos, loading: loadingDepartamentos } =
     useFetchData<Departamento[]>('/departamentos');
@@ -171,23 +173,21 @@ export default function FormDataPart() {
 
   const handleRegister = async (data: any) => {
     const payload = {
-      olimpista: {
-        cedula_identidad: data.olimpista.ci,
-        nombres: data.olimpista.name,
-        apellidos: data.olimpista.lastname,
-        fecha_nacimiento: data.olimpista.birthday,
-        correo_electronico: data.olimpista.email,
-        ci_tutor: '9',
-        unidad_educativa: data.olimpista.colegio,
-        id_grado: data.olimpista.grade,
-      },
+      cedula_identidad: data.olimpista.ci,
+      nombres: data.olimpista.name,
+      apellidos: data.olimpista.lastname,
+      fecha_nacimiento: data.olimpista.birthday,
+      correo_electronico: data.olimpista.email,
+      ci_tutor: '9',
+      unidad_educativa: data.olimpista.colegio,
+      id_grado: data.olimpista.grade,
     };
 
-    // Aquí puedes ver qué estás enviando
     console.log('Datos que se enviarán:', payload);
 
     try {
-      await axios.post(`${API_URL}/olimpistas`, payload);
+      const response = await submitForm(payload);
+      console.log('Se envio correctamente', response);
     } catch (error) {
       console.error('Error al registrar al olimpista:', error);
     }
