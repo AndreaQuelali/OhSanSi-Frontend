@@ -172,14 +172,14 @@ export default function FormDataPart() {
   const handleRegister = async (data: any) => {
     const payload = {
       olimpista: {
-        ci: data.olimpista.ci,
-        name: data.olimpista.name,
-        lastname: data.olimpista.lastname,
-        birthday: data.olimpista.birthday,
-        email: data.olimpista.email,
-        citutor: data.olimpista.citutor,
-        school: data.olimpista.colegio, // o school si tu API lo espera así
-        grade: data.olimpista.grade,
+        cedula_identidad: data.olimpista.ci,
+        nombres: data.olimpista.name,
+        apellidos: data.olimpista.lastname,
+        fecha_nacimiento: data.olimpista.birthday,
+        correo_electronico: data.olimpista.email,
+        ci_tutor: '9',
+        unidad_educativa: data.olimpista.colegio,
+        id_grado: data.olimpista.grade,
       },
     };
 
@@ -187,297 +187,299 @@ export default function FormDataPart() {
     console.log('Datos que se enviarán:', payload);
 
     try {
-      const response = await axios.post(`${API_URL}/olimpistas`, payload);
-      console.log('Respuesta del backend:', response.data);
+      await axios.post(`${API_URL}/olimpistas`, payload);
     } catch (error) {
       console.error('Error al registrar al olimpista:', error);
     }
   };
 
   return (
-    <div className="flex flex-col my-6">
-      <div className="flex flex-col items-center flex-grow">
-        <form onSubmit={handleSubmit(() => setShowModal(true))}>
-          <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
-            Registro de Datos de Olimpista
-          </h1>
-          <h2 className="text-primary headline-sm mb-2 ">Datos personales</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
-            <InputText
-              label="Cédula de identidad"
-              name="olimpista.ci"
-              placeholder="Ingresar cédula de identidad"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
-                },
-                onBlur: checkCi, // Verificar CI al salir del campo
-              }}
-              errors={errors}
-            />
-            <InputText
-              label="Nombre(s)"
-              name="olimpista.name"
-              placeholder="Ingresar nombres"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El nombre es obligatorio',
-                pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
-                },
-              }}
-              errors={errors}
-            />
-            <InputText
-              label="Apellido(s)"
-              name="olimpista.lastname"
-              placeholder="Ingresar apellidos"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El apellido es obligatorio',
-                pattern: {
-                  value:
-                    /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
-                  message:
-                    'Solo se permiten letras y un solo espacio entre palabras',
-                },
-              }}
-              errors={errors}
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
-            <InputText
-              label="Fecha de nacimiento"
-              name="olimpista.birthday"
-              placeholder="DD/MM/AAAA"
-              type="date"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'La fecha de nacimiento es obligatoria',
-                validate: (value: string) => {
-                  if (!value) return 'La fecha de nacimiento es obligatoria';
-                  const today = new Date();
-                  const birthDate = new Date(value);
-                  const age = today.getFullYear() - birthDate.getFullYear();
-                  const hasBirthdayPassed =
-                    today.getMonth() > birthDate.getMonth() ||
-                    (today.getMonth() === birthDate.getMonth() &&
-                      today.getDate() >= birthDate.getDate());
-                  const exactAge = hasBirthdayPassed ? age : age - 1;
-                  return (
-                    (exactAge >= 6 && exactAge <= 20) ||
-                    'Debe tener entre 6 y 20 años'
-                  );
-                },
-              }}
-              errors={errors}
-            />
-            <InputText
-              label="Correo electrónico"
-              name="olimpista.email"
-              placeholder="Ingresar correo electrónico"
-              type="email"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'El correo electrónico es obligatorio',
-                pattern: {
-                  value:
-                    /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
-                  message: 'Correo electrónico no válido',
-                },
-                onBlur: checkEmail, // Verificar correo al salir del campo
-              }}
-              errors={errors}
-            />
-            <InputText
-              label="Cédula de identidad del tutor legal"
-              name="olimpista.citutor"
-              placeholder="Ingresar ci del tutor legal"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
-                },
-                onBlur: checkCi,
-              }}
-              errors={errors}
-            />
-          </div>
-          <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
-            <Dropdown
-              label="Departamento"
-              placeholder="Seleccionar departamento"
-              className="w-full lg:w-[480px]"
-              options={
-                departamentos
-                  ? departamentos.map((departamento) => ({
-                      id: departamento.id_departamento.toString(),
-                      name: departamento.nombre_departamento,
-                    }))
-                  : []
-              }
-              displayKey="name"
-              valueKey="id"
-              register={register}
-              {...register('olimpista.depa', {
-                onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleDepartamentoChange(e.target.value),
-              })}
-              disabled={loadingDepartamentos}
-              errors={errors}
-              validationRules={{
-                required: 'El departamento es obligatorio',
-              }}
-            />
-            <div>
-              <Dropdown
-                label="Provincia"
-                placeholder="Seleccionar provincia"
-                className="w-full lg:w-[480px]"
-                value={watch('olimpista.prov') ?? ''}
-                options={
-                  provincias
-                    ? provincias.map((provincia) => ({
-                        id: provincia.id_provincia.toString(),
-                        name: provincia.nombre_provincia,
-                      }))
-                    : []
-                }
-                displayKey="name"
-                valueKey="id"
-                register={register}
-                {...register('olimpista.prov', {
-                  onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
-                    handleProvinciaChange(e.target.value),
-                })}
-                disabled={loadingProvincias}
-                errors={errors}
-                validationRules={{
-                  required: 'La provincia es obligatoria',
-                }}
-              />
-              <div>
-                {!selectedDepartment && (
-                  <span className="text-neutral subtitle-sm">
-                    Primero seleccione un departamento.
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
-            <div>
-              <Dropdown
-                label="Unidad educativa"
-                placeholder="Seleccionar unidad educativa"
-                className="w-full lg:w-[480px]"
-                value={watch('olimpista.colegio') ?? ''}
-                options={
-                  colegios
-                    ? colegios.map((colegio) => ({
-                        id: colegio.id_colegio.toString(),
-                        name: colegio.nombre_colegio,
-                      }))
-                    : []
-                }
-                displayKey="name"
-                valueKey="id"
-                register={register}
-                {...register('olimpista.colegio', {
-                  onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
-                    handleColegioChange(e.target.value),
-                })}
-                disabled={loadingColegios}
-                errors={errors}
-                validationRules={{
-                  required: 'La unidad educativa es obligatoria',
-                }}
-              />
-              <div>
-                {!selectedProv && (
-                  <span className="text-neutral subtitle-sm">
-                    Primero seleccione una provincia.
-                  </span>
-                )}
-              </div>
-            </div>
-            <Dropdown
-              label="Grado"
-              placeholder="Seleccionar grado"
-              className="w-full lg:w-[480px]"
-              options={
-                grados
-                  ? grados.map((grado) => ({
-                      id: grado.id_grado.toString(),
-                      name: grado.nombre_grado,
-                    }))
-                  : []
-              }
-              register={register}
-              displayKey="name"
-              valueKey="id"
-              {...register('olimpista.grade', {
-                onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleGradoChange(e.target.value),
-              })}
-              disabled={loading}
-              errors={errors}
-            />
-          </div>
-          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            <Button
-              label="Cancelar"
-              variantColor="variant2"
-              className="mt-5 md:mt-0"
-              onClick={() => navigate('/')}
-            />
-            <Button
-              type="submit"
-              label="Registrar"
-              disabled={!isValid}
-              variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
-            />
-          </div>
-        </form>
-        {showModal && (
-          <Modal
-            onClose={() => setShowModal(false)}
-            text="¿Estás seguro de que deseas registrar esta información?"
-            onConfirm={handleSubmit(handleRegister)}
+    <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0">
+      <form
+        onSubmit={handleSubmit(() => setShowModal(true))}
+        className="mt-10 mb-32"
+      >
+        <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
+          Registro de Datos de Olimpista
+        </h1>
+        <h2 className="text-primary headline-sm mb-2 ">Datos personales</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
+          <InputText
+            label="Cédula de identidad"
+            name="olimpista.ci"
+            placeholder="Ingresar cédula de identidad"
+            className="w-full "
+            register={register}
+            validationRules={{
+              required: 'El número de cédula es obligatorio',
+              minLength: {
+                value: 4,
+                message: 'Debe tener al menos 4 dígitos',
+              },
+              maxLength: {
+                value: 8,
+                message: 'No puede tener más de 8 dígitos',
+              },
+              pattern: {
+                value: /^[0-9]+$/,
+                message: 'Solo se permiten números',
+              },
+              onBlur: checkCi, // Verificar CI al salir del campo
+            }}
+            errors={errors}
           />
-        )}
-      </div>
+          <InputText
+            label="Nombre(s)"
+            name="olimpista.name"
+            placeholder="Ingresar nombres"
+            className="w-full"
+            register={register}
+            validationRules={{
+              required: 'El nombre es obligatorio',
+              pattern: {
+                value:
+                  /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                message:
+                  'Solo se permiten letras y un solo espacio entre palabras',
+              },
+            }}
+            errors={errors}
+          />
+          <InputText
+            label="Apellido(s)"
+            name="olimpista.lastname"
+            placeholder="Ingresar apellidos"
+            className="w-full"
+            register={register}
+            validationRules={{
+              required: 'El apellido es obligatorio',
+              pattern: {
+                value:
+                  /^(?! )[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*(?<! )$/,
+                message:
+                  'Solo se permiten letras y un solo espacio entre palabras',
+              },
+            }}
+            errors={errors}
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-9 mb-6">
+          <InputText
+            label="Fecha de nacimiento"
+            name="olimpista.birthday"
+            placeholder="DD/MM/AAAA"
+            type="date"
+            className="w-full "
+            register={register}
+            validationRules={{
+              required: 'La fecha de nacimiento es obligatoria',
+              validate: (value: string) => {
+                if (!value) return 'La fecha de nacimiento es obligatoria';
+                const today = new Date();
+                const birthDate = new Date(value);
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const hasBirthdayPassed =
+                  today.getMonth() > birthDate.getMonth() ||
+                  (today.getMonth() === birthDate.getMonth() &&
+                    today.getDate() >= birthDate.getDate());
+                const exactAge = hasBirthdayPassed ? age : age - 1;
+                return (
+                  (exactAge >= 6 && exactAge <= 20) ||
+                  'Debe tener entre 6 y 20 años'
+                );
+              },
+            }}
+            errors={errors}
+          />
+          <InputText
+            label="Correo electrónico"
+            name="olimpista.email"
+            placeholder="Ingresar correo electrónico"
+            type="email"
+            className="w-full "
+            register={register}
+            validationRules={{
+              required: 'El correo electrónico es obligatorio',
+              pattern: {
+                value:
+                  /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+                message: 'Correo electrónico no válido',
+              },
+              onBlur: checkEmail, // Verificar correo al salir del campo
+            }}
+            errors={errors}
+          />
+          <InputText
+            label="Cédula de identidad del tutor legal"
+            name="olimpista.citutor"
+            placeholder="Ingresar ci del tutor legal"
+            className="w-full "
+            register={register}
+            validationRules={{
+              required: 'El número de cédula es obligatorio',
+              minLength: {
+                value: 4,
+                message: 'Debe tener al menos 4 dígitos',
+              },
+              maxLength: {
+                value: 8,
+                message: 'No puede tener más de 8 dígitos',
+              },
+              pattern: {
+                value: /^[0-9]+$/,
+                message: 'Solo se permiten números',
+              },
+              onBlur: checkCi,
+            }}
+            errors={errors}
+          />
+        </div>
+        <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <Dropdown
+            label="Departamento"
+            placeholder="Seleccionar departamento"
+            className="w-full lg:w-[480px]"
+            value={watch('olimpista.depa') ?? ''}
+            options={
+              departamentos
+                ? departamentos.map((departamento) => ({
+                    id: departamento.id_departamento.toString(),
+                    name: departamento.nombre_departamento,
+                  }))
+                : []
+            }
+            displayKey="name"
+            valueKey="id"
+            register={register}
+            {...register('olimpista.depa', {
+              onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleDepartamentoChange(e.target.value),
+            })}
+            disabled={loadingDepartamentos}
+            errors={errors}
+            validationRules={{
+              required: 'El departamento es obligatorio',
+            }}
+          />
+          <div>
+            <Dropdown
+              label="Provincia"
+              placeholder="Seleccionar provincia"
+              className="w-full lg:w-[480px]"
+              value={watch('olimpista.prov') ?? ''}
+              options={
+                provincias
+                  ? provincias.map((provincia) => ({
+                      id: provincia.id_provincia.toString(),
+                      name: provincia.nombre_provincia,
+                    }))
+                  : []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              {...register('olimpista.prov', {
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleProvinciaChange(e.target.value),
+              })}
+              disabled={loadingProvincias}
+              errors={errors}
+              validationRules={{
+                required: 'La provincia es obligatoria',
+              }}
+            />
+            <div>
+              {!selectedDepartment && (
+                <span className="text-neutral subtitle-sm">
+                  Primero seleccione un departamento.
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <div>
+            <Dropdown
+              label="Unidad educativa"
+              placeholder="Seleccionar unidad educativa"
+              className="w-full lg:w-[480px]"
+              value={watch('olimpista.colegio') ?? ''}
+              options={
+                colegios
+                  ? colegios.map((colegio) => ({
+                      id: colegio.id_colegio.toString(),
+                      name: colegio.nombre_colegio,
+                    }))
+                  : []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              {...register('olimpista.colegio', {
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleColegioChange(e.target.value),
+              })}
+              disabled={loadingColegios}
+              errors={errors}
+              validationRules={{
+                required: 'La unidad educativa es obligatoria',
+              }}
+            />
+            <div>
+              {!selectedProv && (
+                <span className="text-neutral subtitle-sm">
+                  Primero seleccione una provincia.
+                </span>
+              )}
+            </div>
+          </div>
+          <Dropdown
+            label="Grado"
+            placeholder="Seleccionar grado"
+            className="w-full lg:w-[480px]"
+            value={watch('olimpista.grade') ?? ''}
+            options={
+              grados
+                ? grados.map((grado) => ({
+                    id: grado.id_grado.toString(),
+                    name: grado.nombre_grado,
+                  }))
+                : []
+            }
+            register={register}
+            displayKey="name"
+            valueKey="id"
+            {...register('olimpista.grade', {
+              onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleGradoChange(e.target.value),
+            })}
+            disabled={loading}
+            errors={errors}
+          />
+        </div>
+        <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+          <Button
+            label="Cancelar"
+            variantColor="variant2"
+            className="mt-5 md:mt-0"
+            onClick={() => navigate('/')}
+          />
+          <Button
+            type="submit"
+            label="Registrar"
+            disabled={!isValid}
+            variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
+          />
+        </div>
+      </form>
+      {showModal && (
+        <Modal
+          onClose={() => setShowModal(false)}
+          text="¿Estás seguro de que deseas registrar esta información?"
+          onConfirm={handleSubmit(handleRegister)}
+        />
+      )}
     </div>
   );
 }

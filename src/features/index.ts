@@ -21,6 +21,6 @@ export * from './participants/components/form-tutor';
 export * from './participants/components/number';
 export * from './participants/index';
 export * from './participants/interfaces/register-participants.d';
-export * from './participants/pages/register-olympist';
+export * from './participants/pages/register-participant';
 export * from './participants/pages/register-selected-areas';
 export * from './participants/pages/register-tutor';
