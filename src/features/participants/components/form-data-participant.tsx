@@ -1,6 +1,6 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
-import { useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { API_URL } from '@/config/api-config';
 import {
@@ -22,7 +22,7 @@ export default function FormDataPart() {
     clearErrors,
     formState: { errors, isValid },
     watch,
-  } = useFormContext();
+  } = useForm({ mode: 'onBlur' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const { data: grados, loading } = useFetchData<Grado[]>('/grados');
@@ -188,8 +188,11 @@ export default function FormDataPart() {
     try {
       const response = await submitForm(payload);
       console.log('Se envio correctamente', response);
+      alert('Olimpista registrado correctamente');
+      window.location.reload();
     } catch (error) {
       console.error('Error al registrar al olimpista:', error);
+      alert('Error al registrar al olimpista');
     }
   };
 
@@ -224,7 +227,6 @@ export default function FormDataPart() {
                 value: /^[0-9]+$/,
                 message: 'Solo se permiten números',
               },
-              onBlur: checkCi, // Verificar CI al salir del campo
             }}
             errors={errors}
           />
@@ -305,7 +307,6 @@ export default function FormDataPart() {
                   /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
                 message: 'Correo electrónico no válido',
               },
-              onBlur: checkEmail, // Verificar correo al salir del campo
             }}
             errors={errors}
           />
