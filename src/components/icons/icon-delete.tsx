@@ -1,14 +1,13 @@
-export default function IconDelete({ classname }: { classname?: string }) {
+export default function IconDelete({ className }: { className?: string }) {
   return (
     <svg
-      className={classname}
-      viewBox="0 0 24 24"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 24 24"
     >
       <path
-        d="M7 21C6.45 21 5.97917 20.8042 5.5875 20.4125C5.19583 20.0208 5 19.55 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8042 20.0208 18.4125 20.4125C18.0208 20.8042 17.55 21 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z"
-        fill="#26326C"
+        fill="#fff"
+        d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"
       />
     </svg>
   );
