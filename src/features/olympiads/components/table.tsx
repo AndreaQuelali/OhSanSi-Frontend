@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Button } from '@/components';
+import { Button, CustomPagination } from '@/components';
 
 interface TableRow {
   id: number;
@@ -14,12 +14,6 @@ type TableProps = {
 };
 
 export const Table: React.FC<TableProps> = ({ data }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
-
   const columns: TableColumn<TableRow>[] = [
     {
       name: 'Área',
@@ -48,6 +42,12 @@ export const Table: React.FC<TableProps> = ({ data }) => {
         fontSize: '16px',
         fontWeight: '500',
         color: '#0e1217',
+        justifyContent: 'center',
+      },
+    },
+    cells: {
+      style: {
+        justifyContent: 'center',
       },
     },
   };
@@ -64,44 +64,16 @@ export const Table: React.FC<TableProps> = ({ data }) => {
             <DataTable
               title=""
               columns={columns}
-              data={paginatedData}
+              data={data}
+              pagination
+              paginationPerPage={5}
+              paginationComponent={CustomPagination}
               responsive
               highlightOnHover
               customStyles={customStyles}
               noHeader
             />
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-10 flex-wrap gap-2">
-              <Button
-                label="Anterior"
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-                disabled={currentPage === 1}
-                variantColor={
-                  currentPage === 1 ? 'variantDesactivate' : 'variant2'
-                }
-              />
-
-              {[...Array(totalPages)].map((_, i) => (
-                <Button
-                  key={i + 1}
-                  label={`${i + 1}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                  variantColor={currentPage === i + 1 ? 'variant1' : 'variant2'}
-                />
-              ))}
-
-              <Button
-                label="Siguiente"
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-                disabled={currentPage === totalPages}
-                variantColor={
-                  currentPage === totalPages ? 'variantDesactivate' : 'variant2'
-                }
-              />
-            </div>
-          )}
         </>
       )}
     </div>
