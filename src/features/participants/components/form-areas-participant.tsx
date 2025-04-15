@@ -182,7 +182,7 @@ export default function FormAreaPart() {
           <InputText
             label="Cédula de identidad del olimpista"
             name="olimpista.ci"
-            placeholder="Ingrese su número de cédula"
+            placeholder="Ingresar ci del olimpista"
             className="w-full"
             register={register}
             validationRules={{
@@ -197,9 +197,10 @@ export default function FormAreaPart() {
           <InputText
             label="Cédula de identidad del tutor académico (Opcional)"
             name="tutor.ci"
-            placeholder="Ingrese su número de cédula"
+            placeholder="Ingresar ci del tutor académico"
             className="w-full"
             register={register}
+            isRequired={false}
             validationRules={{
               pattern: {
                 value: /^(?! )[0-9]+(?<! )$/,
