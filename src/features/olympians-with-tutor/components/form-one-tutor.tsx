@@ -6,7 +6,7 @@ export default function FormOneTutor() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: 'onBlur' });
 
   const onSubmit = () => {
     alert('Formulario enviado correctamente');
