@@ -42,6 +42,7 @@ export default function FormDataPart() {
 
   const ci = watch('olimpista.ci'); // Observar el campo CI
   const email = watch('olimpista.email'); // Observar el campo Email
+  const citutor = watch('olimpista.citutor'); // Observar el campo CI del tutor
 
   const checkCi = async () => {
     if (!ci) {
@@ -62,6 +63,23 @@ export default function FormDataPart() {
     } catch (error) {
       console.error('Error al verificar el CI:', error);
       clearErrors('olimpista.ci'); // No mostrar error si ocurre un problema en la verificación
+    }
+  };
+
+  const checkCiTutor = async () => {
+    if (!citutor) {
+      clearErrors('olimpista.citutor'); // Limpiar el error si el campo está vacío
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API_URL}/tutores/cedula/${citutor}`);
+      console.log('Se encontro', response.data);
+    } catch (error) {
+      setError('olimpista.citutor', {
+        type: 'manual',
+        message: 'Este ci de tutor no está registrado.',
+      });
     }
   };
 
@@ -178,7 +196,7 @@ export default function FormDataPart() {
       apellidos: data.olimpista.lastname,
       fecha_nacimiento: data.olimpista.birthday,
       correo_electronico: data.olimpista.email,
-      ci_tutor: '9',
+      ci_tutor: data.olimpista.citutor,
       unidad_educativa: data.olimpista.colegio,
       id_grado: data.olimpista.grade,
     };
@@ -227,6 +245,7 @@ export default function FormDataPart() {
                 value: /^[0-9]+$/,
                 message: 'Solo se permiten números',
               },
+              onBlur: checkCi, // Verificar CI al perder el foco
             }}
             errors={errors}
           />
@@ -307,6 +326,7 @@ export default function FormDataPart() {
                   /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
                 message: 'Correo electrónico no válido',
               },
+              onBlur: checkEmail,
             }}
             errors={errors}
           />
@@ -330,7 +350,7 @@ export default function FormDataPart() {
                 value: /^[0-9]+$/,
                 message: 'Solo se permiten números',
               },
-              onBlur: checkCi,
+              onBlur: checkCiTutor,
             }}
             errors={errors}
           />
