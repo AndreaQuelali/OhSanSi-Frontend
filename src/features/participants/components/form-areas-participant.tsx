@@ -11,9 +11,10 @@ import { formattedDate } from '@/utils/date';
 export default function FormAreaPart() {
   const {
     register,
+    handleSubmit,
     formState: { errors },
     watch,
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({ mode: 'onChange' });
 
   const [areasDisponibles, setAreasDisponibles] = useState<
     Record<
@@ -50,40 +51,51 @@ export default function FormAreaPart() {
 
   useEffect(() => {
     const fetchAreasDisponibles = async () => {
-      if (ciOlimpista) {
-        setLoading(true);
+      if (!ciOlimpista) {
+        setAreasDisponibles({});
+        setNivelesSeleccionados({});
         setError(null);
-        try {
-          const response = await axios.get(
-            `${API_URL}/olimpistas/${ciOlimpista}/areas-niveles`,
-          );
+        return;
+      }
 
-          const transformedData = response.data.reduce(
-            (
-              acc: Record<string, { id_nivel: number; nombre_nivel: string }[]>,
-              area: {
-                nombre_area: string;
-                niveles: { id_nivel: number; nombre_nivel: string }[];
-              },
-            ) => {
-              acc[area.nombre_area] = area.niveles.map(
-                (nivel: { id_nivel: number; nombre_nivel: string }) => ({
-                  id_nivel: nivel.id_nivel,
-                  nombre_nivel: nivel.nombre_nivel,
-                  registrado: false, 
-                }),
-              );
-              return acc;
-            },
-            {},
-          );
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(
+          `${API_URL}/olimpistas/${ciOlimpista}/areas-niveles`,
+        );
 
-          setAreasDisponibles(transformedData);
-        } catch {
-          setError('Error al cargar las áreas disponibles.');
-        } finally {
-          setLoading(false);
+        if (!response.data || response.data.length === 0) {
+          setAreasDisponibles({});
+          setError('No se encontró un olimpista con esa cédula.');
+          return;
         }
+
+        const transformedData = response.data.reduce(
+          (
+            acc: Record<string, { id_nivel: number; nombre_nivel: string }[]>,
+            area: {
+              nombre_area: string;
+              niveles: { id_nivel: number; nombre_nivel: string }[];
+            },
+          ) => {
+            acc[area.nombre_area] = area.niveles.map(
+              (nivel: { id_nivel: number; nombre_nivel: string }) => ({
+                id_nivel: nivel.id_nivel,
+                nombre_nivel: nivel.nombre_nivel,
+                registrado: false,
+              }),
+            );
+            return acc;
+          },
+          {},
+        );
+
+        setAreasDisponibles(transformedData);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -92,13 +104,22 @@ export default function FormAreaPart() {
 
   useEffect(() => {
     const fetchInscripciones = async () => {
-      if (!ciOlimpista) return;
+      if (!ciOlimpista) {
+        // Limpia los estados si no hay un ciOlimpista
+        setNivelesSeleccionados({});
+        return;
+      }
 
       try {
         const response = await axios.get(
           `${API_URL}/olimpista/${ciOlimpista}/inscripciones`,
         );
 
+        if (!response.data || response.data.length === 0) {
+          setNivelesSeleccionados({});
+          setError('No se encontró un olimpista con esa cédula.');
+          return;
+        }
         const inscripciones = response.data.inscripciones;
 
         const nivelesPorArea = inscripciones.reduce(
@@ -113,7 +134,7 @@ export default function FormAreaPart() {
             const nivel = {
               id_nivel: inscripcion.nivel.id_nivel,
               nombre_nivel: inscripcion.nivel.nombre,
-              registrado: true, 
+              registrado: true,
             };
 
             if (!acc[areaNombre]) {
@@ -128,13 +149,38 @@ export default function FormAreaPart() {
 
         setNivelesSeleccionados(nivelesPorArea);
       } catch (err) {
-        console.error('Error al obtener las inscripciones:', err);
-        setError('Error al cargar las inscripciones del olimpista.');
+        console.error(err);
       }
     };
 
     fetchInscripciones();
   }, [ciOlimpista]);
+
+  useEffect(() => {
+    const verificarTutor = async () => {
+      if (!ciTutor) {
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${API_URL}/tutores/cedula/${ciTutor}`,
+        );
+
+        if (response.data.status === 200) {
+          setError('');
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          setError('El tutor con esta cédula no existe.');
+        } else {
+          console.error('Error al verificar el tutor:', err);
+        }
+      }
+    };
+
+    verificarTutor();
+  }, [ciTutor]);
 
   const handleRegistrar = async () => {
     if (!ciOlimpista) {
@@ -159,7 +205,6 @@ export default function FormAreaPart() {
     };
 
     try {
-      setLoading(true);
       setError(null);
 
       const response = await axios.post(
@@ -169,35 +214,7 @@ export default function FormAreaPart() {
 
       alert('Registro exitoso');
       console.log('Response:', response.data);
-
-      const inscripciones = await axios.get(
-        `${API_URL}/olimpista/${ciOlimpista}/inscripciones`,
-      );
-      const nivelesPorArea = inscripciones.data.inscripciones.reduce(
-        (
-          acc: Record<
-            string,
-            { id_nivel: number; nombre_nivel: string; registrado: boolean }[]
-          >,
-          inscripcion: any,
-        ) => {
-          const areaNombre = inscripcion.nivel.asociaciones[0].area.nombre;
-          const nivel = {
-            id_nivel: inscripcion.nivel.id_nivel,
-            nombre_nivel: inscripcion.nivel.nombre,
-            registrado: true,
-          };
-
-          if (!acc[areaNombre]) {
-            acc[areaNombre] = [];
-          }
-
-          acc[areaNombre].push(nivel);
-          return acc;
-        },
-        {},
-      );
-      setNivelesSeleccionados(nivelesPorArea); 
+      window.location.href = '/register-selected-areas';
     } catch (err) {
       console.error('Error:', err);
       setError('Error al registrar la inscripción.');
@@ -298,13 +315,30 @@ export default function FormAreaPart() {
     const nivelesRegistrados = nivelesCombinados.filter((n) => n.registrado);
 
     setSelectedArea(area);
-    setNivelesSeleccionadosTemp(nivelesRegistrados); 
+    setNivelesSeleccionadosTemp(nivelesRegistrados);
     setModalVisible(true);
+  };
+
+  // Nueva función para verificar si hay nuevos niveles seleccionados
+  const hasNewSelections = () => {
+    return Object.values(nivelesSeleccionados)
+      .flat()
+      .some((nivel) => !nivel.registrado);
+  };
+
+  // Nueva función para verificar si los campos son válidos
+  const isFormValid = () => {
+    const isCiOlimpistaValido = !!ciOlimpista && !errors?.olimpista?.ci;
+    const isCiTutorValido = !ciTutor || !errors?.tutor?.ci;
+    return isCiOlimpistaValido && isCiTutorValido && hasNewSelections();
   };
 
   return (
     <div className="my-6">
-      <div className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0">
+      <form
+        onSubmit={handleSubmit(handleRegistrar)}
+        className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0"
+      >
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
           Registro de Olimpista en una o varias áreas de competencia
         </h2>
@@ -430,13 +464,13 @@ export default function FormAreaPart() {
             onClick={() => (window.location.href = '/')}
           />
           <Button
-            type="button"
+            type="submit"
             label="Registrar"
             variantColor="variant1"
-            onClick={handleRegistrar}
+            disabled={!isFormValid()}
           />
         </div>
-      </div>
+      </form>
     </div>
   );
 }
