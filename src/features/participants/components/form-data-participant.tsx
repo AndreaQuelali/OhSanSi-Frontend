@@ -302,8 +302,8 @@ export default function FormDataPart() {
                       today.getDate() >= birthDate.getDate());
                   const exactAge = hasBirthdayPassed ? age : age - 1;
                   return (
-                    (exactAge >= 6 && exactAge <= 20) ||
-                    'Debe tener entre 6 y 20 años'
+                    (exactAge >= 6 && exactAge <= 18) ||
+                    'Debe tener entre 6 y 18 años'
                   );
                 },
               }}

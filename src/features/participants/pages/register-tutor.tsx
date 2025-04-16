@@ -6,7 +6,7 @@ export default function RegisterTutorPage() {
 
   return (
     <FormProvider {...methods}>
-      <FormTutor />
+      <FormTutor viewTB={true} />
     </FormProvider>
   );
 }

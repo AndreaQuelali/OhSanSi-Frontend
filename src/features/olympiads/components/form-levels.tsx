@@ -156,83 +156,63 @@ export default function FormLevels() {
     }
   };
   return (
-    <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0">
-      <form
-        onSubmit={handleSubmit(() => setIsModalOpen(true))}
-        className="mt-10 mb-32"
-      >
-        <div className="flex flex-col">
-          <h1 className="text-center text-primary mb-8 headline-lg">
-            Registro de Niveles/Categorías en Áreas de Olimpiada
-          </h1>
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col items-center">
+        <form
+          onSubmit={handleSubmit(() => setIsModalOpen(true))}
+          className="mt-10 mb-32 mx-5 md:w-9/12 lg:w-9/12"
+        >
+          <div className="flex flex-col">
+            <h1 className="text-center text-primary mb-8 headline-lg">
+              Registro de Niveles/Categorías en Áreas de Olimpiada
+            </h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-9 mb-6">
-            <Dropdown
-              name="area"
-              label="Área"
-              className="w-full"
-              placeholder="Seleccionar área"
-              options={
-                areas?.map((area) => ({
-                  id: area.id_area.toString(),
-                  name: area.nombre,
-                })) || []
-              }
-              displayKey="name"
-              valueKey="id"
-              register={register}
-              validationRules={{
-                required: 'Debe seleccionar un área',
-              }}
-              errors={errors}
-            />
-            <Dropdown
-              label="Nivel/Categoría"
-              className="w-full"
-              name="level"
-              placeholder="Seleccionar nivel o categoría"
-              options={
-                levels?.niveles.map((level) => ({
-                  id: level.id_nivel.toString(),
-                  name: level.nombre,
-                })) || []
-              }
-              displayKey="name"
-              valueKey="id"
-              register={register}
-              validationRules={{
-                required: 'Debe seleccionar un nivel o categoría',
-              }}
-              errors={errors}
-            />
-            <Dropdown
-              name="gmin"
-              label="Grado Min."
-              placeholder="Seleccionar grado min"
-              options={
-                grades
-                  ? grades.map((grade) => ({
-                      id: grade.id_grado.toString(),
-                      name: grade.nombre_grado,
-                    }))
-                  : []
-              }
-              displayKey="name"
-              valueKey="id"
-              register={register}
-              validationRules={{
-                required: 'Debe seleccionar el grado mínimo',
-              }}
-              errors={errors}
-            />
-            <div>
+            <div className="grid lg:grid-cols-4 lg:gap-9 mb-6">
               <Dropdown
-                name="gmax"
-                label="Grado Max."
-                placeholder="Seleccionar grado max"
+                name="area"
+                label="Área"
+                className="w-full"
+                placeholder="Seleccionar área"
+                options={
+                  areas?.map((area) => ({
+                    id: area.id_area.toString(),
+                    name: area.nombre,
+                  })) || []
+                }
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                validationRules={{
+                  required: 'Debe seleccionar un área',
+                }}
+                errors={errors}
+              />
+              <Dropdown
+                label="Nivel/Categoría"
+                className="w-full"
+                name="level"
+                placeholder="Seleccionar nivel o categoría"
+                options={
+                  levels?.niveles.map((level) => ({
+                    id: level.id_nivel.toString(),
+                    name: level.nombre,
+                  })) || []
+                }
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                validationRules={{
+                  required: 'Debe seleccionar un nivel o categoría',
+                }}
+                errors={errors}
+              />
+              <Dropdown
+                name="gmin"
+                label="Grado Min."
+                placeholder="Seleccionar grado min"
                 options={
                   grades
-                    ? grades.slice(1).map((grade) => ({
+                    ? grades.map((grade) => ({
                         id: grade.id_grado.toString(),
                         name: grade.nombre_grado,
                       }))
@@ -242,69 +222,91 @@ export default function FormLevels() {
                 valueKey="id"
                 register={register}
                 validationRules={{
-                  validate: (value: string) => {
-                    if (value === '') return true;
-
-                    const minOrder = grades?.find(
-                      (grade) => grade.id_grado.toString() === minGrade,
-                    )?.id_grado;
-                    const maxOrder = grades?.find(
-                      (grade) => grade.id_grado.toString() === value,
-                    )?.id_grado;
-
-                    if (!minOrder) {
-                      return 'Debe seleccionar primero el grado mínimo';
-                    }
-
-                    if (maxOrder && Number(maxOrder) <= Number(minOrder)) {
-                      if (minGrade === '12') {
-                        return 'El grado mínimo es el más alto';
-                      }
-                      return 'El grado máximo debe ser mayor al grado mínimo';
-                    }
-
-                    return true;
-                  },
+                  required: 'Debe seleccionar el grado mínimo',
                 }}
                 errors={errors}
-                isRequired={false}
-                disablePlaceholder={false}
-                disabled={minGrade === '12'}
+              />
+              <div>
+                <Dropdown
+                  name="gmax"
+                  label="Grado Max."
+                  placeholder="Seleccionar grado max"
+                  options={
+                    grades
+                      ? grades.slice(1).map((grade) => ({
+                          id: grade.id_grado.toString(),
+                          name: grade.nombre_grado,
+                        }))
+                      : []
+                  }
+                  displayKey="name"
+                  valueKey="id"
+                  register={register}
+                  validationRules={{
+                    validate: (value: string) => {
+                      if (value === '') return true;
+
+                      const minOrder = grades?.find(
+                        (grade) => grade.id_grado.toString() === minGrade,
+                      )?.id_grado;
+                      const maxOrder = grades?.find(
+                        (grade) => grade.id_grado.toString() === value,
+                      )?.id_grado;
+
+                      if (!minOrder) {
+                        return 'Debe seleccionar primero el grado mínimo';
+                      }
+
+                      if (maxOrder && Number(maxOrder) <= Number(minOrder)) {
+                        if (minGrade === '12') {
+                          return 'El grado mínimo es el más alto';
+                        }
+                        return 'El grado máximo debe ser mayor al grado mínimo';
+                      }
+
+                      return true;
+                    },
+                  }}
+                  errors={errors}
+                  isRequired={false}
+                  disablePlaceholder={false}
+                  disabled={minGrade === '12'}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+              <Button
+                label="Cancelar"
+                variantColor="variant2"
+                className="mt-5 md:mt-0"
+                onClick={() => navigate('/')}
+              />
+              <Button
+                label="Registrar"
+                type="submit"
+                disabled={!isValid || isSubmitting}
+                variantColor={
+                  !isValid || isSubmitting ? 'variantDesactivate' : 'variant1'
+                }
               />
             </div>
-          </div>
-          <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            <Button
-              label="Cancelar"
-              variantColor="variant2"
-              className="mt-5 md:mt-0"
-              onClick={() => navigate('/')}
-            />
-            <Button
-              label="Registrar"
-              type="submit"
-              disabled={!isValid || isSubmitting}
-              variantColor={
-                !isValid || isSubmitting ? 'variantDesactivate' : 'variant1'
-              }
-            />
-          </div>
 
-          <h2 className="text-primary subtitle-md mt-7 md:mt-5">
-            Niveles/Categorías registradas en Áreas
-          </h2>
-          <div className="mt-2 md:w-11/12 mx-auto">
-            <Table data={tableData} />
+            <h2 className="text-primary subtitle-md mt-7 md:mt-5">
+              Niveles/Categorías registradas en Áreas
+            </h2>
+            <div className="mt-2 md:w-11/12 mx-auto">
+              <Table data={tableData} />
+            </div>
           </div>
-        </div>
-      </form>
-      {isModalOpen && (
-        <Modal
-          text="¿Está seguro de registrar los niveles?"
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleSubmit(handleRegister)}
-        />
-      )}
+        </form>
+        {isModalOpen && (
+          <Modal
+            text="¿Está seguro de registrar los niveles?"
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleSubmit(handleRegister)}
+          />
+        )}
+      </div>
     </div>
   );
 }

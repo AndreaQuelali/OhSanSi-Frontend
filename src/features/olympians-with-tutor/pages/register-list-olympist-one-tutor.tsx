@@ -8,7 +8,7 @@ export default function RegisterListOlympistOneTutor() {
         Registro de Lista de Olimpistas con Tutor
       </h1>
       <FormOneTutor />
-      <TableOlympians />
+      <TableOlympians tutor={false} />
     </div>
   );
 }
