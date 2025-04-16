@@ -6,6 +6,7 @@ import { API_URL } from '@/config/api-config';
 import CardArea from './card-area';
 import IconClose from '@/components/icons/icon-close';
 import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
+import { formattedDate } from '@/utils/date';
 
 export default function FormAreaPart() {
   const {
@@ -15,10 +16,16 @@ export default function FormAreaPart() {
   } = useForm({ mode: 'onBlur' });
 
   const [areasDisponibles, setAreasDisponibles] = useState<
-    Record<string, { id_nivel: number; nombre_nivel: string }[]>
+    Record<
+      string,
+      { id_nivel: number; nombre_nivel: string; registrado?: boolean }[]
+    >
   >({});
   const [nivelesSeleccionados, setNivelesSeleccionados] = useState<
-    Record<string, { id_nivel: number; nombre_nivel: string }[]>
+    Record<
+      string,
+      { id_nivel: number; nombre_nivel: string; registrado?: boolean }[]
+    >
   >({});
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
@@ -33,30 +40,13 @@ export default function FormAreaPart() {
     fecha: string;
     id_olimpiada: number;
     max_categorias_olimpista: number;
-  }>(`${API_URL}/olimpiada/max-categorias?fecha=2025-05-27`, {
+  }>(`${API_URL}/olimpiada/max-categorias?fecha=${formattedDate}`, {
     method: 'GET',
   });
-
-  const { data: totalInscripcionesData } = useFetchDataWithBody<{
-    success: boolean;
-    ci_olimpista: string;
-    total_inscripciones: number;
-  }>(
-    ciOlimpista
-      ? `${API_URL}/olimpista/${ciOlimpista}/total-inscripciones`
-      : null,
-    ciOlimpista
-      ? {
-          method: 'GET',
-        }
-      : undefined,
-  );
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
-  const totalInscripciones = totalInscripcionesData?.total_inscripciones || 0;
 
   const limiteAlcanzado =
-    totalInscripciones + Object.keys(nivelesSeleccionados).length >=
-    maxCategorias;
+    Object.keys(nivelesSeleccionados).length >= maxCategorias;
 
   useEffect(() => {
     const fetchAreasDisponibles = async () => {
@@ -80,6 +70,7 @@ export default function FormAreaPart() {
                 (nivel: { id_nivel: number; nombre_nivel: string }) => ({
                   id_nivel: nivel.id_nivel,
                   nombre_nivel: nivel.nombre_nivel,
+                  registrado: false, 
                 }),
               );
               return acc;
@@ -99,38 +90,51 @@ export default function FormAreaPart() {
     fetchAreasDisponibles();
   }, [ciOlimpista]);
 
-  const handleAreaClick = (area: string) => {
-    if (limiteAlcanzado) {
-      alert('Ya has alcanzado el límite de áreas permitidas.');
-      return;
-    }
-    setSelectedArea(area);
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    const fetchInscripciones = async () => {
+      if (!ciOlimpista) return;
 
-  const handleNivelSeleccionado = (
-    area: string,
-    nivel: { id_nivel: number; nombre_nivel: string },
-  ) => {
-    setNivelesSeleccionados((prev) => {
-      const nivelesEnArea = prev[area] || [];
-      const nivelYaSeleccionado = nivelesEnArea.some(
-        (n) => n.id_nivel === nivel.id_nivel,
-      );
+      try {
+        const response = await axios.get(
+          `${API_URL}/olimpista/${ciOlimpista}/inscripciones`,
+        );
 
-      if (nivelYaSeleccionado) {
-        return {
-          ...prev,
-          [area]: nivelesEnArea.filter((n) => n.id_nivel !== nivel.id_nivel),
-        };
-      } else {
-        return {
-          ...prev,
-          [area]: [...nivelesEnArea, nivel],
-        };
+        const inscripciones = response.data.inscripciones;
+
+        const nivelesPorArea = inscripciones.reduce(
+          (
+            acc: Record<
+              string,
+              { id_nivel: number; nombre_nivel: string; registrado: boolean }[]
+            >,
+            inscripcion: any,
+          ) => {
+            const areaNombre = inscripcion.nivel.asociaciones[0].area.nombre;
+            const nivel = {
+              id_nivel: inscripcion.nivel.id_nivel,
+              nombre_nivel: inscripcion.nivel.nombre,
+              registrado: true, 
+            };
+
+            if (!acc[areaNombre]) {
+              acc[areaNombre] = [];
+            }
+
+            acc[areaNombre].push(nivel);
+            return acc;
+          },
+          {},
+        );
+
+        setNivelesSeleccionados(nivelesPorArea);
+      } catch (err) {
+        console.error('Error al obtener las inscripciones:', err);
+        setError('Error al cargar las inscripciones del olimpista.');
       }
-    });
-  };
+    };
+
+    fetchInscripciones();
+  }, [ciOlimpista]);
 
   const handleRegistrar = async () => {
     if (!ciOlimpista) {
@@ -138,18 +142,19 @@ export default function FormAreaPart() {
       return;
     }
 
-    const nivelesSeleccionadosIds = Object.values(nivelesSeleccionados)
+    const nivelesNuevos = Object.values(nivelesSeleccionados)
       .flat()
+      .filter((nivel) => !nivel.registrado)
       .map((nivel) => nivel.id_nivel);
 
-    if (nivelesSeleccionadosIds.length === 0) {
-      alert('Por favor, seleccione al menos un nivel.');
+    if (nivelesNuevos.length === 0) {
+      alert('No hay nuevos niveles para registrar.');
       return;
     }
 
     const payload = {
       ci: ciOlimpista,
-      niveles: nivelesSeleccionadosIds,
+      niveles: nivelesNuevos,
       ci_tutor: ciTutor || null,
     };
 
@@ -164,12 +169,137 @@ export default function FormAreaPart() {
 
       alert('Registro exitoso');
       console.log('Response:', response.data);
+
+      const inscripciones = await axios.get(
+        `${API_URL}/olimpista/${ciOlimpista}/inscripciones`,
+      );
+      const nivelesPorArea = inscripciones.data.inscripciones.reduce(
+        (
+          acc: Record<
+            string,
+            { id_nivel: number; nombre_nivel: string; registrado: boolean }[]
+          >,
+          inscripcion: any,
+        ) => {
+          const areaNombre = inscripcion.nivel.asociaciones[0].area.nombre;
+          const nivel = {
+            id_nivel: inscripcion.nivel.id_nivel,
+            nombre_nivel: inscripcion.nivel.nombre,
+            registrado: true,
+          };
+
+          if (!acc[areaNombre]) {
+            acc[areaNombre] = [];
+          }
+
+          acc[areaNombre].push(nivel);
+          return acc;
+        },
+        {},
+      );
+      setNivelesSeleccionados(nivelesPorArea); 
     } catch (err) {
       console.error('Error:', err);
       setError('Error al registrar la inscripción.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const [nivelesSeleccionadosTemp, setNivelesSeleccionadosTemp] = useState<
+    { id_nivel: number; nombre_nivel: string; registrado?: boolean }[]
+  >([]);
+
+  const handleNivelToggle = (nivel: {
+    id_nivel: number;
+    nombre_nivel: string;
+    registrado?: boolean;
+  }) => {
+    if (nivel.registrado) {
+      alert('No puedes deseleccionar un nivel ya registrado.');
+      return;
+    }
+
+    setNivelesSeleccionadosTemp((prev) => {
+      const nivelYaSeleccionado = prev.some(
+        (n) => n.id_nivel === nivel.id_nivel,
+      );
+      if (nivelYaSeleccionado) {
+        return prev.filter((n) => n.id_nivel !== nivel.id_nivel);
+      } else {
+        return [...prev, nivel];
+      }
+    });
+  };
+
+  const handleModalAceptar = () => {
+    if (selectedArea) {
+      const nivelesRegistrados = nivelesSeleccionadosTemp.filter(
+        (nivel) => nivel.registrado,
+      );
+
+      if (
+        nivelesRegistrados.length > 0 &&
+        nivelesRegistrados.length === nivelesSeleccionadosTemp.length
+      ) {
+        alert('No puedes deseleccionar un área completamente registrada.');
+        setModalVisible(false);
+        return;
+      }
+
+      setNivelesSeleccionados((prev) => {
+        if (nivelesSeleccionadosTemp.length === 0) {
+          const nivelesRegistrados = nivelesSeleccionados[selectedArea]?.filter(
+            (n) => n.registrado,
+          );
+          if (nivelesRegistrados?.length > 0) {
+            return {
+              ...prev,
+              [selectedArea]: nivelesRegistrados,
+            };
+          } else {
+            const { [selectedArea]: _, ...rest } = prev;
+            return rest;
+          }
+        } else {
+          return {
+            ...prev,
+            [selectedArea]: nivelesSeleccionadosTemp,
+          };
+        }
+      });
+    }
+    setModalVisible(false);
+  };
+  const handleModalCancelar = () => {
+    setModalVisible(false);
+    setNivelesSeleccionadosTemp([]);
+  };
+
+  const handleAreaClick = (area: string) => {
+    const disponibles = areasDisponibles[area] || [];
+    const seleccionados = nivelesSeleccionados[area] || [];
+
+    if (seleccionados.length === 0 && limiteAlcanzado) {
+      alert('Ya has alcanzado el límite de áreas permitidas.');
+      return;
+    }
+
+    const nivelesCombinados = disponibles.map((nivel) => {
+      const nivelPrevio = seleccionados.find(
+        (n) => n.id_nivel === nivel.id_nivel,
+      );
+      return {
+        ...nivel,
+        registrado: nivelPrevio?.registrado || false,
+      };
+    });
+
+    const nivelesRegistrados = nivelesCombinados.filter((n) => n.registrado);
+
+    setSelectedArea(area);
+    setNivelesSeleccionadosTemp(nivelesRegistrados); 
+    setModalVisible(true);
   };
 
   return (
@@ -186,7 +316,7 @@ export default function FormAreaPart() {
             className="w-full"
             register={register}
             validationRules={{
-              required: 'La cédula es obligatoria',
+              required: 'Debe ingresar la cédula del olimpista',
               pattern: {
                 value: /^(?! )[0-9]+(?<! )$/,
                 message: 'Solo se permiten números y no puede haber espacios',
@@ -242,7 +372,7 @@ export default function FormAreaPart() {
             <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <div
                 className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-700"
-                onClick={() => setModalVisible(false)}
+                onClick={handleModalCancelar}
               >
                 <IconClose className="w-6 h-6" />
               </div>
@@ -250,23 +380,45 @@ export default function FormAreaPart() {
               <h3 className="text-lg font-semibold mb-4">
                 Seleccione un nivel para el área: {selectedArea}
               </h3>
-              <ul>
+              <div className="grid grid-cols-2 gap-4">
                 {areasDisponibles[selectedArea].map((nivel) => (
-                  <li
+                  <div
                     key={nivel.id_nivel}
-                    className={`cursor-pointer p-2 rounded ${
-                      nivelesSeleccionados[selectedArea]?.some(
+                    className={`flex justify-center p-3 rounded-lg cursor-pointer border ${
+                      nivelesSeleccionadosTemp.some(
                         (n) => n.id_nivel === nivel.id_nivel,
                       )
-                        ? 'bg-gray-300 text-gray-500'
-                        : 'hover:bg-gray-200'
+                        ? nivel.registrado
+                          ? 'bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
+                          : 'bg-primary text-white border-primary'
+                        : 'bg-gray-100 text-gray-700 border-gray-300'
                     }`}
-                    onClick={() => handleNivelSeleccionado(selectedArea, nivel)}
+                    onClick={() => {
+                      if (nivel.registrado) {
+                        alert(
+                          'Este nivel ya está registrado y no se puede deseleccionar.',
+                        );
+                      } else {
+                        handleNivelToggle(nivel);
+                      }
+                    }}
                   >
-                    {nivel.nombre_nivel}
-                  </li>
+                    <p>{nivel.nombre_nivel}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
+              <div className="flex justify-end gap-4 mt-4">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={handleModalCancelar}
+                />
+                <Button
+                  label="Aceptar"
+                  variantColor="variant1"
+                  onClick={handleModalAceptar}
+                />
+              </div>
             </div>
           </div>
         )}
