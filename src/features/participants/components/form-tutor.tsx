@@ -1,23 +1,29 @@
-import { Button, InputText, Modal, RadioGroup } from '../../../components';
-import { useState } from 'react';
+import { Button, InputText, Modal} from '../../../components';
+import { useState, useEffect } from 'react';
 import { FormData } from '../interfaces/form-tutor';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
+import { getData } from '@/services/api-service';
 
 type FormTutorProps = {
   viewTB: boolean;
 };
+
 export default function FormTutor({ viewTB }: FormTutorProps) {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {},
   });
 
+  const ciValue = watch('ci');
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
@@ -60,6 +66,33 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
 
     setShowModal(false);
   };
+
+  useEffect(() => {
+    const verificarCI = async () => {
+      if (!ciValue || String(ciValue).length < 4) {
+        if (errors.ci?.type === 'manual') {
+          clearErrors('ci');
+        }
+        return;
+      }
+  
+      try {
+        const response = await getData(`/tutores/cedula/${ciValue}`);
+        if (response) {
+          setError('ci', {
+            type: 'manual',
+            message: 'Este número de cédula ya está registrado',
+          });
+        }
+      } catch (error) {
+        if (errors.ci?.type === 'manual') {
+          clearErrors('ci');
+        }
+      }
+    };
+  
+    verificarCI();
+  }, [ciValue, setError, clearErrors]);  
 
   return (
     <div className="flex flex-col w-full">
@@ -176,8 +209,8 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 <Button
                   type="submit"
                   label="Registrar"
-                  disabled={!isValid}
-                  variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
+                  disabled={!isValid || !!errors.ci}
+                  variantColor={!isValid || !!errors.ci ? 'variantDesactivate' : 'variant1'}
                 />
               </>
             ) : (
