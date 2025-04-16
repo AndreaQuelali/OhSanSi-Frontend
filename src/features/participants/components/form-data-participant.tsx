@@ -22,7 +22,7 @@ export default function FormDataPart() {
     clearErrors,
     formState: { errors, isValid },
     watch,
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({ mode: 'onChange' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const { data: grados, loading } = useFetchData<Grado[]>('/grados');
