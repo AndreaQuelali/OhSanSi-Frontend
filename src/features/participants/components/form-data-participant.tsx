@@ -82,7 +82,7 @@ export default function FormDataPart() {
     }
   };
 
-  const checkEmail = async () => {
+  /* const checkEmail = async () => {
     if (!email) {
       clearErrors('olimpista.email'); // Limpiar el error si el campo está vacío
       return;
@@ -101,7 +101,7 @@ export default function FormDataPart() {
     } catch (error) {
       console.error('Error al verificar el correo:', error);
     }
-  };
+  };*/
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -323,7 +323,6 @@ export default function FormDataPart() {
                     /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
                   message: 'Correo electrónico no válido',
                 },
-                onBlur: checkEmail,
               }}
               errors={errors}
             />
