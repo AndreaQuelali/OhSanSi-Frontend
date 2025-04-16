@@ -24,3 +24,9 @@ export type Provincia = {
   nombre_provincia: string;
   id_departamento: number;
 };
+
+export type UnidadEducativa = {
+  id_colegio: number;
+  nombre_colegio: string;
+  id_provincia: number;
+};
