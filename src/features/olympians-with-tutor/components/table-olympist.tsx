@@ -5,19 +5,7 @@ import AddIcon from '@/components/icons/icon-add';
 import IconDelete from '@/components/icons/icon-delete';
 import { Button } from '@/components';
 import ModalAddOlympist from './modal-add-olympist';
-
-interface OlympianRow {
-  id: number;
-  ci: string;
-  nombres: string;
-  apellidos: string;
-  departamento: string;
-  provincia: string;
-  unidadEducativa: string;
-  ciTutor: string;
-  area: string;
-  categoria: string;
-}
+import { OlympianRow } from '../interfaces/list-olympist';
 
 const simulatedData: OlympianRow[] = [
   {

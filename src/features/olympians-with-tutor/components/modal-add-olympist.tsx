@@ -58,12 +58,11 @@ export default function ModalAddOlympist({
         ? prev.filter((n) => n.id_nivel !== nivel.id_nivel)
         : [...prev, nivel];
 
-      // Si no quedan niveles seleccionados, elimina el área
       if (updatedNiveles.length === 0 && selectedArea) {
         setSelectedAreas((prevAreas) =>
           prevAreas.filter((id) => id !== selectedArea.id_area),
         );
-        setSelectedArea(null); // Cierra el modal si no hay niveles seleccionados
+        setSelectedArea(null);
       }
 
       return updatedNiveles;
@@ -101,9 +100,6 @@ export default function ModalAddOlympist({
         </div>
 
         <div className="flex flex-col">
-          <h3 className="text-primary text-lg font-semibold mb-2">
-            Datos del Olimpista
-          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <InputText
               label="Número de cédula de identidad"
@@ -208,7 +204,6 @@ export default function ModalAddOlympist({
             />
           </div>
         </div>
-        <h3 className="text-primary text-lg font-semibold">Datos Académicos</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Dropdown
