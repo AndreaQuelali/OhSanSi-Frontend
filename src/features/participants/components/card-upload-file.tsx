@@ -50,14 +50,14 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(({ fileName, setFileN
         }}
         onDragLeave={() => setDragActive(false)}
         className={`flex flex-col items-center justify-center p-6 border-2 ${
-          dragActive ? "border-secondary2" : "border-neutral2"
+          dragActive ? "border-secondary2 bg-secondary2/25" : "border-neutral2 bg-transparent"
         } border-dashed rounded-xl cursor-pointer transition duration-200`}
       >
         <div className="flex flex-row items-center gap-5">
           <div>
             {fileName ? <IconFile /> : <IconNoFile />}
           </div>
-          <div>
+          <div className="mr-2">
             <p className="subtitle-md text-onBack">
               {fileName ? fileName : "Ningún archivo seleccionado"}
             </p>

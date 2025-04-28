@@ -33,22 +33,18 @@ export default function FormDataExcel() {
               setFileName={setFileName}
               ref={inputRef}
             />
-            <div className="flex flex-row items-center justify-start mt-1">
-              <div>
-                <IconDownload classname="h-5 w-5 mr-2 mt-1"/>
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // coloca aquí para descargar la plantilla Excel
-                  }}
-                  className="text-primary underline body-md hover:text-secondary2 transition"
-                >
-                  Descargar plantilla Excel
-                </button>
-              </div>
-            </div>
+          <div className="flex flex-row items-center justify-start mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                // coloca aquí para descargar la plantilla Excel
+              }}
+              className="flex items-center text-primary underline body-md hover:text-secondary2 transition"
+            >
+              <IconDownload classname="h-5 w-5 mr-0.5" />
+              Descargar plantilla Excel
+            </button>
+          </div>
           </div>
           <div className="flex flex-col w-full md:w-auto">
             {fileName ? (
