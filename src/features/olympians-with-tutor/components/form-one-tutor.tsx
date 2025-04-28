@@ -26,7 +26,13 @@ export default function FormOneTutor() {
           placeholder="Ingresar cédula de identidad"
           register={register}
           errors={errors}
-          validationRules={{ required: 'Este campo es obligatorio' }}
+          validationRules={{
+            required: 'Este campo es obligatorio',
+            pattern: {
+              value: /^[0-9]+$/,
+              message: 'Solo se permiten números',
+            },
+          }}
         />
         <InputText
           label="Nombre(s)"
@@ -36,7 +42,14 @@ export default function FormOneTutor() {
           placeholder="Ingresar nombres"
           register={register}
           errors={errors}
-          validationRules={{ required: 'Este campo es obligatorio' }}
+          validationRules={{
+            required: 'Este campo es obligatorio',
+            pattern: {
+              value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/,
+              message:
+                'Solo se permiten letras y un espacio entre palabras. No se permiten espacios al inicio o al final.',
+            },
+          }}
         />
         <InputText
           label="Apellido(s)"
@@ -46,7 +59,14 @@ export default function FormOneTutor() {
           placeholder="Ingresar apellidos"
           register={register}
           errors={errors}
-          validationRules={{ required: 'Este campo es obligatorio' }}
+          validationRules={{
+            required: 'Este campo es obligatorio',
+            pattern: {
+              value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/,
+              message:
+                'Solo se permiten letras y un espacio entre palabras. No se permiten espacios al inicio o al final.',
+            },
+          }}
         />
       </section>
       <section
@@ -64,8 +84,8 @@ export default function FormOneTutor() {
           validationRules={{
             required: 'Este campo es obligatorio',
             pattern: {
-              value: /^[0-9]+$/,
-              message: 'Solo se permiten números',
+              value: /^[0-9]{8}$/,
+              message: 'El número de celular debe tener exactamente 8 dígitos',
             },
           }}
         />
@@ -94,6 +114,7 @@ export default function FormOneTutor() {
               <input
                 type="radio"
                 value="No"
+                defaultChecked
                 {...register('tutorAcademico', {
                   required: 'Este campo es obligatorio',
                 })}

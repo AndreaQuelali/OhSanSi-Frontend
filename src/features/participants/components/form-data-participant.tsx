@@ -22,7 +22,7 @@ export default function FormDataPart() {
     clearErrors,
     formState: { errors, isValid },
     watch,
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({ mode: 'onChange' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const { data: grados, loading } = useFetchData<Grado[]>('/grados');
@@ -82,7 +82,7 @@ export default function FormDataPart() {
     }
   };
 
-  const checkEmail = async () => {
+  /* const checkEmail = async () => {
     if (!email) {
       clearErrors('olimpista.email'); // Limpiar el error si el campo está vacío
       return;
@@ -101,7 +101,7 @@ export default function FormDataPart() {
     } catch (error) {
       console.error('Error al verificar el correo:', error);
     }
-  };
+  };*/
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -302,8 +302,8 @@ export default function FormDataPart() {
                       today.getDate() >= birthDate.getDate());
                   const exactAge = hasBirthdayPassed ? age : age - 1;
                   return (
-                    (exactAge >= 6 && exactAge <= 20) ||
-                    'Debe tener entre 6 y 20 años'
+                    (exactAge >= 6 && exactAge <= 18) ||
+                    'Debe tener entre 6 y 18 años'
                   );
                 },
               }}
@@ -323,7 +323,6 @@ export default function FormDataPart() {
                     /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
                   message: 'Correo electrónico no válido',
                 },
-                onBlur: checkEmail,
               }}
               errors={errors}
             />

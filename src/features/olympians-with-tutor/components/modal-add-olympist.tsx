@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { InputText } from '@/components/ui/input';
-import { Button, Dropdown } from '@/components';
+import { Button, ButtonIcon, Dropdown } from '@/components';
 import { useForm } from 'react-hook-form';
 import IconClose from '@/components/icons/icon-close';
-
+import { API_URL } from '@/config/api-config';
+import axios from 'axios';
+import CloseIcon from '@/components/icons/close';
 interface Nivel {
   id_nivel: number;
   nombre_nivel: string;
@@ -36,17 +38,39 @@ const areasSimuladas: Area[] = [
 export default function ModalAddOlympist({
   isOpen,
   onClose,
+  tutor,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  tutor: boolean;
 }) {
   const {
     register,
     formState: { errors },
+    setError,
+    clearErrors,
+    watch,
   } = useForm({ mode: 'onBlur' });
   const [selectedAreas, setSelectedAreas] = useState<number[]>([]);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedNiveles, setSelectedNiveles] = useState<Nivel[]>([]);
+  const citutor = watch('olimpista.citutor');
+  const checkCiTutor = async () => {
+    if (!citutor) {
+      clearErrors('olimpista.citutor'); // Limpiar el error si el campo está vacío
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API_URL}/tutores/cedula/${citutor}`);
+      console.log('Se encontro', response.data);
+    } catch (error) {
+      setError('olimpista.citutor', {
+        type: 'manual',
+        message: 'Este ci de tutor no está registrado.',
+      });
+    }
+  };
 
   const handleAreaClick = (area: Area) => {
     setSelectedArea(area);
@@ -58,12 +82,11 @@ export default function ModalAddOlympist({
         ? prev.filter((n) => n.id_nivel !== nivel.id_nivel)
         : [...prev, nivel];
 
-      // Si no quedan niveles seleccionados, elimina el área
       if (updatedNiveles.length === 0 && selectedArea) {
         setSelectedAreas((prevAreas) =>
           prevAreas.filter((id) => id !== selectedArea.id_area),
         );
-        setSelectedArea(null); // Cierra el modal si no hay niveles seleccionados
+        setSelectedArea(null);
       }
 
       return updatedNiveles;
@@ -87,28 +110,32 @@ export default function ModalAddOlympist({
 
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-4xl p-6 relative">
+      <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-4xl py-6 px-10 relative">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold">
-            Agregar Olimpista
-          </h2>
+          <div className="w-full flex flex-col items-center">
+            <h2 className="text-primary headline-sm mt-5 mb-2">
+              Agregar Olimpista
+            </h2>
+          </div>
+
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
           >
-            <IconClose className="w-6 h-6" />
+            <ButtonIcon
+              icon={CloseIcon}
+              onClick={onClose}
+              variantColor="variant2"
+            />
           </button>
         </div>
 
         <div className="flex flex-col">
-          <h3 className="text-primary text-lg font-semibold mb-2">
-            Datos del Olimpista
-          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <InputText
-              label="Número de cédula de identidad"
+              label="Cédula de identidad"
               name="olimpista.ci"
-              placeholder="Ingresar número de cédula de identidad"
+              placeholder="Ingresar cédula de identidad"
               className="w-full "
               register={register}
               validationRules={{
@@ -162,23 +189,7 @@ export default function ModalAddOlympist({
               }}
               errors={errors}
             />
-            <InputText
-              label="Correo electrónico"
-              name="olimpista.email"
-              placeholder="luciaquiroz@gmail.com"
-              type="email"
-              className="w-full"
-              register={register}
-              validationRules={{
-                required: 'El correo electrónico es obligatorio',
-                pattern: {
-                  value:
-                    /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
-                  message: 'Correo electrónico no válido',
-                },
-              }}
-              errors={errors}
-            />
+
             <InputText
               label="Fecha de nacimiento"
               name="olimpista.birthday"
@@ -199,18 +210,59 @@ export default function ModalAddOlympist({
                       today.getDate() >= birthDate.getDate());
                   const exactAge = hasBirthdayPassed ? age : age - 1;
                   return (
-                    (exactAge >= 6 && exactAge <= 20) ||
-                    'Debe tener entre 6 y 20 años'
+                    (exactAge >= 6 && exactAge <= 18) ||
+                    'Debe tener entre 6 y 18 años'
                   );
                 },
               }}
               errors={errors}
             />
+            <InputText
+              label="Correo electrónico"
+              name="olimpista.email"
+              placeholder="luciaquiroz@gmail.com"
+              type="email"
+              className="w-full"
+              register={register}
+              validationRules={{
+                required: 'El correo electrónico es obligatorio',
+                pattern: {
+                  value:
+                    /^(?!.*\.\.)(?!.*\.@)(?!^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+                  message: 'Correo electrónico no válido',
+                },
+              }}
+              errors={errors}
+            />
+            {tutor && (
+              <InputText
+                label="Cédula de identidad del tutor"
+                name="olimpista.citutor"
+                placeholder="Ingresar ci del tutor"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El número de cédula es obligatorio',
+                  minLength: {
+                    value: 4,
+                    message: 'Debe tener al menos 4 dígitos',
+                  },
+                  maxLength: {
+                    value: 8,
+                    message: 'No puede tener más de 8 dígitos',
+                  },
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Solo se permiten números',
+                  },
+                  onBlur: checkCiTutor,
+                }}
+                errors={errors}
+              />
+            )}
           </div>
         </div>
-        <h3 className="text-primary text-lg font-semibold">Datos Académicos</h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <Dropdown
             label="Departamento"
             name="olimpista.dep"

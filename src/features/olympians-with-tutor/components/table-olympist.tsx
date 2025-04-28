@@ -5,19 +5,8 @@ import AddIcon from '@/components/icons/icon-add';
 import IconDelete from '@/components/icons/icon-delete';
 import { Button } from '@/components';
 import ModalAddOlympist from './modal-add-olympist';
+import { OlympianRow } from '../interfaces/list-olympist';
 
-interface OlympianRow {
-  id: number;
-  ci: string;
-  nombres: string;
-  apellidos: string;
-  departamento: string;
-  provincia: string;
-  unidadEducativa: string;
-  ciTutor: string;
-  area: string;
-  categoria: string;
-}
 
 const simulatedData: OlympianRow[] = [
   {
@@ -82,7 +71,7 @@ const simulatedData: OlympianRow[] = [
   },
 ];
 
-const TableOlympians: React.FC = () => {
+const TableOlympians: React.FC<{ tutor: boolean }> = ({ tutor }) => {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 3;
@@ -172,12 +161,20 @@ const TableOlympians: React.FC = () => {
       sortable: true,
     },
     {
-      name: 'Categoría/Niveles',
+      name: 'Nivel/Categoría',
       selector: (row) => row.categoria,
       sortable: true,
     },
+    ...(tutor
+      ? [
+          {
+            name: 'CI Tutor',
+            selector: (row: OlympianRow) => row.ciTutor || '',
+            sortable: true,
+          },
+        ]
+      : []),
   ];
-
   return (
     <div className="w-full flex flex-col items-center justify-center my-6">
       <DataTable
@@ -239,7 +236,11 @@ const TableOlympians: React.FC = () => {
           className="py-2 px-8"
         />
       </div>
-      <ModalAddOlympist isOpen={isModalOpen} onClose={handleCloseModal} />
+      <ModalAddOlympist
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        tutor={tutor}
+      />
     </div>
   );
 };

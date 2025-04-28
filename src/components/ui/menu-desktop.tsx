@@ -32,6 +32,9 @@ export default function DesktopMenu({
           { label: 'Registro Olimpista', path: '/register-olimpists' },
           { label: 'Registro Tutor', path: '/register-tutor' },
           { label: 'Registro de Áreas', path: '/register-selected-areas' },
+          { label: 'Registro Excel', path: '/register-data-excel' },
+          { label: 'Registro Lista-Tutor', path: '/register-list-one-tutor' },
+          { label: 'Registro Lista-Tutores', path: '/register-list-tutors' },
         ]}
       />
       <li
