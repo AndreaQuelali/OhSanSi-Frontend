@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { Button, InputText } from '@/components';
@@ -7,14 +7,21 @@ import CardArea from './card-area';
 import IconClose from '@/components/icons/icon-close';
 import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
 import { formattedDate } from '@/utils/date';
+import { debounce } from 'lodash';
 
 export default function FormAreaPart() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid: formFieldsValid }, 
     watch,
-  } = useForm({ mode: 'onChange' });
+  } = useForm({
+    mode: 'all', 
+    defaultValues: {
+      'olimpista.ci': '',
+      'tutor.ci': '',
+    },
+  });
 
   const [areasDisponibles, setAreasDisponibles] = useState<
     Record<
@@ -30,8 +37,10 @@ export default function FormAreaPart() {
   >({});
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  const [olimpistaError, setOlimpistaError] = useState<string | null>(null);
+  const [tutorError, setTutorError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formIsValid, setFormIsValid] = useState(false);
 
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
@@ -49,25 +58,26 @@ export default function FormAreaPart() {
   const limiteAlcanzado =
     Object.keys(nivelesSeleccionados).length >= maxCategorias;
 
-  useEffect(() => {
-    const fetchAreasDisponibles = async () => {
-      if (!ciOlimpista) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFetchData = useCallback(
+    debounce(async (ci: string) => {
+      if (!ci) {
         setAreasDisponibles({});
         setNivelesSeleccionados({});
-        setError(null);
+        setOlimpistaError(null);
         return;
       }
 
       setLoading(true);
-      setError(null);
+      setOlimpistaError(null);
       try {
         const response = await axios.get(
-          `${API_URL}/olimpistas/${ciOlimpista}/areas-niveles`,
+          `${API_URL}/olimpistas/${ci}/areas-niveles`,
         );
 
         if (!response.data || response.data.length === 0) {
           setAreasDisponibles({});
-          setError('No se encontró un olimpista con esa cédula.');
+          setOlimpistaError('No se encontró un olimpista con esa cédula.');
           return;
         }
 
@@ -92,32 +102,44 @@ export default function FormAreaPart() {
         );
 
         setAreasDisponibles(transformedData);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        setAreasDisponibles({});
+        setOlimpistaError('No se encontró un olimpista con esa cédula.');
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchAreasDisponibles();
-  }, [ciOlimpista]);
+    }, 800),
+    [],
+  );
 
   useEffect(() => {
-    const fetchInscripciones = async () => {
-      if (!ciOlimpista) {
-        // Limpia los estados si no hay un ciOlimpista
+    if (ciOlimpista) {
+      debouncedFetchData(ciOlimpista);
+    } else {
+      setAreasDisponibles({});
+      setNivelesSeleccionados({});
+    }
+
+    return () => {
+      debouncedFetchData.cancel();
+    };
+  }, [ciOlimpista, debouncedFetchData]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFetchInscripciones = useCallback(
+    debounce(async (ci: string) => {
+      if (!ci) {
         setNivelesSeleccionados({});
         return;
       }
 
       try {
         const response = await axios.get(
-          `${API_URL}/olimpista/${ciOlimpista}/inscripciones`,
+          `${API_URL}/olimpista/${ci}/inscripciones`,
         );
 
         if (!response.data || response.data.length === 0) {
           setNivelesSeleccionados({});
-          setError('No se encontró un olimpista con esa cédula.');
           return;
         }
         const inscripciones = response.data.inscripciones;
@@ -151,14 +173,25 @@ export default function FormAreaPart() {
       } catch (err) {
         console.error(err);
       }
-    };
+    }, 800),
+    [],
+  );
 
-    fetchInscripciones();
-  }, [ciOlimpista]);
+  useEffect(() => {
+    if (ciOlimpista) {
+      debouncedFetchInscripciones(ciOlimpista);
+    } else {
+      setNivelesSeleccionados({});
+    }
+    return () => {
+      debouncedFetchInscripciones.cancel();
+    };
+  }, [ciOlimpista, debouncedFetchInscripciones]);
 
   useEffect(() => {
     const verificarTutor = async () => {
       if (!ciTutor) {
+        setTutorError(null);
         return;
       }
 
@@ -168,11 +201,11 @@ export default function FormAreaPart() {
         );
 
         if (response.data.status === 200) {
-          setError('');
+          setTutorError(null);
         }
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 404) {
-          setError('El tutor con esta cédula no existe.');
+          setTutorError('El tutor con esta cédula no existe.');
         } else {
           console.error('Error al verificar el tutor:', err);
         }
@@ -205,8 +238,6 @@ export default function FormAreaPart() {
     };
 
     try {
-      setError(null);
-
       const response = await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
         payload,
@@ -217,7 +248,6 @@ export default function FormAreaPart() {
       window.location.href = '/register-selected-areas';
     } catch (err) {
       console.error('Error:', err);
-      setError('Error al registrar la inscripción.');
     } finally {
       setLoading(false);
     }
@@ -294,7 +324,6 @@ export default function FormAreaPart() {
   };
 
   const handleAreaClick = (area: string) => {
-    const disponibles = areasDisponibles[area] || [];
     const seleccionados = nivelesSeleccionados[area] || [];
 
     if (seleccionados.length === 0 && limiteAlcanzado) {
@@ -302,36 +331,44 @@ export default function FormAreaPart() {
       return;
     }
 
-    const nivelesCombinados = disponibles.map((nivel) => {
-      const nivelPrevio = seleccionados.find(
-        (n) => n.id_nivel === nivel.id_nivel,
-      );
-      return {
-        ...nivel,
-        registrado: nivelPrevio?.registrado || false,
-      };
-    });
-
-    const nivelesRegistrados = nivelesCombinados.filter((n) => n.registrado);
-
     setSelectedArea(area);
-    setNivelesSeleccionadosTemp(nivelesRegistrados);
+    setNivelesSeleccionadosTemp([...seleccionados]);
     setModalVisible(true);
   };
 
-  // Nueva función para verificar si hay nuevos niveles seleccionados
-  const hasNewSelections = () => {
-    return Object.values(nivelesSeleccionados)
-      .flat()
-      .some((nivel) => !nivel.registrado);
-  };
+  useEffect(() => {
+    const checkFormValidity = () => {
+      const hasNewSelections = Object.values(nivelesSeleccionados)
+        .flat()
+        .some((nivel) => !nivel.registrado);
 
-  // Nueva función para verificar si los campos son válidos
-  const isFormValid = () => {
-    const isCiOlimpistaValido = !!ciOlimpista && !errors?.olimpista?.ci;
-    const isCiTutorValido = !ciTutor || !errors?.tutor?.ci;
-    return isCiOlimpistaValido && isCiTutorValido && hasNewSelections();
-  };
+      const hayAreasDisponibles = Object.keys(areasDisponibles).length > 0;
+
+      console.log({
+        formFieldsValid, 
+        hasNewSelections,
+        hayAreasDisponibles,
+        olimpistaError,
+        tutorError,
+      });
+
+      return (
+        formFieldsValid &&
+        !olimpistaError &&
+        !tutorError &&
+        hasNewSelections &&
+        hayAreasDisponibles
+      );
+    };
+
+    setFormIsValid(checkFormValidity());
+  }, [
+    formFieldsValid,
+    nivelesSeleccionados,
+    areasDisponibles,
+    olimpistaError,
+    tutorError,
+  ]);
 
   return (
     <div className="my-6">
@@ -342,37 +379,48 @@ export default function FormAreaPart() {
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
           Registro de Olimpista en una o varias áreas de competencia
         </h2>
-        <section className="grid grid-cols-1 md:grid-cols-2 items-center gap-4 mb-6 mt-10">
-          <InputText
-            label="Cédula de identidad del olimpista"
-            name="olimpista.ci"
-            placeholder="Ingresar ci del olimpista"
-            className="w-full"
-            register={register}
-            validationRules={{
-              required: 'Debe ingresar la cédula del olimpista',
-              pattern: {
-                value: /^(?! )[0-9]+(?<! )$/,
-                message: 'Solo se permiten números y no puede haber espacios',
-              },
-            }}
-            errors={errors}
-          />
-          <InputText
-            label="Cédula de identidad del tutor académico (Opcional)"
-            name="tutor.ci"
-            placeholder="Ingresar ci del tutor académico"
-            className="w-full"
-            register={register}
-            isRequired={false}
-            validationRules={{
-              pattern: {
-                value: /^(?! )[0-9]+(?<! )$/,
-                message: 'Solo se permiten números y no puede haber espacios',
-              },
-            }}
-            errors={errors}
-          />
+        <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-4 mb-6 mt-10">
+          <div className="flex flex-col">
+            <InputText
+              label="Cédula de identidad del olimpista"
+              name="olimpista.ci"
+              placeholder="Ingresar ci del olimpista"
+              className="w-full"
+              register={register}
+              validationRules={{
+                required: 'Debe ingresar la cédula del olimpista.',
+                pattern: {
+                  value: /^(?! )[0-9]+(?<! )$/,
+                  message:
+                    'Solo se permiten números y no puede haber espacios.',
+                },
+              }}
+              errors={errors}
+            />
+          </div>
+          <div className="flex flex-col">
+            <InputText
+              label="Cédula de identidad del tutor académico (Opcional)"
+              name="tutor.ci"
+              placeholder="Ingresar ci del tutor académico"
+              className="w-full"
+              register={register}
+              isRequired={false}
+              validationRules={{
+                pattern: {
+                  value: /^(?! )[0-9]+(?<! )$/,
+                  message:
+                    'Solo se permiten números y no puede haber espacios.',
+                },
+              }}
+              errors={errors}
+            />
+            {tutorError && (
+              <p className="text-error subtitle-sm text-wrap mt-[-22px]">
+                {tutorError}
+              </p>
+            )}
+          </div>
         </section>
         <section className="min-h-[300px]">
           <h2 className="text-primary subtitle-lg text-center font-bold mb-6 md:text-left sm:text-left headline-lg">
@@ -380,8 +428,8 @@ export default function FormAreaPart() {
           </h2>
           {loading ? (
             <p className="text-center">Cargando áreas disponibles...</p>
-          ) : error ? (
-            <p className="text-red-500 text-center">{error}</p>
+          ) : olimpistaError ? (
+            <p className="text-error text-center">{olimpistaError}</p>
           ) : Object.keys(areasDisponibles).length === 0 ? (
             <p className="text-center text-gray-500 mt-4 text-lg font-roboto">
               No hay áreas disponibles aún. Por favor, ingrese la cédula del
@@ -467,8 +515,8 @@ export default function FormAreaPart() {
           <Button
             type="submit"
             label="Registrar"
-            variantColor="variant1"
-            disabled={!isFormValid()}
+            disabled={!formIsValid}
+            variantColor={!formIsValid ? 'variantDesactivate' : 'variant1'}
           />
         </div>
       </form>
