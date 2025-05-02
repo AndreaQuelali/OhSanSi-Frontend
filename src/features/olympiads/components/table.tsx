@@ -1,4 +1,3 @@
-import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CustomPagination } from '@/components';
 

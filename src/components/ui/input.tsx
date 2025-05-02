@@ -37,7 +37,8 @@ export const InputText = <T extends FieldValues>({
           name
             .split('.')
             .reduce(
-              (acc: Record<string, any>, key: string) => acc?.[key],
+              (acc: Record<string, unknown>, key: string) =>
+                acc && typeof acc === 'object' ? (acc as Record<string, unknown>)[key] : undefined,
               errors,
             ) && (
             <span className="text-error subtitle-sm text-wrap text-center">
@@ -45,7 +46,8 @@ export const InputText = <T extends FieldValues>({
                 name
                   .split('.')
                   .reduce(
-                    (acc: Record<string, any>, key: string) => acc?.[key],
+                    (acc: Record<string, unknown>, key: string) =>
+                      acc && typeof acc === 'object' ? (acc as Record<string, unknown>)[key] : undefined,
                     errors,
                   )?.message,
               )}

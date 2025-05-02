@@ -35,7 +35,7 @@ export default function FormLevelsGrades() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
-    { level: string; grade: string }[]
+    { id: number; area: string; level: string; grade: string }[]
   >([]);
 
   const { data: levels } = useFetchData<{

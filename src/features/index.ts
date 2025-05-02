@@ -19,7 +19,6 @@ export * from './participants/components/form-data-excel';
 export * from './participants/components/form-data-participant';
 export * from './participants/components/form-tutor';
 export * from './participants/components/number';
-export * from './participants/index';
 export * from './participants/interfaces/register-participants.d';
 export * from './participants/pages/register-data-excel';
 export * from './participants/pages/register-data-participant';
