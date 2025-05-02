@@ -15,19 +15,31 @@ export default function CardArea({
   onClick,
   nivelesSeleccionados,
 }: AreaCardProps) {
+  const isSelected = nivelesSeleccionados.length > 0;
+
   return (
     <div
-      className="relative flex flex-col justify-center items-center rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 shadow-lg border border-gray-100 w-full"
+      className={`relative flex flex-col justify-center items-center rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 shadow-lg border ${
+        isSelected
+          ? 'bg-primary text-white border-primary'
+          : 'bg-gray-100 border-gray-300'
+      }`}
       onClick={onClick}
     >
-      <div className="absolute top-0 left-0 w-full h-3 bg-secondary2 rounded-t-3xl"></div>
-      <div className="flex flex-col items-center justify-center mt-6 p-4">
-        <h3 className="text-primary font-semibold text-lg">{area}</h3>
-        {nivelesSeleccionados.length > 0 && (
-          <p className="mt-2 text-center text-gray-700">
-            {nivelesSeleccionados.map((nivel) => nivel.nombre_nivel).join(', ')}
-          </p>
-        )}
+      {isSelected && (
+        <div className="absolute top-0 left-0 w-full h-full bg-primary flex flex-col items-center justify-center z-10">
+          <p className="text-white subtitle-md font-semibold">Área Seleccionada</p>
+          <div className="flex flex-wrap justify-center mt-2">
+            {nivelesSeleccionados.map((nivel) => (
+              <span key={nivel.id_nivel} className="text-sm text-gray-200 mx-1">
+                {nivel.nombre_nivel}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col items-center justify-center p-6 bg-surface rounded-lg w-full h-full">
+        <h3 className="text-lg font-semibold">{area}</h3>
       </div>
     </div>
   );
