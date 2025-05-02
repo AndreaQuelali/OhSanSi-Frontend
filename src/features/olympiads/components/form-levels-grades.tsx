@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router';
 import { Table } from './table';
 
 interface FormData {
-  area: string;
   level: string;
   gmin: string;
   gmax: string;
@@ -25,13 +24,12 @@ export default function FormLevelsGrades() {
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
-      area: '',
       level: '',
       gmin: '',
       gmax: '',
     },
   });
-  const currentYear = new Date().getFullYear();
+
   const navigate = useNavigate();
   const minGrade = watch('gmin');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,16 +38,6 @@ export default function FormLevelsGrades() {
     { id: number; area: string; level: string; grade: string }[]
   >([]);
 
-  const { data: olympiads } = useFetchData<
-    {
-      id_olimpiada: number;
-      gestion: number;
-    }[]
-  >(`${API_URL}/olimpiadas`);
-
-  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
-    `${API_URL}/areas`,
-  );
   const { data: levels } = useFetchData<{
     niveles: { id_nivel: number; nombre: string }[];
   }>(`${API_URL}/get-niveles`);
@@ -73,79 +61,61 @@ export default function FormLevelsGrades() {
     }
   }, [minGrade]);
 
-  useEffect(() => {
-    const olympiadId = olympiads?.find(
-      (o) => o.gestion === currentYear,
-    )?.id_olimpiada;
-
-    if (olympiadId) {
-      fetchTableData(olympiadId);
-    }
-  }, [olympiads, currentYear]);
-
-  const fetchTableData = async (olympiadId: number) => {
+  const fetchTableData = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/estructura-olimpiada/${olympiadId}`,
-      );
-      const estructura = response.data.estructura;
+      const response = await axios.get(`${API_URL}/grados-niveles`);
+      const levelstable = response.data;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formattedData = estructura.flatMap((area: any, areaIndex: number) =>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        area.niveles.map((nivel: any, nivelIndex: number) => ({
-          id: areaIndex * 100 + nivelIndex, // Generate a unique id
-          area: area.nombre_area,
-          level: nivel.nombre_nivel,
-          grade:
-            nivel.grados.length > 1
-              ? `${nivel.grados[0].nombre_grado} a ${
-                  nivel.grados[nivel.grados.length - 1].nombre_grado
-                }`
-              : nivel.grados[0].nombre_grado,
-        })),
-      );
+      const formatted = levelstable.map((nivel: any) => ({
+        level: nivel.nombre_nivel,
+        grade:
+          nivel.grados.length > 1
+            ? `${nivel.grados[0].nombre_grado} a ${
+                nivel.grados[nivel.grados.length - 1].nombre_grado
+              }`
+            : nivel.grados[0].nombre_grado,
+      }));
 
-      setTableData(formattedData);
+      setTableData(formatted);
     } catch (error) {
-      console.error('Error al cargar la estructura de la olimpiada:', error);
+      console.error('Error al obtener los niveles con sus grados:', error);
     }
   };
 
-  const handleRegister = async (data: FormData) => {
-    console.log('Datos enviados:', data);
+  useEffect(() => {
+    fetchTableData();
+  }, []);
 
-    const areaId = Number(data.area);
+  const handleRegister = async (data: FormData) => {
     const levelId = levels?.niveles.find(
       (level) => level.id_nivel.toString() === data.level,
     )?.id_nivel;
-    const olympiadId = olympiads?.find(
-      (o) => o.gestion === currentYear,
-    )?.id_olimpiada;
+    const gminId = Number(data.gmin);
+    const gmaxId = data.gmax ? Number(data.gmax) : Number(data.gmin);
 
-    const grados = [Number(data.gmin)];
-    if (data.gmax) {
-      grados.push(Number(data.gmax));
-    }
-
-    if (!levelId || !olympiadId) {
+    if (!levelId) {
       alert('Datos inválidos');
       return;
     }
 
-    const payload = [
-      {
-        id_olimpiada: olympiadId,
-        id_area: areaId,
-        id_nivel: levelId,
-        grados,
-      },
-    ];
+    const response = await axios.get(`${API_URL}/grados-niveles`);
+    const alreadyRegistered = response.data.some(
+      (item: any) => item.id_nivel === levelId,
+    );
+    if (alreadyRegistered) {
+      alert('Este nivel ya se encuentra registrado');
+      return;
+    }
 
+    const payload = {
+      id_nivel: levelId,
+      id_grado_min: gminId,
+      id_grado_max: gmaxId,
+    };
     setIsSubmitting(true);
 
     try {
-      await axios.post(`${API_URL}/niveles`, payload);
+      await axios.post(`${API_URL}/asociar-grados-nivel`, payload);
       alert('Nivel registrado correctamente');
       window.location.reload();
     } catch (error) {
@@ -273,7 +243,7 @@ export default function FormLevelsGrades() {
             </div>
 
             <h2 className="text-primary subtitle-md mt-7 md:mt-5">
-              Niveles/Categorías registradas en Áreas
+              Niveles/Categorías registradas
             </h2>
             <div className="mt-2 md:w-11/12 mx-auto">
               <Table data={tableData} />
