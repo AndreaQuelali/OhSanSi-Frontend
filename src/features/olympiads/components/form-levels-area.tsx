@@ -5,13 +5,12 @@ import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
-import { Table } from './table';
+import { TableLevesArea } from './table-levels-area';
 
 interface FormData {
+  olympiad: string;
   area: string;
   level: string;
-  gmin: string;
-  gmax: string;
 }
 
 export default function FormLevelsArea() {
@@ -25,26 +24,21 @@ export default function FormLevelsArea() {
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
+      olympiad: '',
       area: '',
       level: '',
-      gmin: '',
-      gmax: '',
     },
   });
-  const currentYear = new Date().getFullYear();
+
   const navigate = useNavigate();
-  const minGrade = watch('gmin');
+  const selectedOlympiad = watch('olympiad');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
-    { area: string; level: string; grade: string }[]
+    { olympiad: string; area: string; level: string }[]
   >([]);
-
   const { data: olympiads } = useFetchData<
-    {
-      id_olimpiada: number;
-      gestion: number;
-    }[]
+    { id_olimpiada: number; gestion: number }[]
   >(`${API_URL}/olimpiadas`);
 
   const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
@@ -54,107 +48,67 @@ export default function FormLevelsArea() {
     niveles: { id_nivel: number; nombre: string }[];
   }>(`${API_URL}/get-niveles`);
 
-  const { data: grades } = useFetchData<
-    {
-      id_grado: number;
-      nombre_grado: string;
-    }[]
-  >(`${API_URL}/grados`);
-
-  useEffect(() => {
-    if (minGrade) {
-      trigger('gmax');
-    }
-  }, [minGrade, trigger]);
-
-  useEffect(() => {
-    if (minGrade === '12') {
-      setValue('gmax', '');
-    }
-  }, [minGrade]);
-
-  useEffect(() => {
-    const olympiadId = olympiads?.find(
-      (o) => o.gestion === currentYear,
-    )?.id_olimpiada;
-
-    if (olympiadId) {
-      fetchTableData(olympiadId);
-    }
-  }, [olympiads, currentYear]);
-
-  const fetchTableData = async (olympiadId: number) => {
+  const fetchTableLA = async (olympiadId: number) => {
     try {
       const response = await axios.get(
-        `${API_URL}/estructura-olimpiada/${olympiadId}`,
+        `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
       );
-      const estructura = response.data.estructura;
+      const { gestion, areas } = response.data;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formattedData = estructura.flatMap((area: any, areaIndex: number) =>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        area.niveles.map((nivel: any, nivelIndex: number) => ({
-          id: areaIndex * 100 + nivelIndex, // Generate a unique id
+      const formattedData = areas.flatMap((area: any) =>
+        area.niveles.map((nivel: any) => ({
+          olympiad: gestion,
           area: area.nombre_area,
           level: nivel.nombre_nivel,
-          grade:
-            nivel.grados.length > 1
-              ? `${nivel.grados[0].nombre_grado} a ${
-                  nivel.grados[nivel.grados.length - 1].nombre_grado
-                }`
-              : nivel.grados[0].nombre_grado,
         })),
       );
 
       setTableData(formattedData);
+      console.log(formattedData);
     } catch (error) {
       console.error('Error al cargar la estructura de la olimpiada:', error);
     }
   };
 
+  useEffect(() => {
+    if (selectedOlympiad) {
+      fetchTableLA(Number(selectedOlympiad));
+    }
+  }, [selectedOlympiad]);
+
   const handleRegister = async (data: FormData) => {
     console.log('Datos enviados:', data);
 
     const areaId = Number(data.area);
-    const levelId = levels?.niveles.find(
-      (level) => level.id_nivel.toString() === data.level,
-    )?.id_nivel;
-    const olympiadId = olympiads?.find(
-      (o) => o.gestion === currentYear,
-    )?.id_olimpiada;
+    const levelId = Number(data.level);
+    const olympiadId = Number(data.olympiad);
 
-    const grados = [Number(data.gmin)];
-    if (data.gmax) {
-      grados.push(Number(data.gmax));
-    }
-
-    if (!levelId || !olympiadId) {
+    if (!levelId || !areaId || !olympiadId) {
       alert('Datos inválidos');
       return;
     }
 
-    const payload = [
-      {
-        id_olimpiada: olympiadId,
-        id_area: areaId,
-        id_nivel: levelId,
-        grados,
-      },
-    ];
+    const payload = {
+      id_olimpiada: olympiadId,
+      id_area: areaId,
+      id_categorias: [levelId],
+    };
 
+    console.log(payload);
     setIsSubmitting(true);
 
     try {
-      await axios.post(`${API_URL}/niveles`, payload);
-      alert('Nivel registrado correctamente');
+      await axios.post(`${API_URL}/areas/asociar-niveles`, payload);
+      alert('Nivel y área registrados en la olimpiada correctamente');
       window.location.reload();
     } catch (error) {
       console.error('Error al registrar:', error);
-      alert('Error al registrar el nivel');
+      alert('Error al registrar el nivel y área en olimpiada');
     } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
@@ -169,16 +123,16 @@ export default function FormLevelsArea() {
 
             <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
               <Dropdown
-                name="year"
+                name="olympiad"
                 label="Olimpiada"
                 placeholder="Seleccionar año o gestión"
                 className="w-full"
-                options={[
-                  { id: '2025', name: '2025' },
-                  { id: '2026', name: '2026' },
-                  { id: '2027', name: '2027' },
-                  { id: '2028', name: '2028' },
-                ]}
+                options={
+                  olympiads?.map((olimpiada) => ({
+                    id: olimpiada.id_olimpiada.toString(),
+                    name: olimpiada.gestion,
+                  })) || []
+                }
                 displayKey="name"
                 valueKey="id"
                 register={register}
@@ -247,13 +201,13 @@ export default function FormLevelsArea() {
               Niveles/Categorías registradas en Áreas
             </h2>
             <div className="mt-2 md:w-11/12 mx-auto">
-              <Table data={tableData} />
+              <TableLevesArea data={tableData} />
             </div>
           </div>
         </form>
         {isModalOpen && (
           <Modal
-            text="¿Está seguro de registrar los niveles?"
+            text="¿Está seguro de registrar los niveles en area?"
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleSubmit(handleRegister)}
           />
