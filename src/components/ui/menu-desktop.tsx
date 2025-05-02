@@ -44,7 +44,8 @@ export default function DesktopMenu({
           className={`subtitle-sm p-1 cursor-pointer ${
             location.pathname.startsWith('/register-info') ||
             location.pathname.startsWith('/register-areas') ||
-            location.pathname.startsWith('/register-levels')
+            location.pathname.startsWith('/register-levels') ||
+            location.pathname.startsWith('/register-levels-area')
               ? 'text-red-500 border-b-[1px] border-b-red-500'
               : 'text-primary hover:text-secondary'
           }`}
@@ -98,6 +99,20 @@ export default function DesktopMenu({
                 className="block px-4 py-2 text-sm hover:text-secondary"
               >
                 Registro de Niveles
+              </Link>
+            </li>
+            <li
+              className={`hover:bg-gray-100 ${
+                location.pathname === '/register-levels-area'
+                  ? 'text-red-500'
+                  : 'text-primary'
+              }`}
+            >
+              <Link
+                to="/register-levels-area"
+                className="block px-4 py-2 text-sm hover:text-secondary"
+              >
+                Registro Niveles en Area
               </Link>
             </li>
           </ul>

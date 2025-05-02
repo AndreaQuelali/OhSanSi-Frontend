@@ -14,7 +14,7 @@ interface FormData {
   gmax: string;
 }
 
-export default function FormLevels() {
+export default function FormLevelsGrades() {
   const {
     register,
     handleSubmit,
@@ -164,29 +164,10 @@ export default function FormLevels() {
         >
           <div className="flex flex-col">
             <h1 className="text-center text-primary mb-8 headline-lg">
-              Registro de Niveles/Categorías en Áreas de Olimpiada
+              Registro de Niveles/Categorías
             </h1>
 
-            <div className="grid lg:grid-cols-4 lg:gap-9 mb-6">
-              <Dropdown
-                name="area"
-                label="Área"
-                className="w-full"
-                placeholder="Seleccionar área"
-                options={
-                  areas?.map((area) => ({
-                    id: area.id_area.toString(),
-                    name: area.nombre,
-                  })) || []
-                }
-                displayKey="name"
-                valueKey="id"
-                register={register}
-                validationRules={{
-                  required: 'Debe seleccionar un área',
-                }}
-                errors={errors}
-              />
+            <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
               <Dropdown
                 label="Nivel/Categoría"
                 className="w-full"
