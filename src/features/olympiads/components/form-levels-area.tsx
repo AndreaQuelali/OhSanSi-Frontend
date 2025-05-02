@@ -35,7 +35,7 @@ export default function FormLevelsArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
-    { olympiad: string; area: string; level: string }[]
+    { id: number; olympiad: string; area: string; level: string }[]
   >([]);
   const { data: olympiads } = useFetchData<
     { id_olimpiada: number; gestion: number }[]
@@ -53,27 +53,39 @@ export default function FormLevelsArea() {
       const response = await axios.get(
         `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
       );
-      const { gestion, areas } = response.data;
 
-      const formattedData = areas.flatMap((area: any) =>
-        area.niveles.map((nivel: any) => ({
-          olympiad: gestion,
-          area: area.nombre_area,
-          level: nivel.nombre_nivel,
-        })),
-      );
+      if (response.data && response.data.data) {
+        const { gestion, areas } = response.data.data;
 
-      setTableData(formattedData);
-      console.log(formattedData);
+        if (Array.isArray(areas)) {
+          let idCounter = 1;
+          const formattedData = areas.flatMap((area) =>
+            area.niveles.map((nivel) => ({
+              id: idCounter++,
+              olympiad: gestion,
+              area: area.nombre_area,
+              level: nivel.nombre_nivel,
+            })),
+          );
+
+          setTableData(formattedData);
+          console.log('Datos formateados:', formattedData);
+        } else {
+          console.error("La propiedad 'areas' no es un array:", areas);
+          setTableData([]);
+        }
+      } else {
+        console.error('Estructura de datos inesperada:', response.data);
+        setTableData([]);
+      }
     } catch (error) {
       console.error('Error al cargar la estructura de la olimpiada:', error);
+      setTableData([]);
     }
   };
 
   useEffect(() => {
-    if (selectedOlympiad) {
-      fetchTableLA(Number(selectedOlympiad));
-    }
+    fetchTableLA(Number(selectedOlympiad));
   }, [selectedOlympiad]);
 
   const handleRegister = async (data: FormData) => {
