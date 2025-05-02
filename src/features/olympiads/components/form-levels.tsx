@@ -37,7 +37,7 @@ export default function FormLevels() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
-    { area: string; level: string; grade: string }[]
+    { id: number; area: string; level: string; grade: string }[]
   >([]);
 
   const { data: olympiads } = useFetchData<

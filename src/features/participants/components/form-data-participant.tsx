@@ -41,7 +41,6 @@ export default function FormDataPart() {
   const selectedProv = watch('olimpista.prov');
 
   const ci = watch('olimpista.ci'); // Observar el campo CI
-  const email = watch('olimpista.email'); // Observar el campo Email
   const citutor = watch('olimpista.citutor'); // Observar el campo CI del tutor
 
   const checkCi = async () => {

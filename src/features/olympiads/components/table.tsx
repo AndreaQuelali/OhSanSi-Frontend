@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Button, CustomPagination } from '@/components';
+import { CustomPagination } from '@/components';
 
 interface TableRow {
   id: number;
