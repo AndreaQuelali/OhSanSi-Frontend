@@ -1,6 +1,6 @@
 import { Button, Dropdown, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
@@ -19,8 +19,6 @@ export default function FormLevelsArea() {
     handleSubmit,
     formState: { errors, isValid },
     watch,
-    trigger,
-    setValue,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -48,8 +46,13 @@ export default function FormLevelsArea() {
     niveles: { id_nivel: number; nombre: string }[];
   }>(`${API_URL}/get-niveles`);
 
-  const fetchTableLA = async (olympiadId: number) => {
+  const fetchTableLA = useCallback(async (olympiadId: number) => {
+    if (!olympiadId) {
+      return;
+    }
+
     try {
+      console.log('Fetching data for olympiad:', olympiadId);
       const response = await axios.get(
         `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
       );
@@ -60,7 +63,8 @@ export default function FormLevelsArea() {
         if (Array.isArray(areas)) {
           let idCounter = 1;
           const formattedData = areas.flatMap((area) =>
-            area.niveles.map((nivel) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            area.niveles.map((nivel: { nombre_nivel: any }) => ({
               id: idCounter++,
               olympiad: gestion,
               area: area.nombre_area,
@@ -69,7 +73,10 @@ export default function FormLevelsArea() {
           );
 
           setTableData(formattedData);
-          console.log('Datos formateados:', formattedData);
+          console.log(
+            'Datos cargados correctamente. Total:',
+            formattedData.length,
+          );
         } else {
           console.error("La propiedad 'areas' no es un array:", areas);
           setTableData([]);
@@ -82,11 +89,19 @@ export default function FormLevelsArea() {
       console.error('Error al cargar la estructura de la olimpiada:', error);
       setTableData([]);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchTableLA(Number(selectedOlympiad));
-  }, [selectedOlympiad]);
+    if (selectedOlympiad) {
+      console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
+      fetchTableLA(Number(selectedOlympiad));
+    }
+  }, [selectedOlympiad, fetchTableLA]);
+
+  const onSubmitForm = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+    handleSubmit(() => setIsModalOpen(true))();
+  };
 
   const handleRegister = async (data: FormData) => {
     console.log('Datos enviados:', data);
@@ -113,6 +128,9 @@ export default function FormLevelsArea() {
       await axios.post(`${API_URL}/areas/asociar-niveles`, payload);
       alert('Nivel y área registrados en la olimpiada correctamente');
       window.location.reload();
+
+      await fetchTableLA(olympiadId);
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error al registrar:', error);
       alert('Error al registrar el nivel y área en olimpiada');
@@ -125,7 +143,7 @@ export default function FormLevelsArea() {
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
         <form
-          onSubmit={handleSubmit(() => setIsModalOpen(true))}
+          onSubmit={onSubmitForm}
           className="mt-10 mb-32 mx-5 md:w-9/12 lg:w-9/12"
         >
           <div className="flex flex-col">
@@ -213,7 +231,17 @@ export default function FormLevelsArea() {
               Niveles/Categorías registradas en Áreas
             </h2>
             <div className="mt-2 md:w-11/12 mx-auto">
-              <TableLevesArea data={tableData} />
+              {tableData.length > 0 ? (
+                <TableLevesArea data={tableData} />
+              ) : selectedOlympiad ? (
+                <p className="text-center py-4">
+                  No hay datos disponibles para esta olimpiada
+                </p>
+              ) : (
+                <p className="text-center py-4">
+                  Seleccione una olimpiada para ver datos
+                </p>
+              )}
             </div>
           </div>
         </form>
