@@ -37,9 +37,9 @@ export default function FormDataExcel() {
             <button
               type="button"
               onClick={() => {
-                // coloca aquí para descargar la plantilla Excel
+                window.open('/templates/template-excel.xlsx', '_blank');
               }}
-              className="flex items-center text-primary underline body-md hover:text-secondary2 transition"
+              className="flex items-center text-primary underline body-md hover:text-secondary2 transition cursor-pointer"
             >
               <IconDownload classname="h-5 w-5 mr-0.5" />
               Descargar plantilla Excel
