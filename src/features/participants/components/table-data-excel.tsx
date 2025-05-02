@@ -70,14 +70,14 @@ export const TablaOlimpistas: React.FC<TableProps> = ({ data }) => {
     <div className="w-full overflow-x-auto">
       {data.length === 0 ? (
         <div className="text-center text-neutral2 body-lg p-4">
-          Aún no hay olimpistas registrados.
+          Aún no hay datos cargados.
         </div>
       ) : (
         <DataTable
           columns={columns}
           data={data}
           pagination
-          paginationPerPage={5}
+          paginationPerPage={3}
           paginationComponent={CustomPagination}
           customStyles={customStyles}
           noHeader
