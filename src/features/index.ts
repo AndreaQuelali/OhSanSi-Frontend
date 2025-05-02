@@ -2,7 +2,7 @@ export * from './index';
 export * from './olympiads/components/card-upload-image';
 export * from './olympiads/components/form-areas';
 export * from './olympiads/components/form-info';
-export * from './olympiads/components/form-levels';
+export * from './olympiads/components/form-levels-area';
 export * from './olympiads/components/table-areas';
 export * from './olympiads/components/table-levels';
 export * from './olympiads/components/table';

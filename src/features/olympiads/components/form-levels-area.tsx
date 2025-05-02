@@ -14,7 +14,7 @@ interface FormData {
   gmax: string;
 }
 
-export default function FormLevels() {
+export default function FormLevelsArea() {
   const {
     register,
     handleSubmit,
@@ -37,7 +37,7 @@ export default function FormLevels() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
-    { id: number; area: string; level: string; grade: string }[]
+    { area: string; level: string; grade: string }[]
   >([]);
 
   const { data: olympiads } = useFetchData<
@@ -167,7 +167,26 @@ export default function FormLevels() {
               Registro de Niveles/Categorías en Áreas de Olimpiada
             </h1>
 
-            <div className="grid lg:grid-cols-4 lg:gap-9 mb-6">
+            <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
+              <Dropdown
+                name="year"
+                label="Olimpiada"
+                placeholder="Seleccionar año o gestión"
+                className="w-full"
+                options={[
+                  { id: '2025', name: '2025' },
+                  { id: '2026', name: '2026' },
+                  { id: '2027', name: '2027' },
+                  { id: '2028', name: '2028' },
+                ]}
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                errors={errors}
+                validationRules={{
+                  required: 'Debe seleccionar un año/gestión',
+                }}
+              />
               <Dropdown
                 name="area"
                 label="Área"
@@ -206,73 +225,6 @@ export default function FormLevels() {
                 }}
                 errors={errors}
               />
-              <Dropdown
-                name="gmin"
-                label="Grado Min."
-                placeholder="Seleccionar grado min"
-                options={
-                  grades
-                    ? grades.map((grade) => ({
-                        id: grade.id_grado.toString(),
-                        name: grade.nombre_grado,
-                      }))
-                    : []
-                }
-                displayKey="name"
-                valueKey="id"
-                register={register}
-                validationRules={{
-                  required: 'Debe seleccionar el grado mínimo',
-                }}
-                errors={errors}
-              />
-              <div>
-                <Dropdown
-                  name="gmax"
-                  label="Grado Max."
-                  placeholder="Seleccionar grado max"
-                  options={
-                    grades
-                      ? grades.slice(1).map((grade) => ({
-                          id: grade.id_grado.toString(),
-                          name: grade.nombre_grado,
-                        }))
-                      : []
-                  }
-                  displayKey="name"
-                  valueKey="id"
-                  register={register}
-                  validationRules={{
-                    validate: (value: string) => {
-                      if (value === '') return true;
-
-                      const minOrder = grades?.find(
-                        (grade) => grade.id_grado.toString() === minGrade,
-                      )?.id_grado;
-                      const maxOrder = grades?.find(
-                        (grade) => grade.id_grado.toString() === value,
-                      )?.id_grado;
-
-                      if (!minOrder) {
-                        return 'Debe seleccionar primero el grado mínimo';
-                      }
-
-                      if (maxOrder && Number(maxOrder) <= Number(minOrder)) {
-                        if (minGrade === '12') {
-                          return 'El grado mínimo es el más alto';
-                        }
-                        return 'El grado máximo debe ser mayor al grado mínimo';
-                      }
-
-                      return true;
-                    },
-                  }}
-                  errors={errors}
-                  isRequired={false}
-                  disablePlaceholder={false}
-                  disabled={minGrade === '12'}
-                />
-              </div>
             </div>
             <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
               <Button
