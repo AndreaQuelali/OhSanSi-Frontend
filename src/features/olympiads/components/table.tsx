@@ -4,7 +4,6 @@ import { Button, CustomPagination } from '@/components';
 
 interface TableRow {
   id: number;
-  area: string;
   level: string;
   grade: string;
 }
@@ -15,12 +14,6 @@ type TableProps = {
 
 export const Table: React.FC<TableProps> = ({ data }) => {
   const columns: TableColumn<TableRow>[] = [
-    {
-      name: 'Área',
-      selector: (row) => row.area,
-      sortable: true,
-      cell: (row) => <span className="text-onBack body-lg">{row.area}</span>,
-    },
     {
       name: 'Nivel/Categoría',
       selector: (row) => row.level,
