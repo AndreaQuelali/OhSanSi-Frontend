@@ -4,12 +4,15 @@ import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
 import { formattedDate } from '@/utils/date';
-import { useFormValidity, useOlimpistaData, useTutorValidation } from '../hooks';
+import {
+  useFormValidity,
+  useOlimpistaData,
+  useTutorValidation,
+} from '../hooks';
 import ParticipantFormHeader from './form-header';
 import AreasGridSection from './selection-grid-areas';
 import AreaSelectionModal from './selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
-
 
 export default function FormAreaPart() {
   const {
@@ -28,8 +31,13 @@ export default function FormAreaPart() {
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
 
-  const { areasDisponibles, nivelesSeleccionados, setNivelesSeleccionados, olimpistaError, loading } = 
-    useOlimpistaData(ciOlimpista);
+  const {
+    areasDisponibles,
+    nivelesSeleccionados,
+    setNivelesSeleccionados,
+    olimpistaError,
+    loading,
+  } = useOlimpistaData(ciOlimpista);
   const { tutorError } = useTutorValidation(ciTutor);
   const { formIsValid } = useFormValidity({
     formFieldsValid,
@@ -54,7 +62,8 @@ export default function FormAreaPart() {
     method: 'GET',
   });
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
-  const limiteAlcanzado = Object.keys(nivelesSeleccionados).length >= maxCategorias;
+  const limiteAlcanzado =
+    Object.keys(nivelesSeleccionados).length >= maxCategorias;
 
   const handleNivelToggle = (nivel: {
     id_nivel: number;
@@ -67,7 +76,9 @@ export default function FormAreaPart() {
     }
 
     setNivelesSeleccionadosTemp((prev) => {
-      const nivelYaSeleccionado = prev.some((n) => n.id_nivel === nivel.id_nivel);
+      const nivelYaSeleccionado = prev.some(
+        (n) => n.id_nivel === nivel.id_nivel,
+      );
       if (nivelYaSeleccionado) {
         return prev.filter((n) => n.id_nivel !== nivel.id_nivel);
       } else {
@@ -78,15 +89,32 @@ export default function FormAreaPart() {
 
   const handleModalAceptar = () => {
     if (selectedArea) {
-      const nivelesRegistrados = nivelesSeleccionadosTemp.filter(
-        (nivel) => nivel.registrado
-      );
+      const nivelesRegistradosEnArea =
+        areasDisponibles[selectedArea]?.filter((nivel) => nivel.registrado) ||
+        [];
+
+      const todosLosNivelesRegistradosIncluidos =
+        nivelesRegistradosEnArea.every((nivelReg) =>
+          nivelesSeleccionadosTemp.some(
+            (nivel) => nivel.id_nivel === nivelReg.id_nivel,
+          ),
+        );
 
       if (
-        nivelesRegistrados.length > 0 &&
-        nivelesRegistrados.length === nivelesSeleccionadosTemp.length
+        nivelesRegistradosEnArea.length > 0 &&
+        !todosLosNivelesRegistradosIncluidos
       ) {
-        alert('No puedes deseleccionar un área completamente registrada.');
+        alert('No puedes deseleccionar niveles ya registrados.');
+        setModalVisible(false);
+        return;
+      }
+
+      const nivelesDisponiblesSinRegistrar =
+        areasDisponibles[selectedArea]?.filter((nivel) => !nivel.registrado) ||
+        [];
+
+      if (nivelesDisponiblesSinRegistrar.length === 0) {
+        alert('No hay nuevos niveles para registrar en esta área.');
         setModalVisible(false);
         return;
       }
@@ -94,7 +122,7 @@ export default function FormAreaPart() {
       setNivelesSeleccionados((prev) => {
         if (nivelesSeleccionadosTemp.length === 0) {
           const nivelesRegistrados = prev[selectedArea]?.filter(
-            (n) => n.registrado
+            (n) => n.registrado,
           );
           if (nivelesRegistrados?.length > 0) {
             return {
@@ -115,7 +143,6 @@ export default function FormAreaPart() {
     }
     setModalVisible(false);
   };
-
   const handleModalCancelar = () => {
     setModalVisible(false);
     setNivelesSeleccionadosTemp([]);
@@ -159,7 +186,7 @@ export default function FormAreaPart() {
     try {
       const response = await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
-        payload
+        payload,
       );
 
       alert('Registro exitoso');
@@ -179,13 +206,13 @@ export default function FormAreaPart() {
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
           Registro de Olimpista en una o varias áreas de competencia
         </h2>
-        
-        <ParticipantFormHeader 
-          register={register} 
-          errors={errors} 
-          tutorError={tutorError} 
+
+        <ParticipantFormHeader
+          register={register}
+          errors={errors}
+          tutorError={tutorError}
         />
-        
+
         <AreasGridSection
           loading={loading}
           olimpistaError={olimpistaError}
@@ -204,7 +231,7 @@ export default function FormAreaPart() {
             onCancel={handleModalCancelar}
           />
         )}
-        
+
         <FormButtons formIsValid={formIsValid} />
       </form>
     </div>

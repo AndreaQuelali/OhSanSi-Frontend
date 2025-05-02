@@ -59,39 +59,43 @@ export function useOlimpistaData(ciOlimpista: string) {
           {},
         );
 
-        setAreasDisponibles(transformedData);
+        fetchInscripcionesYCombinar(ci, transformedData);
       } catch {
         setAreasDisponibles({});
         setOlimpistaError('No se encontró un olimpista con esa cédula.');
-      } finally {
         setLoading(false);
       }
     }, 800),
     [],
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFetchInscripciones = useCallback(
-    debounce(async (ci: string) => {
-      if (!ci) {
-        setNivelesSeleccionados({});
-        return;
-      }
+  const fetchInscripcionesYCombinar = async (
+    ci: string,
+    areasDisp: Record<
+      string,
+      { id_nivel: number; nombre_nivel: string; registrado?: boolean }[]
+    >,
+  ) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/olimpista/${ci}/inscripciones`,
+      );
 
-      try {
-        const response = await axios.get(
-          `${API_URL}/olimpista/${ci}/inscripciones`,
-        );
+      let nivelesRegistrados: Record<
+        string,
+        { id_nivel: number; nombre_nivel: string; registrado: boolean }[]
+      > = {};
 
-        if (!response.data || response.data.length === 0) {
-          setNivelesSeleccionados({});
-          return;
-        }
+      if (
+        response.data &&
+        response.data.data &&
+        response.data.data.inscripciones
+      ) {
+        const inscripciones = response.data.data.inscripciones;
 
-        const inscripciones = response.data.inscripciones;
-        const nivelesPorArea = inscripciones.reduce(
+        nivelesRegistrados = inscripciones.reduce(
           (acc: any, inscripcion: any) => {
-            const areaNombre = inscripcion.nivel.asociaciones[0].area.nombre;
+            const areaNombre = inscripcion.area.nombre;
             const nivel = {
               id_nivel: inscripcion.nivel.id_nivel,
               nombre_nivel: inscripcion.nivel.nombre,
@@ -107,19 +111,38 @@ export function useOlimpistaData(ciOlimpista: string) {
           },
           {},
         );
-
-        setNivelesSeleccionados(nivelesPorArea);
-      } catch (err) {
-        console.error(err);
       }
-    }, 800),
-    [],
-  );
+
+      const areasActualizadas = { ...areasDisp };
+
+      Object.keys(nivelesRegistrados).forEach((areaNombre) => {
+        if (areasActualizadas[areaNombre]) {
+          areasActualizadas[areaNombre] = areasActualizadas[areaNombre].map(
+            (nivel) => {
+              const nivelRegistrado = nivelesRegistrados[areaNombre].find(
+                (n) => n.id_nivel === nivel.id_nivel,
+              );
+              return nivelRegistrado ? { ...nivel, registrado: true } : nivel;
+            },
+          );
+        } else {
+          areasActualizadas[areaNombre] = nivelesRegistrados[areaNombre];
+        }
+      });
+
+      setAreasDisponibles(areasActualizadas);
+      setNivelesSeleccionados(nivelesRegistrados);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error al obtener inscripciones:', err);
+      setAreasDisponibles(areasDisp);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (ciOlimpista) {
       debouncedFetchData(ciOlimpista);
-      debouncedFetchInscripciones(ciOlimpista);
     } else {
       setAreasDisponibles({});
       setNivelesSeleccionados({});
@@ -127,9 +150,8 @@ export function useOlimpistaData(ciOlimpista: string) {
 
     return () => {
       debouncedFetchData.cancel();
-      debouncedFetchInscripciones.cancel();
     };
-  }, [ciOlimpista, debouncedFetchData, debouncedFetchInscripciones]);
+  }, [ciOlimpista, debouncedFetchData]);
 
   return {
     areasDisponibles,
