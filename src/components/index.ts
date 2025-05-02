@@ -1,4 +1,5 @@
 export * from './icons/close';
+export * from './icons/icon-add';
 export * from './icons/icon-close';
 export * from './icons/icon-delete';
 export * from './icons/icon-down';
@@ -17,6 +18,7 @@ export * from './ui/custom-pagination';
 export * from './ui/dropdown-menu';
 export * from './ui/dropdown';
 export * from './ui/footer-design';
+export * from './ui/form-buttons';
 export * from './ui/input';
 export * from './ui/menu-desktop';
 export * from './ui/modal';

@@ -99,6 +99,14 @@ export default function NavbarLayout() {
                       Registro de Niveles
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      to="/register-levels-area"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro de Niveles en Area
+                    </Link>
+                  </li>
                 </ul>
               </div>
             )}
