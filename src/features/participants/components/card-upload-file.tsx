@@ -13,18 +13,33 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
     const [dragActive, setDragActive] = useState(false);
 
     const isValidExcel = (file: File) =>
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
       file.type === "application/vnd.ms-excel";
+
+    const isUnder3MB = (file: File) => file.size <= 3 * 1024 * 1024;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file && isValidExcel(file)) {
-        setFileName(file.name);
-      } else {
-        setFileName(null);
+
+      if (!file) return;
+
+      if (!isValidExcel(file)) {
         alert("Archivo inválido. Solo se permiten archivos .xlsx o .xls");
+        if (ref && "current" in ref && ref.current) {
+          ref.current.value = "";
+        }
+        return;
       }
+
+      if (!isUnder3MB(file)) {
+        alert("Archivo demasiado grande. El tamaño máximo es 3 MB.");
+        if (ref && "current" in ref && ref.current) {
+          ref.current.value = "";
+        }
+        return;
+      }
+
+      setFileName(file.name);
 
       if (onFileChange) {
         onFileChange(e);
@@ -35,12 +50,20 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
       e.preventDefault();
       setDragActive(false);
       const file = e.dataTransfer.files[0];
-      if (file && isValidExcel(file)) {
-        setFileName(file.name);
-      } else {
-        setFileName(null);
+
+      if (!file) return;
+
+      if (!isValidExcel(file)) {
         alert("Archivo inválido. Solo se permiten archivos .xlsx o .xls");
+        return;
       }
+
+      if (!isUnder3MB(file)) {
+        alert("Archivo demasiado grande. El tamaño máximo es 3 MB.");
+        return;
+      }
+
+      setFileName(file.name);
     };
 
     return (
@@ -52,11 +75,13 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
             setDragActive(true);
           }}
           onDragLeave={() => setDragActive(false)}
-          className={`flex flex-col items-center justify-center p-6 border-2 ${
+          className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition duration-200 ${
             dragActive
               ? "border-secondary2 bg-secondary2/25"
+              : fileName
+              ? "border-secondary2 bg-secondary2/5"
               : "border-neutral2 bg-transparent"
-          } border-dashed rounded-xl cursor-pointer transition duration-200`}
+          }`}
         >
           <div className="flex flex-row items-center gap-5">
             <div>{fileName ? <IconFile /> : <IconNoFile />}</div>

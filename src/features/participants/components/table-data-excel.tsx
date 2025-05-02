@@ -70,7 +70,7 @@ export const TablaOlimpistas: React.FC<TableProps> = ({ data }) => {
     <div className="w-full overflow-x-auto">
       {data.length === 0 ? (
         <div className="text-center text-neutral2 body-lg p-4">
-          Aún no hay datos cargados.
+          No hay datos cargados.
         </div>
       ) : (
         <DataTable
