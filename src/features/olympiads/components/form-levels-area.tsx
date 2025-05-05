@@ -36,7 +36,7 @@ export default function FormLevelsArea() {
     { id: number; olympiad: string; area: string; level: string }[]
   >([]);
   const { data: olympiads } = useFetchData<
-    { id_olimpiada: number; gestion: number }[]
+    { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
   >(`${API_URL}/olimpiadas`);
 
   const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
@@ -155,12 +155,12 @@ export default function FormLevelsArea() {
               <Dropdown
                 name="olympiad"
                 label="Olimpiada"
-                placeholder="Seleccionar año o gestión"
+                placeholder="Seleccionar Olimpiada"
                 className="w-full"
                 options={
                   olympiads?.map((olimpiada) => ({
                     id: olimpiada.id_olimpiada.toString(),
-                    name: olimpiada.gestion,
+                    name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
                   })) || []
                 }
                 displayKey="name"
