@@ -1,7 +1,7 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API_URL } from '@/config/api-config';
 import {
   Departamento,
@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
+import { debounce } from 'lodash';
 
 export default function FormDataPart() {
   const {
@@ -40,68 +41,86 @@ export default function FormDataPart() {
   const selectedDepartment = watch('olimpista.depa');
   const selectedProv = watch('olimpista.prov');
 
-  const ci = watch('olimpista.ci'); // Observar el campo CI
-  const email = watch('olimpista.email'); // Observar el campo Email
-  const citutor = watch('olimpista.citutor'); // Observar el campo CI del tutor
+  const ci = watch('olimpista.ci');
+  const citutor = watch('olimpista.citutor');
 
-  const checkCi = async () => {
-    if (!ci) {
-      clearErrors('olimpista.ci'); // Limpiar el error si el campo está vacío
-      return;
-    }
-
-    try {
-      const response = await axios.get(`${API_URL}/olimpistas/cedula/${ci}`);
-      if (response.data) {
-        setError('olimpista.ci', {
-          type: 'manual',
-          message: 'Este número de cédula ya está registrado.',
-        });
-      } else {
-        clearErrors('olimpista.ci'); // Limpiar el error si no existe
+  const debouncedCheckCi = useCallback(
+    (ciValue: string) => {
+      if (!ciValue || ciValue.length < 4) {
+        return; 
       }
-    } catch (error) {
-      console.error('Error al verificar el CI:', error);
-    }
+
+      debounce(async (value: string) => {
+        try {
+          const response = await axios.get(
+            `${API_URL}/olimpistas/cedula/${value}`,
+          );
+          if (response.data) {
+            setError('olimpista.ci', {
+              type: 'manual',
+              message: 'Este número de cédula ya está registrado.',
+            });
+          } else {
+            clearErrors('olimpista.ci');
+          }
+        } catch (error) {
+          console.error('Error al verificar el CI:', error);
+          clearErrors('olimpista.ci');
+        }
+      }, 500)(ciValue);
+    },
+    [setError, clearErrors],
+  );
+
+  const debouncedCheckCiTutor = useCallback(
+    (ciTutorValue: string) => {
+      if (!ciTutorValue || ciTutorValue.length < 4) {
+        return;
+      }
+
+      if (ciTutorValue === ci) {
+        clearErrors('olimpista.citutor');
+        return;
+      }
+
+      debounce(async (value: string) => {
+        try {
+          const response = await axios.get(
+            `${API_URL}/tutores/cedula/${value}`,
+          );
+          if (response.data) {
+            clearErrors('olimpista.citutor');
+          }
+        } catch {
+          setError('olimpista.citutor', {
+            type: 'manual',
+            message: 'Este CI de tutor no está registrado.',
+          });
+        }
+      }, 500)(ciTutorValue);
+    },
+    [ci, setError, clearErrors],
+  );
+
+  const checkCi = () => {
+    if (ci) debouncedCheckCi(ci);
   };
 
-  const checkCiTutor = async () => {
-    if (!citutor) {
-      clearErrors('olimpista.citutor'); // Limpiar el error si el campo está vacío
-      return;
-    }
-
-    try {
-      const response = await axios.get(`${API_URL}/tutores/cedula/${citutor}`);
-      console.log('Se encontro', response.data);
-    } catch (error) {
-      setError('olimpista.citutor', {
-        type: 'manual',
-        message: 'Este ci de tutor no está registrado.',
-      });
-    }
+  const checkCiTutor = () => {
+    if (citutor) debouncedCheckCiTutor(citutor);
   };
 
-  /* const checkEmail = async () => {
-    if (!email) {
-      clearErrors('olimpista.email'); // Limpiar el error si el campo está vacío
-      return;
+  useEffect(() => {
+    if (ci && ci.length >= 4) {
+      debouncedCheckCi(ci);
     }
+  }, [ci, debouncedCheckCi]);
 
-    try {
-      const response = await axios.get(`${API_URL}/olimpistas/email/${email}`);
-      if (response.data) {
-        setError('olimpista.email', {
-          type: 'manual',
-          message: 'Este correo electrónico ya está registrado.',
-        });
-      } else {
-        clearErrors('olimpista.email'); // Limpiar el error si no existe
-      }
-    } catch (error) {
-      console.error('Error al verificar el correo:', error);
+  useEffect(() => {
+    if (citutor && citutor.length >= 4) {
+      debouncedCheckCiTutor(citutor);
     }
-  };*/
+  }, [citutor, debouncedCheckCiTutor]);
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -165,7 +184,7 @@ export default function FormDataPart() {
     setValue('olimpista.grade', id_grado, { shouldValidate: true });
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.grade = parseInt(id_grado, 10); // Guarda el id_grado como número
+    formData.olimpista.grade = parseInt(id_grado, 10);
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
@@ -187,6 +206,7 @@ export default function FormDataPart() {
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRegister = async (data: any) => {
     const payload = {
       cedula_identidad: data.olimpista.ci,
@@ -244,7 +264,7 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
-                onBlur: checkCi, // Verificar CI al perder el foco
+                onBlur: checkCi,
               }}
               errors={errors}
             />
@@ -257,9 +277,9 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
                   message:
-                    'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -273,9 +293,9 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El apellido es obligatorio',
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
                   message:
-                    'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -468,6 +488,7 @@ export default function FormDataPart() {
               displayKey="name"
               valueKey="id"
               {...register('olimpista.grade', {
+                required: 'El grado es obligatorio',
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleGradoChange(e.target.value),
               })}
@@ -485,8 +506,12 @@ export default function FormDataPart() {
             <Button
               type="submit"
               label="Registrar"
-              disabled={!isValid}
-              variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
+              disabled={!isValid || Object.keys(errors).length > 0}
+              variantColor={
+                !isValid || Object.keys(errors).length > 0
+                  ? 'variantDesactivate'
+                  : 'variant1'
+              }
             />
           </div>
         </form>
