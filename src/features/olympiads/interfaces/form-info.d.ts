@@ -4,4 +4,5 @@ export type FormData = {
   dateIni: string;
   dateEnd: string;
   limitAreas: number;
+  inputNameOlimpiada: string;
 };
