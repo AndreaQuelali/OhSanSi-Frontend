@@ -10,6 +10,7 @@ import RegisterDataExcel from '@/features/participants/pages/register-data-excel
 import RegisterParticipantPage from '@/features/participants/pages/register-participant';
 import RegisterSelectedAreasPage from '@/features/participants/pages/register-selected-areas';
 import RegisterTutorPage from '@/features/participants/pages/register-tutor';
+import RegistrationsPage from '@/features/registrations/pages/registrations';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
@@ -30,7 +31,7 @@ export default function AppRoutes() {
             path="/register-olimpists"
             element={<RegisterParticipantPage />}
           />
-          <Route path="/register-tutor" element={<RegisterTutorPage />} />
+          <Route path="/register-tutor" element={<RegistrationsPage />} />
           <Route
             path="/register-selected-areas"
             element={<RegisterSelectedAreasPage />}
