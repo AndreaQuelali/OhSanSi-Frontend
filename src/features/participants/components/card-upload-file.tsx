@@ -5,77 +5,106 @@ import { useState, forwardRef } from "react";
 interface Props {
   fileName: string | null;
   setFileName: (name: string | null) => void;
+  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; 
 }
 
-const CardUploadFile = forwardRef<HTMLInputElement, Props>(({ fileName, setFileName }, ref) => {
-  const [dragActive, setDragActive] = useState(false);
+const CardUploadFile = forwardRef<HTMLInputElement, Props>(
+  ({ fileName, setFileName, onFileChange }, ref) => {
+    const [dragActive, setDragActive] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (
-      file &&
-      (file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.type === "application/vnd.ms-excel")
-    ) {
+    const isValidExcel = (file: File) =>
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.ms-excel";
+
+    const isUnder3MB = (file: File) => file.size <= 3 * 1024 * 1024;
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+
+      if (!file) return;
+
+      if (!isValidExcel(file)) {
+        alert("Archivo inválido. Solo se permiten archivos .xlsx o .xls");
+        if (ref && "current" in ref && ref.current) {
+          ref.current.value = "";
+        }
+        return;
+      }
+
+      if (!isUnder3MB(file)) {
+        alert("Archivo demasiado grande. El tamaño máximo es 3 MB.");
+        if (ref && "current" in ref && ref.current) {
+          ref.current.value = "";
+        }
+        return;
+      }
+
       setFileName(file.name);
-    } else {
-      setFileName(null);
-    }
-  };
 
-  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setDragActive(false);
-    const file = e.dataTransfer.files[0];
-    if (
-      file &&
-      (file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.type === "application/vnd.ms-excel")
-    ) {
+      if (onFileChange) {
+        onFileChange(e);
+      }
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+      const file = e.dataTransfer.files[0];
+
+      if (!file) return;
+
+      if (!isValidExcel(file)) {
+        alert("Archivo inválido. Solo se permiten archivos .xlsx o .xls");
+        return;
+      }
+
+      if (!isUnder3MB(file)) {
+        alert("Archivo demasiado grande. El tamaño máximo es 3 MB.");
+        return;
+      }
+
       setFileName(file.name);
-    } else {
-      setFileName(null);
-    }
-  };
+    };
 
-  return (
-    <div className="w-full max-w-md mx-auto">
-      <label
-        onDrop={handleDrop}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragActive(true);
-        }}
-        onDragLeave={() => setDragActive(false)}
-        className={`flex flex-col items-center justify-center p-6 border-2 ${
-          dragActive ? "border-secondary2" : "border-neutral2"
-        } border-dashed rounded-xl cursor-pointer transition duration-200`}
-      >
-        <div className="flex flex-row items-center gap-5">
-          <div>
-            {fileName ? <IconFile /> : <IconNoFile />}
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <label
+          onDrop={handleDrop}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition duration-200 ${
+            dragActive
+              ? "border-secondary2 bg-secondary2/25"
+              : fileName
+              ? "border-secondary2 bg-secondary2/5"
+              : "border-neutral2 bg-transparent"
+          }`}
+        >
+          <div className="flex flex-row items-center gap-5">
+            <div>{fileName ? <IconFile /> : <IconNoFile />}</div>
+            <div className="mr-2">
+              <p className="subtitle-md text-onBack">
+                {fileName ? fileName : "Ningún archivo seleccionado"}
+              </p>
+              <p className="body-md text-primary hover:text-secondary2 mt-1 underline transition">
+                Selecciona o arrastra el archivo aquí
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="subtitle-md text-onBack">
-              {fileName ? fileName : "Ningún archivo seleccionado"}
-            </p>
-            <p className="body-md text-primary hover:text-secondary2 mt-1 underline transition">
-              Selecciona o arrastra el archivo aquí
-            </p>
-          </div>
-        </div>
-        <input
-          ref={ref}
-          type="file"
-          accept=".xlsx,.xls"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </label>
-    </div>
-  );
-});
+          <input
+            ref={ref}
+            type="file"
+            accept=".xlsx,.xls"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </label>
+      </div>
+    );
+  }
+);
 
 export default CardUploadFile;

@@ -1,46 +1,88 @@
-interface Nivel {
+interface NivelType {
   id_nivel: number;
   nombre_nivel: string;
+  registrado?: boolean;
 }
 
-interface AreaCardProps {
+interface CardAreaProps {
   area: string;
-  niveles: Nivel[];
+  niveles: NivelType[];
   onClick: () => void;
-  nivelesSeleccionados: Nivel[];
+  nivelesSeleccionados: NivelType[];
 }
 
 export default function CardArea({
   area,
+  niveles,
   onClick,
   nivelesSeleccionados,
-}: AreaCardProps) {
-  const isSelected = nivelesSeleccionados.length > 0;
+}: CardAreaProps) {
+  const tieneNivelesRegistrados = nivelesSeleccionados.some(
+    (nivel) => nivel.registrado,
+  );
+
+  const cantidadNivelesRegistrados = nivelesSeleccionados.filter(
+    (nivel) => nivel.registrado,
+  ).length;
+
+  const cantidadNivelesSeleccionados = nivelesSeleccionados.filter(
+    (nivel) => !nivel.registrado,
+  ).length;
+
+  const nivelesDisponibles = niveles.length;
+  const nivelesOcupados = nivelesSeleccionados.length;
+  const nivelesDisponiblesSinSeleccionar = nivelesDisponibles - nivelesOcupados;
+  const esAreaRegistrada = tieneNivelesRegistrados;
+  const esAreaSeleccionada = nivelesSeleccionados.length > 0;
 
   return (
     <div
-      className={`relative flex flex-col justify-center items-center rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 shadow-lg border ${
-        isSelected
-          ? 'bg-primary text-white border-primary'
-          : 'bg-gray-100 border-gray-300'
-      }`}
+      className={`border ${
+        esAreaRegistrada
+          ? 'border-primary bg-green-50'
+          : esAreaSeleccionada
+            ? 'border-primary bg-blue-50'
+            : 'border-gray-400 bg-white'
+      } rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow`}
       onClick={onClick}
     >
-      {isSelected && (
-        <div className="absolute top-0 left-0 w-full h-full bg-primary flex flex-col items-center justify-center z-10">
-          <p className="text-white subtitle-md font-semibold">Área Seleccionada</p>
-          <div className="flex flex-wrap justify-center mt-2">
-            {nivelesSeleccionados.map((nivel) => (
-              <span key={nivel.id_nivel} className="text-sm text-gray-200 mx-1">
-                {nivel.nombre_nivel}
-              </span>
-            ))}
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-bold text-lg text-gray-800">{area}</h3>
+
+        {esAreaRegistrada ? (
+          <div className="inline-flex items-center bg-green-100 text-primary px-2 py-1 rounded text-sm">
+            Área registrada
           </div>
-        </div>
-      )}
-      <div className="flex flex-col items-center justify-center p-6 bg-surface rounded-lg w-full h-full">
-        <h3 className="text-lg font-semibold">{area}</h3>
+        ) : esAreaSeleccionada ? (
+          <div className="inline-flex items-center bg-blue-100 text-primary px-2 py-1 rounded text-sm">
+            Área seleccionada
+          </div>
+        ) : (
+          <div className="inline-flex items-center bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">
+            Área disponible
+          </div>
+        )}
       </div>
+
+      <div className="text-sm text-gray-600">
+        {esAreaRegistrada && (
+          <div className="mt-1">
+            <span className="font-medium">Niveles registrados:</span>{' '}
+            {cantidadNivelesRegistrados}
+          </div>
+        )}
+        {cantidadNivelesSeleccionados > 0 && (
+          <div className="mt-1">
+            <span className="font-medium">Niveles seleccionados:</span>{' '}
+            {cantidadNivelesSeleccionados}
+          </div>
+        )}
+        <div className="mt-1">
+          <span className="font-medium">Niveles disponibles:</span>{' '}
+          {nivelesDisponiblesSinSeleccionar}
+        </div>
+      </div>
+
     </div>
   );
 }
