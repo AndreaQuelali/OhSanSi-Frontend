@@ -115,6 +115,23 @@ export default function FormLevelsArea() {
       return;
     }
 
+    const response = await axios.get(
+      `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
+    );
+
+    const registros = response.data?.data?.areas ?? [];
+
+    const alreadyRegistered = registros.some(
+      (area: any) =>
+        area.id_area === areaId &&
+        area.niveles.some((nivel: any) => nivel.id_nivel === levelId),
+    );
+
+    if (alreadyRegistered) {
+      alert('Este nivel y área ya se encuentra registrado en la olimpiada');
+      return;
+    }
+
     const payload = {
       id_olimpiada: olympiadId,
       id_area: areaId,
