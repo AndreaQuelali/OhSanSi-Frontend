@@ -340,8 +340,9 @@ export default function FormDataPart() {
                 required: 'El correo electrónico es obligatorio',
                 pattern: {
                   value:
-                    /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
-                  message: 'Correo electrónico no válido',
+                    /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*[a-zA-Z0-9.]@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
+                  message:
+                    'Correo electrónico no válido.',
                 },
               }}
               errors={errors}
