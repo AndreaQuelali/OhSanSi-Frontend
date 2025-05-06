@@ -1,7 +1,7 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { API_URL } from '@/config/api-config';
 import {
   Departamento,
@@ -44,83 +44,91 @@ export default function FormDataPart() {
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
 
-  const debouncedCheckCi = useCallback(
-    (ciValue: string) => {
+  const debouncedCheckCiRef = useRef(
+    debounce(async (ciValue: string) => {
       if (!ciValue || ciValue.length < 4) {
         return;
       }
 
-      debounce(async (value: string) => {
-        try {
-          const response = await axios.get(
-            `${API_URL}/olimpistas/cedula/${value}`,
-          );
-          if (response.data) {
-            setError('olimpista.ci', {
-              type: 'manual',
-              message: 'Este número de cédula ya está registrado.',
-            });
-          } else {
-            clearErrors('olimpista.ci');
-          }
-        } catch (error) {
-          console.error('Error al verificar el CI:', error);
+      try {
+        const response = await axios.get(
+          `${API_URL}/olimpistas/cedula/${ciValue}`,
+        );
+        if (response.data) {
+          setError('olimpista.ci', {
+            type: 'manual',
+            message: 'Este número de cédula ya está registrado.',
+          });
+        } else {
           clearErrors('olimpista.ci');
         }
-      }, 500)(ciValue);
-    },
-    [setError, clearErrors],
+      } catch (error) {
+        console.error('Error al verificar el CI:', error);
+        clearErrors('olimpista.ci');
+      }
+    }, 500),
   );
 
-  const debouncedCheckCiTutor = useCallback(
-    (ciTutorValue: string) => {
+  const debouncedCheckCiTutorRef = useRef(
+    debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
       if (!ciTutorValue || ciTutorValue.length < 4) {
         return;
       }
 
-      if (ciTutorValue === ci) {
+      if (ciTutorValue === ciOlimpistaValue) {
         clearErrors('olimpista.citutor');
-        return;
+        return; 
       }
 
-      debounce(async (value: string) => {
-        try {
-          const response = await axios.get(
-            `${API_URL}/tutores/cedula/${value}`,
-          );
-          if (response.data) {
-            clearErrors('olimpista.citutor');
-          }
-        } catch {
+      try {
+        const response = await axios.get(
+          `${API_URL}/tutores/cedula/${ciTutorValue}`,
+        );
+        if (response.data) {
+          clearErrors('olimpista.citutor');
+        } else {
           setError('olimpista.citutor', {
             type: 'manual',
             message: 'Este CI de tutor no está registrado.',
           });
         }
-      }, 500)(ciTutorValue);
-    },
-    [ci, setError, clearErrors],
+      } catch {
+        setError('olimpista.citutor', {
+          type: 'manual',
+          message: 'Este CI de tutor no está registrado.',
+        });
+      }
+    }, 500),
   );
-
   const checkCi = () => {
-    if (ci) debouncedCheckCi(ci);
+    if (ci) debouncedCheckCiRef.current(ci);
   };
 
   const checkCiTutor = () => {
-    if (citutor) debouncedCheckCiTutor(citutor);
+    if (citutor) {
+      if (citutor === ci) {
+        clearErrors('olimpista.citutor');
+        return;
+      }
+      debouncedCheckCiTutorRef.current(citutor, ci);
+    }
   };
 
   useEffect(() => {
     if (ci && ci.length >= 4) {
-      debouncedCheckCi(ci);
+      debouncedCheckCiRef.current(ci);
     }
-  }, [ci, debouncedCheckCi]);
+  }, [ci]);
 
   useEffect(() => {
     if (citutor && citutor.length >= 4) {
-      debouncedCheckCiTutor(citutor);
+      if (citutor === ci) {
+        clearErrors('olimpista.citutor');
+      } else {
+        debouncedCheckCiTutorRef.current(citutor, ci);
+      }
     }
-  }, [citutor, debouncedCheckCiTutor]);
+  }, [citutor, ci]); 
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -341,8 +349,7 @@ export default function FormDataPart() {
                 pattern: {
                   value:
                     /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*[a-zA-Z0-9.]@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
-                  message:
-                    'Correo electrónico no válido.',
+                  message: 'Correo electrónico no válido.',
                 },
               }}
               errors={errors}
@@ -366,6 +373,9 @@ export default function FormDataPart() {
                 pattern: {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
+                },
+                validate: (value) => {
+                  return value === ci ? true : undefined;
                 },
                 onBlur: checkCiTutor,
               }}
