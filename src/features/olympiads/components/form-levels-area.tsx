@@ -119,6 +119,7 @@ export default function FormLevelsArea() {
       id_olimpiada: olympiadId,
       id_area: areaId,
       id_categorias: [levelId],
+      max_niveles: 1,
     };
 
     console.log(payload);
@@ -155,7 +156,7 @@ export default function FormLevelsArea() {
               <Dropdown
                 name="olympiad"
                 label="Olimpiada"
-                placeholder="Seleccionar Olimpiada"
+                placeholder="Seleccionar olimpiada"
                 className="w-full"
                 options={
                   olympiads?.map((olimpiada) => ({
