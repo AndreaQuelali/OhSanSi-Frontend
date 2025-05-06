@@ -370,6 +370,23 @@ export default function FormDataPart() {
               }}
               errors={errors}
             />
+            {ci && citutor && ci === citutor && (
+              <InputText
+                label="Número de celular"
+                name="phone"
+                placeholder="Ingresar número de celular"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El número de celular es obligatorio',
+                  pattern: {
+                    value: /^[0-9]{8,}$/,
+                    message: 'Debe contener solo números y al menos 8 dígitos',
+                  },
+                }}
+                errors={errors}
+              />
+            )}
           </div>
           <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
           <div className="grid md:grid-cols-2 md:gap-9 mb-6">
