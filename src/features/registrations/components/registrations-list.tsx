@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import RegistrationCard from "./registration-card";
-import { Button, InputText } from "@/components";
-import { useForm } from "react-hook-form";
 
 type Registration = {
   nombre: string;
@@ -55,17 +53,6 @@ const mockData: RegistrationData[] = [
 ];
 
 const RegistrationsList: React.FC = () => {
-      const {
-        register,
-        handleSubmit,
-        watch,
-        setError,
-        clearErrors,
-        formState: { errors, isValid },
-      } = useForm<FormData>({
-        mode: 'onChange',
-        defaultValues: {},
-      });
 
   const [data, setData] = useState<RegistrationData[]>([]);
 
@@ -77,23 +64,10 @@ const RegistrationsList: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full h-full">
-        <form className="w-full h-full flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
             <h1 className="text-center text-primary mb-8 headline-lg">
             Inscripciones
             </h1>
-            <div className="flex flex-row gap-16 w-10/12 items-center justify-center">
-                <InputText
-                label="Ingrese el CI del responsable para ver las inscripciones asociadas al mismo"
-                name="ci"
-                placeholder="Ingresar cédula de identidad"
-                className="w-full"
-                register={register}
-
-                errors={errors}
-                />
-                <Button label="Consultar" />
-            </div>
             {data.map((item, index) => (
             <RegistrationCard
                 key={index}
@@ -102,7 +76,6 @@ const RegistrationsList: React.FC = () => {
                 isAlternate={index % 2 === 0} // alterna el fondo: blanco/surface/blanco/...
             />
             ))}    
-        </form>
     </div>
   );
 };
