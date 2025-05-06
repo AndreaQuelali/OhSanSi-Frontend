@@ -16,7 +16,6 @@ export * from './index';
 export * from './interfaces/form-tutor.d';
 export * from './interfaces/register-participants.d';
 export * from './pages/register-data-excel';
-export * from './pages/register-data-participant';
 export * from './pages/register-participant';
 export * from './pages/register-selected-areas';
 export * from './pages/register-tutor';

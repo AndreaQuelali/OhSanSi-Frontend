@@ -28,9 +28,9 @@ export const Dropdown = <T extends FieldValues>({
       <select
         id={name}
         value={value}
-        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className} ${
+        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral  p-2 ${className} ${
           errors[name] ? 'border-error' : ''
-        }`}
+        } ${value === '' ? 'text-neutral' : 'text-onBack'}`}
         {...register(name, validationRules)}
         disabled={disabled}
       >

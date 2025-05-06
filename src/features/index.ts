@@ -21,7 +21,6 @@ export * from './participants/components/form-tutor';
 export * from './participants/components/number';
 export * from './participants/interfaces/register-participants.d';
 export * from './participants/pages/register-data-excel';
-export * from './participants/pages/register-data-participant';
 export * from './participants/pages/register-participant';
 export * from './participants/pages/register-selected-areas';
 export * from './participants/pages/register-tutor';

@@ -36,7 +36,7 @@ export default function FormLevelsArea() {
     { id: number; olympiad: string; area: string; level: string }[]
   >([]);
   const { data: olympiads } = useFetchData<
-    { id_olimpiada: number; gestion: number }[]
+    { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
   >(`${API_URL}/olimpiadas`);
 
   const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
@@ -119,6 +119,7 @@ export default function FormLevelsArea() {
       id_olimpiada: olympiadId,
       id_area: areaId,
       id_categorias: [levelId],
+      max_niveles: 1,
     };
 
     console.log(payload);
@@ -155,12 +156,12 @@ export default function FormLevelsArea() {
               <Dropdown
                 name="olympiad"
                 label="Olimpiada"
-                placeholder="Seleccionar año o gestión"
+                placeholder="Seleccionar olimpiada"
                 className="w-full"
                 options={
                   olympiads?.map((olimpiada) => ({
                     id: olimpiada.id_olimpiada.toString(),
-                    name: olimpiada.gestion,
+                    name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
                   })) || []
                 }
                 displayKey="name"
@@ -234,11 +235,11 @@ export default function FormLevelsArea() {
               {tableData.length > 0 ? (
                 <TableLevesArea data={tableData} />
               ) : selectedOlympiad ? (
-                <p className="text-center py-4">
+                <p className="text-center py-4 text-neutral">
                   No hay datos disponibles para esta olimpiada
                 </p>
               ) : (
-                <p className="text-center py-4">
+                <p className="text-center py-4 text-neutral">
                   Seleccione una olimpiada para ver datos
                 </p>
               )}

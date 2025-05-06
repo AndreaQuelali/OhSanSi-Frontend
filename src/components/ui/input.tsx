@@ -14,6 +14,14 @@ export const InputText = <T extends FieldValues>({
   isRequired = true,
   onInput,
 }: InputProps<T>) => {
+  const isTextType = type === 'text';
+
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
+    target.value = target.value.toUpperCase();
+    if (onInput) onInput(e); // Ejecuta el onInput externo si existe
+  };
+
   return (
     <div className="flex flex-col">
       <label
@@ -29,7 +37,7 @@ export const InputText = <T extends FieldValues>({
           type={type}
           className={`h-[50px] body-lg placeholder-neutral border-b-[1px] border-neutral rounded p-2 ${className}`}
           {...(register ? register(name, validationRules) : {})}
-          onInput={onInput}
+          onInput={isTextType ? handleInput : onInput}
         />
       </div>
       <div className="min-h-[25px]">
@@ -38,7 +46,9 @@ export const InputText = <T extends FieldValues>({
             .split('.')
             .reduce(
               (acc: Record<string, unknown>, key: string) =>
-                acc && typeof acc === 'object' ? (acc as Record<string, unknown>)[key] : undefined,
+                acc && typeof acc === 'object'
+                  ? (acc as Record<string, unknown>)[key]
+                  : undefined,
               errors,
             ) && (
             <span className="text-error subtitle-sm text-wrap text-center">
@@ -47,7 +57,9 @@ export const InputText = <T extends FieldValues>({
                   .split('.')
                   .reduce(
                     (acc: Record<string, unknown>, key: string) =>
-                      acc && typeof acc === 'object' ? (acc as Record<string, unknown>)[key] : undefined,
+                      acc && typeof acc === 'object'
+                        ? (acc as Record<string, unknown>)[key]
+                        : undefined,
                     errors,
                   )?.message,
               )}

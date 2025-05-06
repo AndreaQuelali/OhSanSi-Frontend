@@ -1,7 +1,7 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { Button, Dropdown, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { API_URL } from '@/config/api-config';
 import {
   Departamento,
@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
+import { debounce } from 'lodash';
 
 export default function FormDataPart() {
   const {
@@ -40,67 +41,94 @@ export default function FormDataPart() {
   const selectedDepartment = watch('olimpista.depa');
   const selectedProv = watch('olimpista.prov');
 
-  const ci = watch('olimpista.ci'); // Observar el campo CI
-  const citutor = watch('olimpista.citutor'); // Observar el campo CI del tutor
+  const ci = watch('olimpista.ci');
+  const citutor = watch('olimpista.citutor');
 
-  const checkCi = async () => {
-    if (!ci) {
-      clearErrors('olimpista.ci'); // Limpiar el error si el campo está vacío
-      return;
-    }
-
-    try {
-      const response = await axios.get(`${API_URL}/olimpistas/cedula/${ci}`);
-      if (response.data) {
-        setError('olimpista.ci', {
-          type: 'manual',
-          message: 'Este número de cédula ya está registrado.',
-        });
-      } else {
-        clearErrors('olimpista.ci'); // Limpiar el error si no existe
+  const debouncedCheckCiRef = useRef(
+    debounce(async (ciValue: string) => {
+      if (!ciValue || ciValue.length < 4) {
+        return;
       }
-    } catch (error) {
-      console.error('Error al verificar el CI:', error);
+
+      try {
+        const response = await axios.get(
+          `${API_URL}/olimpistas/cedula/${ciValue}`,
+        );
+        if (response.data) {
+          setError('olimpista.ci', {
+            type: 'manual',
+            message: 'Este número de cédula ya está registrado.',
+          });
+        } else {
+          clearErrors('olimpista.ci');
+        }
+      } catch (error) {
+        console.error('Error al verificar el CI:', error);
+        clearErrors('olimpista.ci');
+      }
+    }, 500),
+  );
+
+  const debouncedCheckCiTutorRef = useRef(
+    debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
+      if (!ciTutorValue || ciTutorValue.length < 4) {
+        return;
+      }
+
+      if (ciTutorValue === ciOlimpistaValue) {
+        clearErrors('olimpista.citutor');
+        return; 
+      }
+
+      try {
+        const response = await axios.get(
+          `${API_URL}/tutores/cedula/${ciTutorValue}`,
+        );
+        if (response.data) {
+          clearErrors('olimpista.citutor');
+        } else {
+          setError('olimpista.citutor', {
+            type: 'manual',
+            message: 'Este CI de tutor no está registrado.',
+          });
+        }
+      } catch {
+        setError('olimpista.citutor', {
+          type: 'manual',
+          message: 'Este CI de tutor no está registrado.',
+        });
+      }
+    }, 500),
+  );
+  const checkCi = () => {
+    if (ci) debouncedCheckCiRef.current(ci);
+  };
+
+  const checkCiTutor = () => {
+    if (citutor) {
+      if (citutor === ci) {
+        clearErrors('olimpista.citutor');
+        return;
+      }
+      debouncedCheckCiTutorRef.current(citutor, ci);
     }
   };
 
-  const checkCiTutor = async () => {
-    if (!citutor) {
-      clearErrors('olimpista.citutor'); // Limpiar el error si el campo está vacío
-      return;
+  useEffect(() => {
+    if (ci && ci.length >= 4) {
+      debouncedCheckCiRef.current(ci);
     }
+  }, [ci]);
 
-    try {
-      const response = await axios.get(`${API_URL}/tutores/cedula/${citutor}`);
-      console.log('Se encontro', response.data);
-    } catch (error) {
-      setError('olimpista.citutor', {
-        type: 'manual',
-        message: 'Este ci de tutor no está registrado.',
-      });
-    }
-  };
-
-  /* const checkEmail = async () => {
-    if (!email) {
-      clearErrors('olimpista.email'); // Limpiar el error si el campo está vacío
-      return;
-    }
-
-    try {
-      const response = await axios.get(`${API_URL}/olimpistas/email/${email}`);
-      if (response.data) {
-        setError('olimpista.email', {
-          type: 'manual',
-          message: 'Este correo electrónico ya está registrado.',
-        });
+  useEffect(() => {
+    if (citutor && citutor.length >= 4) {
+      if (citutor === ci) {
+        clearErrors('olimpista.citutor');
       } else {
-        clearErrors('olimpista.email'); // Limpiar el error si no existe
+        debouncedCheckCiTutorRef.current(citutor, ci);
       }
-    } catch (error) {
-      console.error('Error al verificar el correo:', error);
     }
-  };*/
+  }, [citutor, ci]); 
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -164,7 +192,7 @@ export default function FormDataPart() {
     setValue('olimpista.grade', id_grado, { shouldValidate: true });
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.grade = parseInt(id_grado, 10); // Guarda el id_grado como número
+    formData.olimpista.grade = parseInt(id_grado, 10);
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
@@ -186,6 +214,7 @@ export default function FormDataPart() {
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRegister = async (data: any) => {
     const payload = {
       cedula_identidad: data.olimpista.ci,
@@ -243,7 +272,7 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
-                onBlur: checkCi, // Verificar CI al perder el foco
+                onBlur: checkCi,
               }}
               errors={errors}
             />
@@ -256,9 +285,9 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El nombre es obligatorio',
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
                   message:
-                    'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -272,9 +301,9 @@ export default function FormDataPart() {
               validationRules={{
                 required: 'El apellido es obligatorio',
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
+                  value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
                   message:
-                    'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    'Solo se permiten letras y un solo espacio entre palabras',
                 },
               }}
               errors={errors}
@@ -319,8 +348,8 @@ export default function FormDataPart() {
                 required: 'El correo electrónico es obligatorio',
                 pattern: {
                   value:
-                    /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
-                  message: 'Correo electrónico no válido',
+                    /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*[a-zA-Z0-9.]@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
+                  message: 'Correo electrónico no válido.',
                 },
               }}
               errors={errors}
@@ -345,17 +374,37 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
+                validate: (value) => {
+                  return value === ci ? true : undefined;
+                },
                 onBlur: checkCiTutor,
               }}
               errors={errors}
             />
+            {ci && citutor && ci === citutor && (
+              <InputText
+                label="Número de celular"
+                name="phone"
+                placeholder="Ingresar número de celular"
+                className="w-full"
+                register={register}
+                validationRules={{
+                  required: 'El número de celular es obligatorio',
+                  pattern: {
+                    value: /^[0-9]{8,}$/,
+                    message: 'Debe contener solo números y al menos 8 dígitos',
+                  },
+                }}
+                errors={errors}
+              />
+            )}
           </div>
           <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
           <div className="grid md:grid-cols-2 md:gap-9 mb-6">
             <Dropdown
               label="Departamento"
               placeholder="Seleccionar departamento"
-              className="w-full lg:w-[480px]"
+              className="w-ful"
               value={watch('olimpista.depa') ?? ''}
               options={
                 departamentos
@@ -467,6 +516,7 @@ export default function FormDataPart() {
               displayKey="name"
               valueKey="id"
               {...register('olimpista.grade', {
+                required: 'El grado es obligatorio',
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleGradoChange(e.target.value),
               })}
@@ -484,8 +534,12 @@ export default function FormDataPart() {
             <Button
               type="submit"
               label="Registrar"
-              disabled={!isValid}
-              variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
+              disabled={!isValid || Object.keys(errors).length > 0}
+              variantColor={
+                !isValid || Object.keys(errors).length > 0
+                  ? 'variantDesactivate'
+                  : 'variant1'
+              }
             />
           </div>
         </form>
