@@ -37,11 +37,6 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
     setShowVisualModal(true); // Mostrar modal de visualización después de aceptar
   };
 
-  const handleCloseAll = () => {
-    setShowResponsibleModal(false);
-    setShowVisualModal(false);
-  };
-
   return (
     <div
       className={`card w-10/12 h-full flex flex-col gap-4 py-6 px-10 rounded-2xl ${
@@ -53,10 +48,12 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
       </h4>
       <div className="flex flex-row gap-16">
         <div className="flex flex-col gap-1 min-w-1/4">
+          <p className="subtitle-md"><strong>Responsable: </strong>{list.responsable}</p>
           {!isGroup && <p><strong>Estudiante: </strong> {registrations[0]?.nombre}</p>}
           {isGroup && <p><strong>Nro de estudiantes:</strong> {list.cantidad}</p>}
         </div>
         <div className="flex flex-col gap-1 min-w-1/12">
+          <p className="subtitle-md"><strong>CI:</strong> {list.ci}</p>
           {!isGroup && <p className="subtitle-md"><strong>CI:</strong> {registrations[0]?.ci}</p>}
         </div>
         {!isGroup && (
