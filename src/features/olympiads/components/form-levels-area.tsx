@@ -234,11 +234,11 @@ export default function FormLevelsArea() {
               {tableData.length > 0 ? (
                 <TableLevesArea data={tableData} />
               ) : selectedOlympiad ? (
-                <p className="text-center py-4">
+                <p className="text-center py-4 text-neutral">
                   No hay datos disponibles para esta olimpiada
                 </p>
               ) : (
-                <p className="text-center py-4">
+                <p className="text-center py-4 text-neutral">
                   Seleccione una olimpiada para ver datos
                 </p>
               )}

@@ -47,7 +47,7 @@ export default function FormDataPart() {
   const debouncedCheckCi = useCallback(
     (ciValue: string) => {
       if (!ciValue || ciValue.length < 4) {
-        return; 
+        return;
       }
 
       debounce(async (value: string) => {
@@ -376,7 +376,7 @@ export default function FormDataPart() {
             <Dropdown
               label="Departamento"
               placeholder="Seleccionar departamento"
-              className="w-full lg:w-[480px]"
+              className="w-ful"
               value={watch('olimpista.depa') ?? ''}
               options={
                 departamentos
