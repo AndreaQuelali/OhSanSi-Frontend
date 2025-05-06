@@ -91,10 +91,6 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
           <PaymentOrderModal
             isOpen={showVisualModal}
             onClose={() => setShowVisualModal(false)}
-            onDownload={() => {
-              // aquí defines qué pasa al hacer clic en "Descargar"
-              console.log("Descargar PDF");
-            }}
             data={{
               ci: list.ci,
               nombres: "Nombre del responsable", // reemplaza con datos reales

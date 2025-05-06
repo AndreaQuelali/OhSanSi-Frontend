@@ -43,14 +43,6 @@ export const ResponsibleModal = ({ onClose, text, onConfirm, children }: ModalPr
 
                             errors={errors}
                             />
-                            <InputText
-                            label="Nombre completo del responsable"
-                            name="ci"
-                            placeholder="Ingresar nombre completo del responsable"
-                            className="w-full"
-                            register={register}
-                            errors={errors}
-                            />
                     </div>
                     <div className="flex flex-row justify-end space-x-4 mb-2">
                         <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
