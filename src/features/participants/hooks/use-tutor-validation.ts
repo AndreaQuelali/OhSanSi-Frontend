@@ -36,5 +36,5 @@ export function useTutorValidation(ciTutor: string) {
     return () => clearTimeout(timeoutId); // Limpia si ciTutor cambia antes de los 500ms
   }, [ciTutor]);
 
-  return { tutorError };
+  return { tutorError, setTutorError };
 }
