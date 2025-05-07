@@ -39,35 +39,76 @@ type Props = {
 };
 
 const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate }) => {
+  console.log("list en RegistrationCard:", list); 
   const isGroup = list.cantidad > 1;
   const [showVisualModal, setShowVisualModal] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
+  const [modalTipo, setModalTipo] = useState<"individual" | "grupal" | null>(null);
+
+  const convertirNumeroALetras = (monto: number): string => {
+    // Puedes usar librerías como `numero-a-letras` si deseas más precisión
+    return `Son: ${monto} Bolivianos`;
+  };
+
   const handleOpenVisualModal = async () => {
-    if (!list.id_lista) return;
-  
     try {
-      const response = await axios.get(`${API_URL}/boleta-de-pago-grupal/${list.id_lista}`);
-      const { responsable, pago, detalle_grupo } = response.data;
+      // 1. Obtener la inscripción del usuario
+      const inscripcionResp = await axios.get(`${API_URL}/inscripciones/${list.ci}`);
+      const listas = inscripcionResp.data.listas;
   
+      // 2. Buscar la lista por ID
+      console.log("list.id_lista:", list.id_lista);
+      console.log("listas:", listas);
+      const listaEncontrada = listas.find((l: any) => l.id_lista === Number(list.id_lista));
+      console.log("Lista encontrada:", listaEncontrada);
+      if (!listaEncontrada) throw new Error("No se encontró la lista de inscripción");
+  
+      const tipo = listaEncontrada.detalle.tipo as "individual" | "grupal";
+      setModalTipo(tipo); // Guardamos tipo para renderizar luego
+  
+      let paymentDataTemp: PaymentData;
+  
+      if (tipo === "grupal") {
+        const response = await axios.get(`${API_URL}/boleta-de-pago-grupal/${list.id_lista}`);
+        const { responsable, pago, detalle_grupo } = response.data;
+  
+        paymentDataTemp = {
+          ci: responsable.ci,
+          nombres: responsable.nombres,
+          apellidos: responsable.apellidos,
+          cantidadOlimpistas: detalle_grupo.participantes_unicos,
+          total: pago.total_a_pagar,
+          totalLiteral: convertirNumeroALetras(pago.total_a_pagar), // si usas función externa
+          fecha: new Date(pago.fecha_pago).toLocaleDateString(),
+          hora: new Date(pago.fecha_pago).toLocaleTimeString(),
+          nroOrden: pago.referencia,
+        };
+  
+      } else {
+        const response = await axios.get(`${API_URL}/boleta-de-pago-individual/${list.id_lista}`);
+        const { responsable, pago } = response.data;
+  
+        paymentDataTemp = {
+          ci: responsable.ci,
+          nombres: responsable.nombres,
+          apellidos: responsable.apellidos,
+          cantidadOlimpistas: 1,
+          total: pago.total,
+          totalLiteral: convertirNumeroALetras(pago.total), // si usas función externa
+          fecha: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString(),
+          nroOrden: pago.referencia,
+        };
+      }
+  
+      setPaymentData(paymentDataTemp);
       setShowVisualModal(true);
   
-      // Podrías pasar los datos reales al modal aquí
-      setPaymentData({
-        ci: responsable.ci,
-        nombres: responsable.nombres,
-        apellidos: responsable.apellidos,
-        cantidadOlimpistas: detalle_grupo.participantes_unicos,
-        total: pago.total_a_pagar,
-        totalLiteral: "Debe convertir a texto aquí",
-        fecha: new Date(pago.fecha_pago).toLocaleDateString(),
-        hora: new Date(pago.fecha_pago).toLocaleTimeString(),
-        nroOrden: pago.referencia,
-      });
     } catch (error) {
-      console.error("Error al obtener la boleta de pago grupal", error);
+      console.error("Error al abrir boleta", error);
     }
-  };
+  };  
 
   return (
     <div
@@ -106,14 +147,23 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
           />
         </div>
 
-        {/* Modal de Visualización */}
-        {showVisualModal && paymentData && (
+        {showVisualModal && paymentData && modalTipo === "grupal" && (
           <PaymentOrderModal
             isOpen={showVisualModal}
             onClose={() => setShowVisualModal(false)}
             data={paymentData}
           />
         )}
+
+        {showVisualModal && paymentData && modalTipo === "individual" && (
+          <PaymentOrderModalInd
+            isOpen={showVisualModal}
+            onClose={() => setShowVisualModal(false)}
+            data={paymentData}
+          />
+        )}
+
+
       </div>
     </div>
   );

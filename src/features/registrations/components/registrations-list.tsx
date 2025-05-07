@@ -49,45 +49,49 @@ const RegistrationsList: React.FC = () => {
       if (!Array.isArray(listas)) {
         throw new Error("El campo 'listas' no es un arreglo.");
       }
+
+      // Obtenemos el responsable antes de usarlo
+      const responsableName = `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim();
   
       const mapped: RegistrationData[] = listas.map((item: any) => {
         // Individual
         if (item.detalle?.tipo === "individual") {
           const olimpista = item.detalle.olimpista;
           const niveles = item.detalle.niveles || [];
-  
+        
           const registrations: Registration[] = niveles.map((nivel: any) => ({
             nombre: `${olimpista?.nombres || ""} ${olimpista?.apellidos || ""}`.trim(),
             ci: olimpista?.ci || "Sin CI",
             area: nivel.area || "Sin área",
             categoria: nivel.nombre || "Sin categoría",
           }));
-  
+        
           return {
             list: {
               cantidad: registrations.length,
-              responsable: `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim(),
+              responsable: responsableName,
               ci: responsable?.ci || "Sin CI",
               estado: item.estado || "Pendiente",
+              id_lista: item.id_lista, // Asegúrate de incluir `id_lista` para inscripciones individuales
             },
             registrations,
           };
         }
-  
+        
         // Grupal
         if (item.detalle?.tipo === "grupal") {
           return {
             list: {
               cantidad: item.detalle.cantidad_estudiantes || 0,
-              responsable: `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim(),
+              responsable: responsableName,
               ci: responsable?.ci || "Sin CI",
               estado: item.estado || "Pendiente",
-              id_lista: item.id_lista,
+              id_lista: item.id_lista, // Aquí también
             },
             registrations: [], // No hay detalle de estudiantes en este caso
           };
         }
-  
+        
         return null;
       }).filter(Boolean) as RegistrationData[];
   
@@ -99,7 +103,6 @@ const RegistrationsList: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   const onSubmit = (values: FormData) => {
     if (values.ci && values.ci.length >= 4) {

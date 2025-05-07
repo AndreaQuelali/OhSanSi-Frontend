@@ -63,17 +63,10 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
         <div  ref={contentRef}>
                         {/* Logos y encabezados */}
             <div className="flex justify-between items-start">
-            <img src="/assets/images/logoUMSS.png" alt="Logo UMSS" className="w-40" />
-            <div className="text-right">
-                <div className="flex flex-row items-center gap-1">
-                <img src="/assets/images/ohsansi2.png" alt="Logo Sansi" className="w-20 mx-auto" />
-                <p className="text-secondary subtitle-md"><strong>Sansi!</strong></p>
-                </div>
+            <img src="/assets/images/logoUMSS (1).png" alt="Logo UMSS" className="w-40" />
             </div>
-            </div>
-
+            <p className="text-right subtitle-md text-secondary">N° {data.nroOrden}</p>
             <h2 className="headline-md text-primary text-center mb-4">ORDEN DE PAGO</h2>
-            <p className="text-right headline-sm text-secondary">N° {data.nroOrden}</p>
 
             <div className="mb-4">
             <p className="subtitle-md text-onBack mb-4"><strong>Responsable:</strong></p>
