@@ -21,6 +21,7 @@ export default function FormAreaPart() {
     handleSubmit,
     formState: { errors, isValid: formFieldsValid },
     watch,
+    control,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -28,7 +29,6 @@ export default function FormAreaPart() {
       'tutor.ci': '',
     },
   });
-  // Añadir estado para el modal
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
@@ -40,7 +40,7 @@ export default function FormAreaPart() {
     olimpistaError,
     loading,
   } = useOlimpistaData(ciOlimpista);
-  const { tutorError } = useTutorValidation(ciTutor);
+  const { tutorError, setTutorError } = useTutorValidation(ciTutor);
   const { formIsValid } = useFormValidity({
     formFieldsValid,
     nivelesSeleccionados,
@@ -64,6 +64,10 @@ export default function FormAreaPart() {
     method: 'GET',
   });
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
+
+  const clearTutorError = () => {
+    setTutorError(null);
+  };
   const limiteAlcanzado =
     Object.keys(nivelesSeleccionados).length >= maxCategorias;
 
@@ -208,11 +212,12 @@ export default function FormAreaPart() {
       alert('Error al realizar el registro. Por favor intente nuevamente.');
     }
   };
+
   return (
     <div className="my-6">
       <form
         onSubmit={(e) => {
-          e.preventDefault(); 
+          e.preventDefault();
           handleSubmit(handleRegistrar)(e);
         }}
         className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0"
@@ -225,6 +230,8 @@ export default function FormAreaPart() {
           register={register}
           errors={errors}
           tutorError={tutorError}
+          clearTutorError={clearTutorError}
+          control={control}
         />
 
         <AreasGridSection
@@ -247,12 +254,12 @@ export default function FormAreaPart() {
         )}
 
         <FormButtons formIsValid={formIsValid} />
-        <ResponsiblePersonModal
-          isOpen={showResponsibleModal}
-          onClose={() => setShowResponsibleModal(false)}
-          onConfirm={handleResponsibleConfirm}
-        />
       </form>
+      <ResponsiblePersonModal
+        isOpen={showResponsibleModal}
+        onClose={() => setShowResponsibleModal(false)}
+        onConfirm={handleResponsibleConfirm}
+      />
     </div>
   );
 }

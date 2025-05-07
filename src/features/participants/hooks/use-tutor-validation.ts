@@ -32,5 +32,5 @@ export function useTutorValidation(ciTutor: string) {
     verificarTutor();
   }, [ciTutor]);
 
-  return { tutorError };
+  return { tutorError, setTutorError };
 }

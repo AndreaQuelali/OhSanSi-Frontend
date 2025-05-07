@@ -1,17 +1,36 @@
 import { InputText } from '@/components';
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
+import { useEffect } from 'react';
 
 interface ParticipantFormHeaderProps {
   register: UseFormRegister<any>;
   errors: FieldErrors;
   tutorError: string | null;
+  clearTutorError?: () => void;
+  control?: any;
 }
 
 export default function ParticipantFormHeader({
   register,
   errors,
   tutorError,
+  clearTutorError,
+  control,
 }: ParticipantFormHeaderProps) {
+  const tutorCi = control
+    ? useWatch({
+        control,
+        name: 'tutor.ci',
+        defaultValue: '',
+      })
+    : '';
+
+  useEffect(() => {
+    if (clearTutorError && (!tutorCi || tutorCi === '')) {
+      clearTutorError();
+    }
+  }, [tutorCi, clearTutorError]);
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 items-start gap-4 mb-6 mt-10">
       <div className="flex flex-col">
@@ -47,7 +66,7 @@ export default function ParticipantFormHeader({
           }}
           errors={errors}
         />
-        {tutorError && (
+        {tutorError && tutorCi && (
           <p
             className={`text-error subtitle-sm text-wrap ${errors.tutor?.ci ? 'mt-1' : 'mt-[-20px]'}`}
           >

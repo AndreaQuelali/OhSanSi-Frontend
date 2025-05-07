@@ -49,7 +49,7 @@ export default function ResponsiblePersonModal({
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
       ) {
-        handleCancel();
+        onClose();
       }
     };
 
@@ -60,7 +60,7 @@ export default function ResponsiblePersonModal({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -144,7 +144,7 @@ export default function ResponsiblePersonModal({
         <InputText
           label="CI del responsable"
           name="responsibleCi"
-          placeholder="Ingresar CI del profesor"
+          placeholder="Ingresar CI del responsable"
           className="w-full"
           register={register}
           validationRules={{
