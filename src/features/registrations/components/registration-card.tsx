@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import PaymentOrderModal from "./payment-order-modal";
 import { API_URL } from "@/config/api-config";
 import axios from "axios";
+import { PaymentOrderModalInd } from "./payment-order-modal-individual";
 
 type Registration = {
   nombre: string;

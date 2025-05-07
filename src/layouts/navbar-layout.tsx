@@ -69,10 +69,42 @@ export default function NavbarLayout() {
                 <ul>
                   <li>
                     <Link
-                      to="/register-applicants"
+                      to="/incripciones"
                       className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
-                      Postulante
+                      Inscripciones
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register-olimpists"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro de Olimpista
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register-tutor"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro de Tutor
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register-selected-areas"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro Olimpista a Area
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register-data-excel"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro Excel
                     </Link>
                   </li>
                   <li>

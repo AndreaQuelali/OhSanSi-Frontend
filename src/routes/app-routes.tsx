@@ -31,12 +31,13 @@ export default function AppRoutes() {
             path="/register-olimpists"
             element={<RegisterParticipantPage />}
           />
-          <Route path="/register-tutor" element={<RegistrationsPage />} />   
+          <Route path="/register-tutor" element={<RegisterTutorPage />} />
           <Route
             path="/register-selected-areas"
             element={<RegisterSelectedAreasPage />}
           />
           <Route path="/register-data-excel" element={<RegisterDataExcel />} />
+          <Route path="/incripciones" element={<RegistrationsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
