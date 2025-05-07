@@ -13,6 +13,7 @@ import ParticipantFormHeader from './form-header';
 import AreasGridSection from './selection-grid-areas';
 import AreaSelectionModal from './selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
+import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 
 export default function FormAreaPart() {
   const {
@@ -27,7 +28,8 @@ export default function FormAreaPart() {
       'tutor.ci': '',
     },
   });
-
+  // Añadir estado para el modal
+  const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
 
@@ -75,16 +77,15 @@ export default function FormAreaPart() {
       return;
     }
 
-    setNivelesSeleccionadosTemp((prev) => {
-      const nivelYaSeleccionado = prev.some(
-        (n) => n.id_nivel === nivel.id_nivel,
-      );
-      if (nivelYaSeleccionado) {
-        return prev.filter((n) => n.id_nivel !== nivel.id_nivel);
-      } else {
-        return [...prev, nivel];
-      }
-    });
+    const nivelesYaRegistrados = nivelesSeleccionadosTemp.filter(
+      (n) => n.registrado,
+    );
+
+    if (nivelesSeleccionadosTemp.some((n) => n.id_nivel === nivel.id_nivel)) {
+      setNivelesSeleccionadosTemp([...nivelesYaRegistrados]);
+    } else {
+      setNivelesSeleccionadosTemp([...nivelesYaRegistrados, nivel]);
+    }
   };
 
   const handleModalAceptar = () => {
@@ -177,10 +178,20 @@ export default function FormAreaPart() {
       return;
     }
 
+    setShowResponsibleModal(true);
+  };
+
+  const handleResponsibleConfirm = async (responsibleCi: string) => {
+    const nivelesNuevos = Object.values(nivelesSeleccionados)
+      .flat()
+      .filter((nivel) => !nivel.registrado)
+      .map((nivel) => nivel.id_nivel);
+
     const payload = {
       ci: ciOlimpista,
       niveles: nivelesNuevos,
-      ci_tutor: ciTutor || null,
+      'ci-tutor': ciTutor || null,
+      'ci-responsable': responsibleCi,
     };
 
     try {
@@ -190,17 +201,20 @@ export default function FormAreaPart() {
       );
 
       alert('Registro exitoso');
-      console.log('Response:', response.data);
+      console.log(response);
       window.location.href = '/register-selected-areas';
     } catch (err) {
       console.error('Error:', err);
+      alert('Error al realizar el registro. Por favor intente nuevamente.');
     }
   };
-
   return (
     <div className="my-6">
       <form
-        onSubmit={handleSubmit(handleRegistrar)}
+        onSubmit={(e) => {
+          e.preventDefault(); 
+          handleSubmit(handleRegistrar)(e);
+        }}
         className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0"
       >
         <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
@@ -233,6 +247,11 @@ export default function FormAreaPart() {
         )}
 
         <FormButtons formIsValid={formIsValid} />
+        <ResponsiblePersonModal
+          isOpen={showResponsibleModal}
+          onClose={() => setShowResponsibleModal(false)}
+          onConfirm={handleResponsibleConfirm}
+        />
       </form>
     </div>
   );
