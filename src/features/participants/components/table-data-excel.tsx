@@ -77,7 +77,7 @@ export const TablaOlimpistas: React.FC<TableProps> = ({ data }) => {
           columns={columns}
           data={data}
           pagination
-          paginationPerPage={3}
+          paginationPerPage={10}
           paginationComponent={CustomPagination}
           customStyles={customStyles}
           noHeader
