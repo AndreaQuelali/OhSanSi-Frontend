@@ -12,6 +12,8 @@ interface PaymentData {
   fecha: string;
   hora: string;
   nroOrden: string;
+  unitario: number;
+  niveles: { nivel_id: number; nombre_nivel: string; area: string }[];
 }
 
 interface PaymentPreviewModalProps {
@@ -42,16 +44,12 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
       html2pdf().set(opt).from(contentRef.current).save();
     }
   };
-  const datas = [
-    { id: 1, count: '2', concept: 'Cuaderno Universitario', money: '15.00 Bs' },
-    {
-      id: 2,
-      count: '1',
-      concept: 'Matricula Gestión 2025',
-      money: '350.00 Bs',
-    },
-  ];
-
+  const datas = data.niveles.map((nivel, index) => ({
+    id: index + 1,
+    count: `${index + 1}`,
+    concept: nivel.area,
+    money: `${data.unitario.toFixed(2)} Bs`,
+  }));
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
