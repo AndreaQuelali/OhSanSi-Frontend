@@ -21,33 +21,48 @@ export default function CardArea({
     (nivel) => nivel.registrado,
   );
 
-  const cantidadNivelesRegistrados = nivelesSeleccionados.filter(
+  const nivelesRegistrados = nivelesSeleccionados.filter(
     (nivel) => nivel.registrado,
-  ).length;
+  );
 
-  const cantidadNivelesSeleccionados = nivelesSeleccionados.filter(
+  const nivelesSeleccionadosNoRegistrados = nivelesSeleccionados.filter(
     (nivel) => !nivel.registrado,
-  ).length;
+  );
 
+  const cantidadNivelesSeleccionados = nivelesSeleccionadosNoRegistrados.length;
   const nivelesDisponibles = niveles.length;
-  const nivelesOcupados = nivelesSeleccionados.length;
-  const nivelesDisponiblesSinSeleccionar = nivelesDisponibles - nivelesOcupados;
+  const nivelesDisponiblesSinSeleccionar = nivelesDisponibles;
   const esAreaRegistrada = tieneNivelesRegistrados;
   const esAreaSeleccionada = nivelesSeleccionados.length > 0;
+  const areaBloqueada = esAreaRegistrada;
+
+  const handleClick = () => {
+    if (!areaBloqueada) {
+      onClick();
+    }
+  };
 
   return (
     <div
       className={`border ${
         esAreaRegistrada
-          ? 'border-primary bg-green-50'
+          ? 'border-primary bg-primary'
           : esAreaSeleccionada
-            ? 'border-primary bg-blue-50'
+            ? 'border-primary border-2 bg-blue-50'
             : 'border-gray-400 bg-white'
-      } rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow`}
-      onClick={onClick}
+      } rounded-lg p-4 ${
+        areaBloqueada
+          ? 'cursor-not-allowed opacity-80'
+          : 'cursor-pointer hover:shadow-md'
+      } transition-shadow`}
+      onClick={handleClick}
     >
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg text-gray-800">{area}</h3>
+        <h3
+          className={`font-bold text-lg ${esAreaRegistrada ? 'text-white' : ' text-gray-800'}`}
+        >
+          {area}
+        </h3>
 
         {esAreaRegistrada ? (
           <div className="inline-flex items-center bg-green-100 text-primary px-2 py-1 rounded text-sm">
@@ -67,22 +82,33 @@ export default function CardArea({
       <div className="text-sm text-gray-600">
         {esAreaRegistrada && (
           <div className="mt-1">
-            <span className="font-medium">Niveles registrados:</span>{' '}
-            {cantidadNivelesRegistrados}
+            <ul className="list-disc mt-1">
+              {nivelesRegistrados.map((nivel) => (
+                <li
+                  className="list-none text-center text-xl text-surface"
+                  key={nivel.id_nivel}
+                >
+                  {nivel.nombre_nivel}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         {cantidadNivelesSeleccionados > 0 && (
           <div className="mt-1">
-            <span className="font-medium">Niveles seleccionados:</span>{' '}
-            {cantidadNivelesSeleccionados}
+            <span className="font-medium">Nivel seleccionado:</span>{' '}
+            {nivelesSeleccionadosNoRegistrados
+              .map((nivel) => nivel.nombre_nivel)
+              .join(', ')}
           </div>
         )}
-        <div className="mt-1">
-          <span className="font-medium">Niveles disponibles:</span>{' '}
-          {nivelesDisponiblesSinSeleccionar}
-        </div>
+        {!areaBloqueada && cantidadNivelesSeleccionados === 0 && (
+          <div className="mt-1">
+            <span className="font-medium">Niveles disponibles:</span>{' '}
+            {nivelesDisponiblesSinSeleccionar}
+          </div>
+        )}
       </div>
-
     </div>
   );
 }

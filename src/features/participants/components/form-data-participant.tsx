@@ -77,7 +77,7 @@ export default function FormDataPart() {
 
       if (ciTutorValue === ciOlimpistaValue) {
         clearErrors('olimpista.citutor');
-        return; 
+        return;
       }
 
       try {
@@ -128,7 +128,7 @@ export default function FormDataPart() {
         debouncedCheckCiTutorRef.current(citutor, ci);
       }
     }
-  }, [citutor, ci]); 
+  }, [citutor, ci]);
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -223,6 +223,7 @@ export default function FormDataPart() {
       fecha_nacimiento: data.olimpista.birthday,
       correo_electronico: data.olimpista.email,
       ci_tutor: data.olimpista.citutor,
+      celular: data.olimpista.phone,
       unidad_educativa: data.olimpista.colegio,
       id_grado: data.olimpista.grade,
     };
@@ -384,7 +385,7 @@ export default function FormDataPart() {
             {ci && citutor && ci === citutor && (
               <InputText
                 label="Número de celular"
-                name="phone"
+                name="olimpista.phone"
                 placeholder="Ingresar número de celular"
                 className="w-full"
                 register={register}

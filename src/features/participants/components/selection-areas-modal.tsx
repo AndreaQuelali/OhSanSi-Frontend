@@ -37,6 +37,12 @@ export default function AreaSelectionModal({
         <h3 className="text-lg font-semibold mb-4">
           Seleccione un nivel para el área: {selectedArea}
         </h3>
+
+        {/* Aviso de restricción */}
+        <p className="text-sm text-gray-600 mb-4 font-medium">
+          Solo puede seleccionar un nivel por área.
+        </p>
+
         <div className="grid grid-cols-2 gap-4">
           {areasDisponibles[selectedArea].map((nivel) => (
             <div
@@ -60,7 +66,32 @@ export default function AreaSelectionModal({
                 }
               }}
             >
-              <p>{nivel.nombre_nivel}</p>
+              {/* Radio button visual para indicar selección única */}
+              <div className="flex items-center justify-center">
+                <div className="mr-2">
+                  <div
+                    className={`w-4 h-4 rounded-full border ${
+                      nivelesSeleccionadosTemp.some(
+                        (n) => n.id_nivel === nivel.id_nivel && !n.registrado,
+                      )
+                        ? 'border-white bg-white'
+                        : 'border-gray-400'
+                    }`}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {nivelesSeleccionadosTemp.some(
+                      (n) => n.id_nivel === nivel.id_nivel && !n.registrado,
+                    ) && (
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    )}
+                  </div>
+                </div>
+                <p>{nivel.nombre_nivel}</p>
+              </div>
             </div>
           ))}
         </div>

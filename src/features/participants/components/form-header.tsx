@@ -48,7 +48,9 @@ export default function ParticipantFormHeader({
           errors={errors}
         />
         {tutorError && (
-          <p className="text-error subtitle-sm text-wrap mt-[-22px]">
+          <p
+            className={`text-error subtitle-sm text-wrap ${errors.tutor?.ci ? 'mt-1' : 'mt-[-20px]'}`}
+          >
             {tutorError}
           </p>
         )}

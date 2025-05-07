@@ -48,7 +48,7 @@ export const Table: React.FC<TableProps> = ({ data }) => {
     <div className="w-full flex flex-col items-center justify-center my-6">
       {data.length === 0 ? (
         <span className="text-neutral2 body-lg">
-          No hay niveles o categorías registradas en áreas
+          No hay niveles o categorías registradas
         </span>
       ) : (
         <>
