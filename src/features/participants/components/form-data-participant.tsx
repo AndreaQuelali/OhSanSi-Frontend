@@ -50,6 +50,10 @@ export default function FormDataPart() {
         return;
       }
 
+      if (ciValue.length > 8) {
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${API_URL}/olimpistas/cedula/${ciValue}`,
@@ -60,11 +64,17 @@ export default function FormDataPart() {
             message: 'Este número de cédula ya está registrado.',
           });
         } else {
-          clearErrors('olimpista.ci');
+          const currentError = errors?.olimpista?.ci?.type;
+          if (currentError === 'manual') {
+            clearErrors('olimpista.ci');
+          }
         }
       } catch (error) {
         console.error('Error al verificar el CI:', error);
-        clearErrors('olimpista.ci');
+        const currentError = errors?.olimpista?.ci?.type;
+        if (currentError === 'manual') {
+          clearErrors('olimpista.ci');
+        }
       }
     }, 500),
   );
@@ -72,6 +82,10 @@ export default function FormDataPart() {
   const debouncedCheckCiTutorRef = useRef(
     debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
       if (!ciTutorValue || ciTutorValue.length < 4) {
+        return;
+      }
+
+      if (ciTutorValue.length > 8) {
         return;
       }
 
@@ -100,17 +114,25 @@ export default function FormDataPart() {
       }
     }, 500),
   );
+
   const checkCi = () => {
-    if (ci) debouncedCheckCiRef.current(ci);
+    if (ci && ci.length <= 8) {
+      debouncedCheckCiRef.current(ci);
+    }
   };
 
   const checkCiTutor = () => {
     if (citutor) {
       if (citutor === ci) {
-        clearErrors('olimpista.citutor');
+        const currentError = errors?.olimpista?.citutor?.type;
+        if (currentError === 'manual') {
+          clearErrors('olimpista.citutor');
+        }
         return;
       }
-      debouncedCheckCiTutorRef.current(citutor, ci);
+      if (citutor.length <= 8) {
+        debouncedCheckCiTutorRef.current(citutor, ci);
+      }
     }
   };
 
@@ -121,14 +143,17 @@ export default function FormDataPart() {
   }, [ci]);
 
   useEffect(() => {
-    if (citutor && citutor.length >= 4) {
-      if (citutor === ci) {
-        clearErrors('olimpista.citutor');
-      } else {
-        debouncedCheckCiTutorRef.current(citutor, ci);
-      }
+    if (!citutor || citutor.length < 4) {
+      return;
     }
-  }, [citutor, ci]);
+
+    if (citutor === ci) {
+      clearErrors('olimpista.citutor');
+      return;
+    }
+
+    debouncedCheckCiTutorRef.current(citutor, ci);
+  }, [citutor, ci, clearErrors]);
 
   useEffect(() => {
     if (selectedDepartment) {
