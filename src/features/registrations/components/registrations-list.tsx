@@ -18,6 +18,7 @@ type List = {
   responsable: string;
   ci: string;
   estado: string;
+  id_lista?: number;
 };
 
 type RegistrationData = {
@@ -81,6 +82,7 @@ const RegistrationsList: React.FC = () => {
               responsable: `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim(),
               ci: responsable?.ci || "Sin CI",
               estado: item.estado || "Pendiente",
+              id_lista: item.id_lista,
             },
             registrations: [], // No hay detalle de estudiantes en este caso
           };

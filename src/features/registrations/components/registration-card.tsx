@@ -1,6 +1,8 @@
 import { Button } from "@/components";
 import React, { useState } from "react";
 import PaymentOrderModal from "./payment-order-modal";
+import { API_URL } from "@/config/api-config";
+import axios from "axios";
 
 type Registration = {
   nombre: string;
@@ -14,6 +16,19 @@ type List = {
   responsable: string;
   ci: string;
   estado: string;
+  id_lista?: number;
+};
+
+type PaymentData = {
+  ci: string;
+  nombres: string;
+  apellidos: string;
+  cantidadOlimpistas: number;
+  total: number;
+  totalLiteral: string;
+  fecha: string;
+  hora: string;
+  nroOrden: string;
 };
 
 type Props = {
@@ -25,8 +40,33 @@ type Props = {
 const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate }) => {
   const isGroup = list.cantidad > 1;
   const [showVisualModal, setShowVisualModal] = useState(false);
+  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
-  const handleOpenVisualModal = () => setShowVisualModal(true);
+  const handleOpenVisualModal = async () => {
+    if (!list.id_lista) return;
+  
+    try {
+      const response = await axios.get(`${API_URL}/boleta-de-pago-grupal/${list.id_lista}`);
+      const { responsable, pago, detalle_grupo } = response.data;
+  
+      setShowVisualModal(true);
+  
+      // Podrías pasar los datos reales al modal aquí
+      setPaymentData({
+        ci: responsable.ci,
+        nombres: responsable.nombres,
+        apellidos: responsable.apellidos,
+        cantidadOlimpistas: detalle_grupo.participantes_unicos,
+        total: pago.total_a_pagar,
+        totalLiteral: "Debe convertir a texto aquí",
+        fecha: new Date(pago.fecha_pago).toLocaleDateString(),
+        hora: new Date(pago.fecha_pago).toLocaleTimeString(),
+        nroOrden: pago.referencia,
+      });
+    } catch (error) {
+      console.error("Error al obtener la boleta de pago grupal", error);
+    }
+  };
 
   return (
     <div
@@ -48,7 +88,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
           {!isGroup && <p className="subtitle-md"><strong>CI:</strong> {registrations[0]?.ci}</p>}
         </div>
         {!isGroup && (
-          <div className="flex flex-col gap-1 min-w-1/6">
+          <div className="flex flex-col gap-1 min-w-1/6 max-w-1/6">
             <p className="subtitle-md"><strong>Área:</strong> {registrations[0]?.area}</p>
             <p className="subtitle-md"><strong>Nivel/Categoría:</strong> {registrations[0]?.categoria}</p>
           </div>
@@ -66,21 +106,11 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
         </div>
 
         {/* Modal de Visualización */}
-        {showVisualModal && (
+        {showVisualModal && paymentData && (
           <PaymentOrderModal
             isOpen={showVisualModal}
             onClose={() => setShowVisualModal(false)}
-            data={{
-              ci: list.ci,
-              nombres: "Nombre del responsable", // reemplaza con datos reales
-              apellidos: "Apellido del responsable",
-              cantidadOlimpistas: list.cantidad,
-              total: list.cantidad * 10,
-              totalLiteral: "Cien bolivianos",
-              fecha: new Date().toLocaleDateString(),
-              hora: new Date().toLocaleTimeString(),
-              nroOrden: "OP-00123",
-            }}
+            data={paymentData}
           />
         )}
       </div>
