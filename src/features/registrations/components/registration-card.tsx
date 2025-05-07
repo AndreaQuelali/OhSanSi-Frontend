@@ -2,6 +2,7 @@ import { Button } from "@/components";
 import React, { useState } from "react";
 import { ResponsibleModal } from "./data-responsible-modal";
 import PaymentOrderModal from "./payment-order-modal";
+import { PaymentOrderModalInd } from "./payment-order-modal-individual";
 
 type Registration = {
   nombre: string;
@@ -85,7 +86,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
 
         {/* Modal de Visualización */}
         {showVisualModal && (
-          <PaymentOrderModal
+          <PaymentOrderModalInd
             isOpen={showVisualModal}
             onClose={() => setShowVisualModal(false)}
             data={{
