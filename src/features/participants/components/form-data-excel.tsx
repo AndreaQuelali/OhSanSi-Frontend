@@ -1,4 +1,4 @@
-import { Button, Modal } from "@/components";
+import { Button, InputText, Modal } from "@/components";
 import CardUploadFile from "./card-upload-file";
 import { useNavigate } from "react-router";
 import { useState, useRef } from "react";
@@ -7,6 +7,7 @@ import axios from "axios";
 import { API_URL } from "@/config/api-config";
 import { TablaOlimpistas } from "./table-data-excel";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useForm } from "react-hook-form";
 
 interface OlimpistaRow {
   Nombre: string;
@@ -32,7 +33,20 @@ interface OlimpistaRow {
   CorreoelectronicoProfesor: string;
 }
 
+interface FormFields {
+  ci_responsable: string;
+}
+
 export default function FormDataExcel() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid: formFieldsValid },
+    watch,
+  } = useForm<FormFields>({
+    mode: 'all',
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [fileName, setFileName] = useState<string | null>(null);
@@ -114,8 +128,12 @@ export default function FormDataExcel() {
   const handleRegister = async () => {
     if (rawDataToSend.length === 0) return alert("No hay datos para registrar.");
   
+    const ciResponsable = watch("ci_responsable");
+    if (!ciResponsable) return alert("Debe ingresar el CI del responsable.");
+  
     try {
       const response2 = await axios.post(`${API_URL}/registro/excel`, {
+        ci_responsable_inscripcion: ciResponsable,
         data: rawDataToSend,
       });
   
@@ -165,7 +183,7 @@ export default function FormDataExcel() {
   
     } catch (error) {
       console.error("Error al registrar los datos:", error);
-      alert("Hubo un error al registrar los datos.");
+      alert("Hubo un error al registrar los datos. Verifique el formato del excel y que no haya campos vacíos.");
     }
   };
 
@@ -177,6 +195,23 @@ export default function FormDataExcel() {
         </h1>
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-10 mb-5">
+          <div className="flex">
+            <InputText
+              label="Cédula de identidad del responsable de la lista (Deberá haber sido registrado previamente)"
+              name="ci_responsable"
+              placeholder="Ingresar ci del responsable"
+              className="w-full"
+              register={register}
+              validationRules={{
+                required: 'Debe ingresar la cédula del responsable.',
+                pattern: {
+                  value: /^(?! )[0-9]+(?<! )$/,
+                  message: 'Solo se permiten números y no puede haber espacios.',
+                },
+              }}
+              errors={errors}
+            />
+          </div>
           <div className="flex flex-col">
             <CardUploadFile
               fileName={fileName}
