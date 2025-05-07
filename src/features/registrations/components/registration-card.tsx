@@ -1,6 +1,5 @@
 import { Button } from "@/components";
 import React, { useState } from "react";
-import { ResponsibleModal } from "./data-responsible-modal";
 import PaymentOrderModal from "./payment-order-modal";
 
 type Registration = {
@@ -25,21 +24,13 @@ type Props = {
 
 const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate }) => {
   const isGroup = list.cantidad > 1;
-
-  const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const [showVisualModal, setShowVisualModal] = useState(false);
 
-  const handleOpenModal = () => setShowResponsibleModal(true);
-  const handleCloseModal = () => setShowResponsibleModal(false);
-
-  const handleResponsibleAccept = () => {
-    setShowResponsibleModal(false);
-    setShowVisualModal(true); // Mostrar modal de visualización después de aceptar
-  };
+  const handleOpenVisualModal = () => setShowVisualModal(true);
 
   return (
     <div
-      className={`card w-10/12 h-full flex flex-col gap-4 py-6 px-10 rounded-2xl ${
+      className={`card w-full h-full flex flex-col gap-4 py-6 px-10 rounded-2xl ${
         isAlternate ? "bg-surface" : "bg-white"
       }`}
     >
@@ -50,7 +41,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
         <div className="flex flex-col gap-1 min-w-1/4">
           <p className="subtitle-md"><strong>Responsable: </strong>{list.responsable}</p>
           {!isGroup && <p><strong>Estudiante: </strong> {registrations[0]?.nombre}</p>}
-          {isGroup && <p><strong>Nro de estudiantes:</strong> {list.cantidad}</p>}
+          {isGroup && <p><strong>Nro de inscripciones:</strong> {list.cantidad}</p>}
         </div>
         <div className="flex flex-col gap-1 min-w-1/12">
           <p className="subtitle-md"><strong>CI:</strong> {list.ci}</p>
@@ -70,18 +61,9 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             label={isGroup ? "Generar boleta por lista" : "Generar boleta"}
-            onClick={handleOpenModal}
+            onClick={handleOpenVisualModal}
           />
         </div>
-
-        {/* Modal de Responsable */}
-        {showResponsibleModal && (
-          <ResponsibleModal
-            text="Generar boleta de pago"
-            onClose={handleCloseModal}
-            onConfirm={handleResponsibleAccept}
-          />
-        )}
 
         {/* Modal de Visualización */}
         {showVisualModal && (
@@ -93,11 +75,11 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
               nombres: "Nombre del responsable", // reemplaza con datos reales
               apellidos: "Apellido del responsable",
               cantidadOlimpistas: list.cantidad,
-              total: list.cantidad * 10, // por ejemplo, Bs 10 por cada uno
-              totalLiteral: "Cien bolivianos", // aquí podrías usar un conversor
+              total: list.cantidad * 10,
+              totalLiteral: "Cien bolivianos",
               fecha: new Date().toLocaleDateString(),
               hora: new Date().toLocaleTimeString(),
-              nroOrden: "OP-00123", // genera o trae de tu backend
+              nroOrden: "OP-00123",
             }}
           />
         )}

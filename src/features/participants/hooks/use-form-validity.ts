@@ -12,6 +12,7 @@ interface FormValidityProps {
   >;
   olimpistaError: string | null;
   tutorError: string | null;
+  ciTutor: string; // 👈 nuevo parámetro
 }
 
 export function useFormValidity({
@@ -20,6 +21,7 @@ export function useFormValidity({
   areasDisponibles,
   olimpistaError,
   tutorError,
+  ciTutor,
 }: FormValidityProps) {
   const [formIsValid, setFormIsValid] = useState(false);
 
@@ -31,10 +33,12 @@ export function useFormValidity({
 
       const hayAreasDisponibles = Object.keys(areasDisponibles).length > 0;
 
+      const tutorErrorIsRelevant = ciTutor.trim() !== '' && !!tutorError;
+
       return (
         formFieldsValid &&
         !olimpistaError &&
-        !tutorError &&
+        !tutorErrorIsRelevant &&
         hasNewSelections &&
         hayAreasDisponibles
       );
@@ -47,6 +51,7 @@ export function useFormValidity({
     areasDisponibles,
     olimpistaError,
     tutorError,
+    ciTutor,
   ]);
 
   return { formIsValid };

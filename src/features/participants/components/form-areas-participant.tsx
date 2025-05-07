@@ -45,6 +45,7 @@ export default function FormAreaPart() {
     areasDisponibles,
     olimpistaError,
     tutorError,
+    ciTutor,
   });
 
   const [modalVisible, setModalVisible] = useState(false);

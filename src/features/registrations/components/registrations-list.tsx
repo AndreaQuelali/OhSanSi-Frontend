@@ -3,8 +3,9 @@ import RegistrationCard from "./registration-card";
 import { Button, InputText } from "@/components";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { API_URL } from '@/config/api-config';
+import { API_URL } from "@/config/api-config";
 
+// Tipos para los datos de inscripción
 type Registration = {
   nombre: string;
   ci: string;
@@ -42,31 +43,52 @@ const RegistrationsList: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API_URL}/inscripciones/${ci}`);
-      const inscripciones = response.data.data;
-
-      const mapped: RegistrationData[] = inscripciones.map((item: any) => {
-        const inscripciones = item.detalle.tipo === "grupal"
-          ? item.detalle.inscripciones
-          : [item.detalle];
-
-        const registrations: Registration[] = inscripciones.map((i: any) => ({
-          nombre: i.olimpista?.nombre || "Desconocido",
-          ci: i.olimpista?.ci || "Sin CI",
-          area: i.nivel?.area || "Sin área",
-          categoria: i.nivel?.nombre || "Sin categoría",
-        }));
-
-        return {
-          list: {
-            cantidad: registrations.length,
-            responsable: item.nombre_responsable || "No especificado",
-            ci: item.ci_responsable_inscripcion,
-            estado: item.estado || "Pendiente",
-          },
-          registrations,
-        };
-      });
-
+      const { responsable, listas } = response.data;
+  
+      if (!Array.isArray(listas)) {
+        throw new Error("El campo 'listas' no es un arreglo.");
+      }
+  
+      const mapped: RegistrationData[] = listas.map((item: any) => {
+        // Individual
+        if (item.detalle?.tipo === "individual") {
+          const olimpista = item.detalle.olimpista;
+          const niveles = item.detalle.niveles || [];
+  
+          const registrations: Registration[] = niveles.map((nivel: any) => ({
+            nombre: `${olimpista?.nombres || ""} ${olimpista?.apellidos || ""}`.trim(),
+            ci: olimpista?.ci || "Sin CI",
+            area: nivel.area || "Sin área",
+            categoria: nivel.nombre || "Sin categoría",
+          }));
+  
+          return {
+            list: {
+              cantidad: registrations.length,
+              responsable: `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim(),
+              ci: responsable?.ci || "Sin CI",
+              estado: item.estado || "Pendiente",
+            },
+            registrations,
+          };
+        }
+  
+        // Grupal
+        if (item.detalle?.tipo === "grupal") {
+          return {
+            list: {
+              cantidad: item.detalle.cantidad_estudiantes || 0,
+              responsable: `${responsable?.nombres || ""} ${responsable?.apellidos || ""}`.trim(),
+              ci: responsable?.ci || "Sin CI",
+              estado: item.estado || "Pendiente",
+            },
+            registrations: [], // No hay detalle de estudiantes en este caso
+          };
+        }
+  
+        return null;
+      }).filter(Boolean) as RegistrationData[];
+  
       setData(mapped);
     } catch (err) {
       console.error("Error al obtener inscripciones", err);
@@ -75,6 +97,7 @@ const RegistrationsList: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   const onSubmit = (values: FormData) => {
     if (values.ci && values.ci.length >= 4) {
@@ -83,7 +106,7 @@ const RegistrationsList: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full h-full flex flex-col items-center justify-center"
@@ -108,7 +131,7 @@ const RegistrationsList: React.FC = () => {
         </div>
       </form>
 
-      <div className="mt-10 w-10/12 mx-auto">
+      <div className="mt-10 min-w-10/12 mx-auto">
         {data.map((item, index) => (
           <RegistrationCard
             key={index}

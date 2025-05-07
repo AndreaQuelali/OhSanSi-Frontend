@@ -183,7 +183,7 @@ export default function FormDataExcel() {
   
     } catch (error) {
       console.error("Error al registrar los datos:", error);
-      alert("Hubo un error al registrar los datos. Verifique el formato del excel y que no haya campos vacíos.");
+      alert("Hubo un error al registrar los datos. Verifique el formato del excel y que los campos obligatorios no estén vacíos");
     }
   };
 
