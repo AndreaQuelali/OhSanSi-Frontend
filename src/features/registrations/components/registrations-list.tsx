@@ -30,7 +30,12 @@ type FormData = {
   ci: string;
 };
 
-const RegistrationsList: React.FC = () => {
+type RegistrationsListProps = {
+  showGenerateButton?: boolean; // opcional, por defecto false
+  title?: string;
+};
+
+const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButton = false, title = "Inscripciones", }) => {
   const {
     register,
     handleSubmit,
@@ -117,7 +122,7 @@ const RegistrationsList: React.FC = () => {
         className="w-full h-full flex flex-col items-center justify-center"
       >
         <h1 className="text-center text-primary mb-8 headline-lg">
-          Inscripciones
+          {title}
         </h1>
         <div className="flex flex-row gap-16 w-10/12 items-center justify-center">
           <InputText
@@ -143,6 +148,7 @@ const RegistrationsList: React.FC = () => {
             list={item.list}
             registrations={item.registrations}
             isAlternate={index % 2 === 0}
+            showGenerateButton={showGenerateButton}
           />
         ))}
         {!loading && data.length === 0 && (

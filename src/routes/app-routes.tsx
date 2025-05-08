@@ -10,7 +10,7 @@ import RegisterDataExcel from '@/features/participants/pages/register-data-excel
 import RegisterParticipantPage from '@/features/participants/pages/register-participant';
 import RegisterSelectedAreasPage from '@/features/participants/pages/register-selected-areas';
 import RegisterTutorPage from '@/features/participants/pages/register-tutor';
-import RegistrationsPage from '@/features/registrations/pages/registrations';
+import RegistrationsPage from '@/features/registrations/pages/pre-registrations';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 

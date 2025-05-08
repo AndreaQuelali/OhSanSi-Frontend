@@ -38,9 +38,10 @@ type Props = {
   list: List;
   registrations: Registration[];
   isAlternate?: boolean;
+  showGenerateButton?: boolean; // <-- Nueva prop
 };
 
-const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate }) => {
+const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, showGenerateButton }) => {
   console.log("list en RegistrationCard:", list); 
   const isGroup = list.cantidad > 1;
   const [showVisualModal, setShowVisualModal] = useState(false);
@@ -128,8 +129,8 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
       <div className="flex flex-row gap-16">
         <div className="flex flex-col gap-1 min-w-1/4">
           <p className="subtitle-md"><strong>Responsable: </strong>{list.responsable}</p>
-          {!isGroup && <p><strong>Estudiante: </strong> {registrations[0]?.nombre}</p>}
-          {isGroup && <p><strong>Nro de inscripciones:</strong> {list.cantidad}</p>}
+          {!isGroup && <p className="subtitle-md"><strong>Estudiante: </strong> {registrations[0]?.nombre}</p>}
+          {isGroup && <p className="subtitle-md"><strong>Nro de inscripciones:</strong> {list.cantidad}</p>}
         </div>
         <div className="flex flex-col gap-1 min-w-1/12">
           <p className="subtitle-md"><strong>CI:</strong> {list.ci}</p>
@@ -146,12 +147,14 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate })
         <div className="flex flex-col gap-1 min-w-1/8">
           <p className="subtitle-md"><strong>Estado:</strong> {list.estado}</p>
         </div>
-        <div className="flex flex-col gap-2 ml-auto">
-          <Button
-            label={isGroup ? "Generar boleta por lista" : "Generar boleta"}
-            onClick={handleOpenVisualModal}
-          />
-        </div>
+        {showGenerateButton && (
+          <div className="flex flex-col gap-2 ml-auto">
+            <Button
+              label={isGroup ? "Generar boleta" : "Generar boleta"}
+              onClick={handleOpenVisualModal}
+            />
+          </div>
+        )}
 
         {showVisualModal && paymentData && modalTipo === "grupal" && (
           <PaymentOrderModal

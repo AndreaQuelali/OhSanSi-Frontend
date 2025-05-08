@@ -1,4 +1,4 @@
 export * from './index';
 export * from './components/registration-card';
 export * from './components/registrations-list';
-export * from './pages/registrations';
+export * from './pages/pre-registrations';
