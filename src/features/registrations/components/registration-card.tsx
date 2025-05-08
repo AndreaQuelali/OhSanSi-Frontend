@@ -57,7 +57,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
   const handleOpenVisualModal = async () => {
     try {
       // 1. Obtener la inscripción del usuario
-      const inscripcionResp = await axios.get(`${API_URL}/inscripciones/${list.ci}`);
+      const inscripcionResp = await axios.get(`${API_URL}/inscripciones/${list.ci}/PENDIENTE`);
       const listas = inscripcionResp.data.listas;
   
       // 2. Buscar la lista por ID

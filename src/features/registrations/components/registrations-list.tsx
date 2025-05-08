@@ -48,9 +48,12 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
   const getRegistrations = async (ci: string) => {
     setLoading(true);
     try {
-      const endpoint = showGenerateButton
-        ? `${API_URL}/inscripciones/${ci}/PAGADO`
-        : `${API_URL}/inscripciones/${ci}/PENDIENTE`;
+      let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
+
+      if (title === "Inscripciones" && !showGenerateButton) {
+        endpoint = `${API_URL}/inscripciones/${ci}/PAGADO`;
+      }
+  
       const response = await axios.get(endpoint);
       const { responsable, listas } = response.data;
   
