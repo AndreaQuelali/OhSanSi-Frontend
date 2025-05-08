@@ -22,6 +22,7 @@ export default function FormAreaPart() {
     formState: { errors, isValid: formFieldsValid },
     watch,
     control,
+    setValue,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -64,13 +65,14 @@ export default function FormAreaPart() {
   }>(`${API_URL}/olimpiada/max-categorias?fecha=${formattedDate}`, {
     method: 'GET',
   });
+  const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>(
+    {},
+  );
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
 
   const clearTutorError = () => {
     setTutorError(null);
   };
-  const limiteAlcanzado =
-    Object.keys(nivelesSeleccionados).length >= maxCategorias;
 
   const handleNivelToggle = (nivel: {
     id_nivel: number;
@@ -95,6 +97,22 @@ export default function FormAreaPart() {
 
   const handleModalAceptar = () => {
     if (selectedArea) {
+      const hayNivelesNuevosSeleccionados = nivelesSeleccionadosTemp.some(
+        (nivel) => !nivel.registrado,
+      );
+
+      if (hayNivelesNuevosSeleccionados) {
+        setTutoresPorArea((prev) => ({
+          ...prev,
+          [selectedArea]: ciTutor || '',
+        }));
+      } else {
+        setTutoresPorArea((prev) => {
+          const { [selectedArea]: _, ...rest } = prev;
+          return rest;
+        });
+      }
+
       const nivelesRegistradosEnArea =
         areasDisponibles[selectedArea]?.filter((nivel) => nivel.registrado) ||
         [];
@@ -147,8 +165,11 @@ export default function FormAreaPart() {
         }
       });
     }
+
+    setValue('tutor.ci', '');
     setModalVisible(false);
   };
+
   const handleModalCancelar = () => {
     setModalVisible(false);
     setNivelesSeleccionadosTemp([]);
@@ -156,14 +177,34 @@ export default function FormAreaPart() {
 
   const handleAreaClick = (area: string) => {
     const seleccionados = nivelesSeleccionados[area] || [];
-
-    if (seleccionados.length === 0 && limiteAlcanzado) {
-      alert('Ya has alcanzado el límite de áreas permitidas.');
+    const tutorCiForArea = tutoresPorArea[area] || '';
+    setValue('tutor.ci', tutorCiForArea);
+    if (seleccionados.length > 0) {
+      setSelectedArea(area);
+      setNivelesSeleccionadosTemp([...seleccionados]);
+      setModalVisible(true);
       return;
     }
 
+    if (maxCategorias <= 0) {
+      console.warn(
+        'Valor de maxCategorias no válido:',
+        maxCategorias,
+        'permitiendo selección',
+      );
+      setSelectedArea(area);
+      setNivelesSeleccionadosTemp([]);
+      setModalVisible(true);
+      return;
+    }
+
+    const areasConSelecciones = Object.keys(nivelesSeleccionados).length;
+    if (areasConSelecciones >= maxCategorias) {
+      alert(`Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`);
+      return;
+    }
     setSelectedArea(area);
-    setNivelesSeleccionadosTemp([...seleccionados]);
+    setNivelesSeleccionadosTemp([]);
     setModalVisible(true);
   };
 
@@ -187,16 +228,23 @@ export default function FormAreaPart() {
   };
 
   const handleResponsibleConfirm = async (responsibleCi: string) => {
-    const nivelesNuevos = Object.values(nivelesSeleccionados)
-      .flat()
-      .filter((nivel) => !nivel.registrado)
-      .map((nivel) => nivel.id_nivel);
+    const nivelesNuevosFlat = Object.entries(nivelesSeleccionados).flatMap(
+      ([area, niveles]) => {
+        return niveles
+          .filter((nivel) => !nivel.registrado)
+          .map((nivel) => ({
+            id_nivel: nivel.id_nivel,
+            ...(tutoresPorArea[area]
+              ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
+              : {}),
+          }));
+      },
+    );
 
     const payload = {
-      ci: ciOlimpista,
-      niveles: nivelesNuevos,
-      'ci-tutor': ciTutor || null,
-      'ci-responsable': responsibleCi,
+      ci: parseInt(ciOlimpista),
+      niveles: nivelesNuevosFlat,
+      ci_responsable: parseInt(responsibleCi),
     };
 
     try {
@@ -227,13 +275,7 @@ export default function FormAreaPart() {
           Registro de Olimpista en una o varias áreas de competencia
         </h2>
 
-        <ParticipantFormHeader
-          register={register}
-          errors={errors}
-          tutorError={tutorError}
-          clearTutorError={clearTutorError}
-          control={control}
-        />
+        <ParticipantFormHeader register={register} errors={errors} />
 
         <AreasGridSection
           loading={loading}
@@ -251,6 +293,11 @@ export default function FormAreaPart() {
             onToggleNivel={handleNivelToggle}
             onAccept={handleModalAceptar}
             onCancel={handleModalCancelar}
+            register={register}
+            errors={errors}
+            tutorError={tutorError}
+            clearTutorError={clearTutorError}
+            control={control}
           />
         )}
 
