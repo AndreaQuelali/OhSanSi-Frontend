@@ -48,7 +48,10 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
   const getRegistrations = async (ci: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/inscripciones/${ci}`);
+      const endpoint = showGenerateButton
+        ? `${API_URL}/inscripciones/${ci}/PAGADO`
+        : `${API_URL}/inscripciones/${ci}/PENDIENTE`;
+      const response = await axios.get(endpoint);
       const { responsable, listas } = response.data;
   
       if (!Array.isArray(listas)) {
