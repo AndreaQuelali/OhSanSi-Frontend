@@ -115,6 +115,43 @@ export default function FormLevelsArea() {
       return;
     }
 
+    try {
+      const olimpResponse = await axios.get(`${API_URL}/olimpiadas`);
+      const currentDate = new Date();
+
+      const olimpiada = olimpResponse.data.find(
+        (olimpiada: any) => olimpiada.id_olimpiada === olympiadId,
+      );
+
+      if (!selectedOlympiad) {
+        alert('No se encontró la olimpiada seleccionada');
+        return;
+      }
+      const fechaInicio = new Date(olimpiada.fecha_inicio);
+      const fechaFin = new Date(olimpiada.fecha_fin);
+      const creadoEn = new Date(olimpiada.creado_en);
+
+      if (currentDate >= fechaInicio && currentDate <= fechaFin) {
+        alert(
+          'No se puede registrar, la olimpiada está en etapa de inscripción',
+        );
+        return;
+      }
+
+      if (!(currentDate >= creadoEn && currentDate < fechaInicio)) {
+        alert(
+          'No se puede registrar fuera del periodo de preparación de la olimpiada',
+        );
+        return;
+      }
+    } catch (error) {
+      console.error('Error al verificar el estado de la olimpiada:', error);
+      alert(
+        'No se pudo verificar la etapa de la olimpiada. Intenta nuevamente.',
+      );
+      return;
+    }
+
     const response = await axios.get(
       `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
     );

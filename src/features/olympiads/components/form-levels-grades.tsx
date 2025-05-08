@@ -103,7 +103,46 @@ export default function FormLevelsGrades() {
       (item: any) => item.id_nivel === levelId,
     );
     if (alreadyRegistered) {
-      alert('Este nivel ya se encuentra registrado');
+      alert('Este nivel ya se encuentra asociado a grados');
+      return;
+    }
+
+    try {
+      const olimpResponse = await axios.get(`${API_URL}/olimpiadas`);
+      const currentDate = new Date();
+
+      const algunaEnInscripcion = olimpResponse.data.some((olimpiada: any) => {
+        const fechaInicio = new Date(olimpiada.fecha_inicio);
+        const fechaFin = new Date(olimpiada.fecha_fin);
+
+        return currentDate >= fechaInicio && currentDate <= fechaFin;
+      });
+
+      if (algunaEnInscripcion) {
+        alert(
+          'No se puede registrar, la olimpiada está en etapa de inscripción',
+        );
+        return;
+      }
+
+      const dentroDePreparacion = olimpResponse.data.some((olimpiada: any) => {
+        const creadoEn = new Date(olimpiada.creado_en);
+        const fechaInicio = new Date(olimpiada.fecha_inicio);
+
+        return currentDate >= creadoEn && currentDate < fechaInicio;
+      });
+
+      if (!dentroDePreparacion) {
+        alert(
+          'No se puede registrar fuera del periodo de preparación de las olimpiadas',
+        );
+        return;
+      }
+    } catch (error) {
+      console.error('Error al verificar el estado de las olimpiadas:', error);
+      alert(
+        'No se pudo verificar la etapa de las olimpiadas. Intenta nuevamente.',
+      );
       return;
     }
 
@@ -116,7 +155,7 @@ export default function FormLevelsGrades() {
 
     try {
       await axios.post(`${API_URL}/asociar-grados-nivel`, payload);
-      alert('Nivel registrado correctamente');
+      alert('Nivel asociado a grados correctamente');
       window.location.reload();
     } catch (error) {
       console.error('Error al registrar:', error);
@@ -134,7 +173,7 @@ export default function FormLevelsGrades() {
         >
           <div className="flex flex-col">
             <h1 className="text-center text-primary mb-8 headline-lg">
-              Registro de Niveles/Categorías
+              Registro de Niveles/Categorías con Grados
             </h1>
 
             <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
@@ -243,7 +282,7 @@ export default function FormLevelsGrades() {
             </div>
 
             <h2 className="text-primary subtitle-md mt-7 md:mt-5">
-              Niveles/Categorías registradas
+              Niveles/Categorías asociadas con grados
             </h2>
             <div className="mt-2 md:w-11/12 mx-auto">
               <Table data={tableData} />
