@@ -19,11 +19,22 @@ export default function DesktopMenu({
   return (
     <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
       <li
-        className={`${location.pathname === '/incripciones' ? 'text-red-500' : 'text-primary'}`}
+        className={`${location.pathname === '/registrations' ? 'text-red-500' : 'text-primary'}`}
         ref={adminMenuRef}
       >
-        <Link to="/incripciones" className="hover:text-secondary subtitle-sm">
+        <Link to="/registrations" className="hover:text-secondary subtitle-sm">
           Inscripciones
+        </Link>
+      </li>
+      <li
+        className={`${location.pathname === '/pre-registrations' ? 'text-red-500' : 'text-primary'}`}
+        ref={adminMenuRef}
+      >
+        <Link
+          to="/pre-registrations"
+          className="hover:text-secondary subtitle-sm"
+        >
+          Preinscripciones
         </Link>
       </li>
       <DropdownMenu
@@ -33,6 +44,7 @@ export default function DesktopMenu({
           { label: 'Registro Tutor', path: '/register-tutor' },
           { label: 'Registro de Áreas', path: '/register-selected-areas' },
           { label: 'Registro Excel', path: '/register-data-excel' },
+          { label: 'Orden de Pago', path: '/generate-order-payment' },
         ]}
       />
       <li
