@@ -6,6 +6,7 @@ import {
 import { Home } from '@/features/olympiads/pages/home';
 
 import { RegisterLevelsAreaPage } from '@/features/olympiads/pages/register-levels-area';
+import { RegisterLevelsGradesPage } from '@/features/olympiads/pages/register-levels-grades';
 import RegisterDataExcel from '@/features/participants/pages/register-data-excel';
 import RegisterParticipantPage from '@/features/participants/pages/register-participant';
 import RegisterSelectedAreasPage from '@/features/participants/pages/register-selected-areas';
@@ -23,6 +24,10 @@ export default function AppRoutes() {
           <Route path="/register-info" element={<RegisterInfoPage />} />
           <Route path="/register-areas" element={<RegisterAreas />} />
           <Route path="/register-levels" element={<RegisterLevelsPage />} />
+          <Route
+            path="/register-levels-grades"
+            element={<RegisterLevelsGradesPage />}
+          />
           <Route
             path="/register-levels-area"
             element={<RegisterLevelsAreaPage />}
