@@ -12,6 +12,7 @@ export const InputText = <T extends FieldValues>({
   errors,
   validationRules = {},
   isRequired = true,
+
   onInput,
 }: InputProps<T>) => {
   const isTextType = type === 'text';
