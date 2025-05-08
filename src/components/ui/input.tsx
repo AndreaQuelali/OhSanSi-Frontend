@@ -12,10 +12,10 @@ export const InputText = <T extends FieldValues>({
   errors,
   validationRules = {},
   isRequired = true,
-  isMayus = true,
+
   onInput,
 }: InputProps<T>) => {
-  const isTextType = type === 'text' && isMayus === true;
+  const isTextType = type === 'text';
 
   const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget;

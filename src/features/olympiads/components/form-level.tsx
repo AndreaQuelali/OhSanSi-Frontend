@@ -128,7 +128,6 @@ export const FormLevel = () => {
               type="text"
               className="w-full"
               labelPadding="py-5"
-              isMayus={false}
               register={register}
               errors={errors}
               validationRules={{
@@ -163,7 +162,7 @@ export const FormLevel = () => {
             />
           </div>
           <h2 className="text-primary subtitle-md mb-5 mt-7 md:mt-5">
-            Niveles/Categorías registrados
+            Niveles/Categorías registradas
           </h2>
           <div className="mt-2 md:w-11/12 mx-auto">
             <TableLevel data={levelsRegistered} />
