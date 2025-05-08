@@ -1,5 +1,8 @@
 import { Button } from '@/components';
 import IconClose from '@/components/icons/icon-close';
+import { InputText } from '@/components';
+import { FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
+import { useEffect } from 'react';
 
 interface NivelType {
   id_nivel: number;
@@ -14,6 +17,11 @@ interface AreaSelectionModalProps {
   onToggleNivel: (nivel: NivelType) => void;
   onAccept: () => void;
   onCancel: () => void;
+  register: UseFormRegister<any>;
+  errors: FieldErrors;
+  tutorError: string | null;
+  clearTutorError?: () => void;
+  control?: any;
 }
 
 export default function AreaSelectionModal({
@@ -23,7 +31,26 @@ export default function AreaSelectionModal({
   onToggleNivel,
   onAccept,
   onCancel,
+  register,
+  errors,
+  tutorError,
+  clearTutorError,
+  control,
 }: AreaSelectionModalProps) {
+  const tutorCi = control
+    ? useWatch({
+        control,
+        name: 'tutor.ci',
+        defaultValue: '',
+      })
+    : '';
+
+  useEffect(() => {
+    if (clearTutorError && (!tutorCi || tutorCi === '')) {
+      clearTutorError();
+    }
+  }, [tutorCi, clearTutorError]);
+
   return (
     <div className="fixed inset-0 bg-white bg-opacity-30 flex justify-center items-center z-50">
       <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -34,11 +61,31 @@ export default function AreaSelectionModal({
           <IconClose className="w-6 h-6" />
         </div>
 
-        <h3 className="text-lg font-semibold mb-4">
-          Seleccione un nivel para el área: {selectedArea}
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">Área: {selectedArea}</h3>
 
-        {/* Aviso de restricción */}
+        <div className="mb-6">
+          <InputText
+            label="Cédula de identidad del tutor académico (Opcional)"
+            name="tutor.ci"
+            placeholder="Ingresar ci del tutor académico"
+            className="w-full"
+            register={register}
+            isRequired={false}
+            validationRules={{
+              pattern: {
+                value: /^(?! )[0-9]+(?<! )$/,
+                message: 'Solo se permiten números y no puede haber espacios.',
+              },
+            }}
+            errors={errors}
+          />
+          {tutorError && tutorCi && (
+            <p className="text-error subtitle-sm mt-1">{tutorError}</p>
+          )}
+        </div>
+
+        <h4 className="font-medium mb-2">Seleccione un nivel:</h4>
+
         <p className="text-sm text-gray-600 mb-4 font-medium">
           Solo puede seleccionar un nivel por área.
         </p>
@@ -66,7 +113,6 @@ export default function AreaSelectionModal({
                 }
               }}
             >
-              {/* Radio button visual para indicar selección única */}
               <div className="flex items-center justify-center">
                 <div className="mr-2">
                   <div
