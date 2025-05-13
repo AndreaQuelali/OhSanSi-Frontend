@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router';
 import IconUser from '@/components/icons/icon-user';
 import DropdownMenu from './dropdown-menu';
 import IconDown from '../icons/icon-down';
+import { useEffect } from 'react';
 
 type DesktopMenuProps = {
   isAdminMenuOpen: boolean;
@@ -15,6 +16,22 @@ export default function DesktopMenu({
   adminMenuRef,
 }: DesktopMenuProps) {
   const location = useLocation();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        adminMenuRef.current &&
+        !adminMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsAdminMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [adminMenuRef, setIsAdminMenuOpen]);
 
   return (
     <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
