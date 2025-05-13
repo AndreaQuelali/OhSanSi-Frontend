@@ -6,7 +6,6 @@ import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { TableAreas } from './table-areas';
 
-
 type FormData = {
   inputArea: string;
 };
@@ -18,9 +17,9 @@ type TableRow = {
 
 const normalizeAreaName = (str: string) =>
   removeAccents(str.toUpperCase())
-    .replace(/ ?- ?/g, ' ') 
-    .replace(/\s+/g, ' ')    
-    .trim();   
+    .replace(/ ?- ?/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 const removeAccents = (str: string) =>
   str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -47,10 +46,12 @@ const FormAreas = () => {
       const response = await axios.get(`${API_URL}/areas`);
       const areasFromDB = response.data;
 
-      const formatted = areasFromDB.map((area: { id_area: number; nombre: string }) => ({
-        id: area.id_area,
-        area: area.nombre,
-      }));
+      const formatted = areasFromDB.map(
+        (area: { id_area: number; nombre: string }) => ({
+          id: area.id_area,
+          area: area.nombre,
+        }),
+      );
 
       setAreasRegistradas(formatted);
     } catch (error) {
@@ -72,7 +73,7 @@ const FormAreas = () => {
 
       const isDuplicate = areas.some(
         (area: { nombre: string }) =>
-          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea)
+          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea),
       );
 
       if (isDuplicate) {
@@ -93,14 +94,14 @@ const FormAreas = () => {
   const handleRegister = async () => {
     setIsModalOpen(false);
     const inputArea = getValues('inputArea');
-  
+
     try {
       const payload = {
         nombre: inputArea,
       };
-  
+
       await axios.post(`${API_URL}/areas`, payload);
-  
+
       alert('Área registrada correctamente');
       reset();
       fetchAreas(); // recargar la tabla
@@ -108,14 +109,17 @@ const FormAreas = () => {
       console.error('Error al registrar el área:', error);
       alert(
         error.response?.data?.message ||
-          'Ocurrió un error al registrar el área.'
+          'Ocurrió un error al registrar el área.',
       );
     }
   };
 
   return (
     <div className="flex flex-col items-center w-full">
-      <form onSubmit={handleSubmit(onSubmit)} className="mx-5 mt-10 mb-32 md:w-9/12 lg:w-7/12">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-5 mt-10 mb-32 md:w-9/12 lg:w-7/12"
+      >
         <div className="flex flex-col">
           <h1 className="text-center headline-lg text-primary">
             Registro de Áreas de Competencia
@@ -132,10 +136,11 @@ const FormAreas = () => {
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre es obligatorio',
+                required: 'El nombre del área es obligatorio',
                 pattern: {
                   value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
-                  message: 'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
+                  message:
+                    'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
                 },
                 maxLength: {
                   value: 50,
@@ -159,7 +164,9 @@ const FormAreas = () => {
               variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
             />
           </div>
-          <h2 className="text-primary subtitle-md mb-5 mt-7 md:mt-5">Áreas registradas</h2>
+          <h2 className="text-primary subtitle-md mb-5 mt-7 md:mt-5">
+            Áreas registradas
+          </h2>
           <div className="mt-2 md:w-11/12 mx-auto">
             <TableAreas data={areasRegistradas} />
           </div>

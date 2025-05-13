@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import IconDown from '../icons/icon-down';
 
 type DropdownMenuProps = {
@@ -11,6 +11,17 @@ export default function DropdownMenu({ label, options }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const menuRef = useRef<HTMLLIElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <li ref={menuRef} className="relative" onClick={() => setIsOpen(!isOpen)}>
