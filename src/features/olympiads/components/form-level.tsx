@@ -131,7 +131,7 @@ export const FormLevel = () => {
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre es obligatorio',
+                required: 'El nombre del nivel es obligatorio',
                 pattern: {
                   value:
                     /^[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?:(?: |-| - | -|- | - )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)*$/,
