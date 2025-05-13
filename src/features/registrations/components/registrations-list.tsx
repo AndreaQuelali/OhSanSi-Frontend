@@ -125,7 +125,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
     <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full h-full flex flex-col items-center justify-center"
+        className="mb-32 w-11/12 md:w-9/12 lg:w-10/12"
       >
         <h1 className="text-center text-primary mb-8 headline-lg">
           {title}
@@ -145,9 +145,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
           />
           <Button type="submit" label="Consultar" disabled={loading} />
         </div>
-      </form>
-
-      <div className="mt-10 min-w-10/12 mx-auto">
+        <div className="mt-10 min-w-10/12 mx-auto">
         {data.map((item, index) => (
           <RegistrationCard
             key={index}
@@ -163,6 +161,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
           </p>
         )}
       </div>
+      </form>
     </div>
   );
 };

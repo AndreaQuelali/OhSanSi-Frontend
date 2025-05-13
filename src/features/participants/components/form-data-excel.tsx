@@ -8,6 +8,7 @@ import { API_URL } from "@/config/api-config";
 import { TablaOlimpistas } from "./table-data-excel";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useForm } from "react-hook-form";
+import ErrorModal from "./modal-error";
 
 interface OlimpistaRow {
   Nombre: string;
@@ -54,6 +55,8 @@ export default function FormDataExcel() {
   const [rawDataToSend, setRawDataToSend] = useState<any[][]>([]); 
   const inputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleClearFile = () => {
     setFileName(null);
@@ -116,76 +119,57 @@ export default function FormDataExcel() {
       }));
   
       setOlimpistas(parsedData);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al procesar el archivo Excel", error);
-      alert("No se pudo procesar el archivo. Asegúrate de que el formato es correcto.");
+
+      if (error.response?.data?.errors) {
+        const formatoErrors = error.response.data.errors.formato ?? [];
+
+        let mensaje = "Error en el formato del archivo Excel:\n";
+        if (formatoErrors.length > 0) {
+          mensaje += `\n• ${formatoErrors.join("\n• ")}`;
+        }
+
+        setErrorMessage(mensaje);
+        setShowErrorModal(true);
+      } else {
+        setErrorMessage("No se pudo procesar el archivo. Asegúrate de que el formato es correcto.");
+        setShowErrorModal(true);
+      }
+
       handleClearFile();
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };  
 
-  const handleRegister = async () => {
-    if (rawDataToSend.length === 0) return alert("No hay datos para registrar.");
-  
-    const ciResponsable = watch("ci_responsable");
-    if (!ciResponsable) return alert("Debe ingresar el CI del responsable.");
-  
-    try {
-      const response2 = await axios.post(`${API_URL}/registro/excel`, {
-        ci_responsable_inscripcion: ciResponsable,
-        data: rawDataToSend,
-      });
-  
-      const resultado = response2.data.resultado;
+const handleRegister = async () => {
+  if (rawDataToSend.length === 0) {
+    alert("No hay datos para registrar.");
+    return;
+  }
 
-      const erroresProfesoresFiltrados = (resultado?.profesores_errores || []).filter(
-        (item: { ci: number | null | undefined }) => item.ci !== null && item.ci !== undefined
-      );
-  
-      const errores = [
-        ...(resultado?.tutores_errores || []),
-        ...(resultado?.olimpistas_errores || []),
-        ...erroresProfesoresFiltrados, 
-      ];
-  
-      const omitidos = [
-        ...(resultado?.tutores_omitidos || []),
-        ...(resultado?.profesores_omitidos || []),
-      ];
-  
-      if (errores.length > 0 || omitidos.length > 0) {
-        let mensaje = "Algunos datos no fueron registrados correctamente:\n\n";
-  
-        if (omitidos.length > 0) {
-          mensaje += "Omitidos:\n";
-          omitidos.forEach((item) => {
-            mensaje += `• CI: ${item.ci} - ${item.message}\n`;
-          });
-          mensaje += "\n";
-        }
-  
-        if (errores.length > 0) {
-          mensaje += "Errores:\n";
-          errores.forEach((item) => {
-            const errorData = JSON.parse(item.error || "{}");
-            mensaje += `• CI: ${item.ci ?? "No se colocó el CI"} - ${errorData.message || "El olimpista no tiene tutor legal"}\n`;
-          });
-        }
-  
-        alert(mensaje);
-      } else {
-        alert("Datos registrados correctamente.");
-      }
-  
-      console.log("Res:", rawDataToSend);
-      console.log("Respuesta del backend:", response2.data);
-  
-    } catch (error) {
-      console.error("Error al registrar los datos:", error);
-      alert("Hubo un error al registrar los datos. Verifique el formato del excel y que los campos obligatorios no estén vacíos");
-    }
-  };
+  const ciResponsable = watch("ci_responsable");
+  if (!ciResponsable) {
+    alert("Debe ingresar el CI del responsable.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/registro/excel`, {
+      ci_responsable_inscripcion: ciResponsable,
+      data: rawDataToSend,
+    });
+
+    alert("Datos registrados correctamente.");
+
+    console.log("Res:", rawDataToSend);
+    console.log("Respuesta del backend:", response.data);
+  } catch (error) {
+    console.error("Error al registrar los datos:", error);
+    alert("Hubo un error al registrar los datos. Verifique el formato del excel y que los campos obligatorios no estén vacíos.");
+  }
+};
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -280,6 +264,14 @@ export default function FormDataExcel() {
           text="¿Estás seguro de que deseas registrar los datos?"
           onClose={() => setShowModal(false)}
           onConfirm={handleConfirmRegister}
+        />
+      )}
+      {showErrorModal && (
+        <ErrorModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+          errorMessage={errorMessage}
+          title="Error en el archivo Excel"
         />
       )}
     </div>
