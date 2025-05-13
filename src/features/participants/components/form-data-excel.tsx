@@ -143,33 +143,93 @@ export default function FormDataExcel() {
     }
   };  
 
-const handleRegister = async () => {
-  if (rawDataToSend.length === 0) {
-    alert("No hay datos para registrar.");
-    return;
+  const handleRegister = async () => {
+    if (rawDataToSend.length === 0) {
+      alert("No hay datos para registrar.");
+      return;
+    }
+
+    const ciResponsable = watch("ci_responsable");
+    if (!ciResponsable) {
+      alert("Debe ingresar el CI del responsable.");
+      return;
+    }
+
+try {
+  const response = await axios.post(`${API_URL}/registro/excel`, {
+    ci_responsable_inscripcion: ciResponsable,
+    data: rawDataToSend,
+  });
+
+  alert("Datos registrados correctamente.");
+  console.log("Respuesta del backend:", response.data);
+} catch (error: any) {
+  console.error("Error al registrar los datos:", error);
+
+  const data = error.response?.data;
+
+  // Caso 1: error con estructura completa
+  if (data?.resultado) {
+    const resultado = data.resultado;
+    let mensaje = `${data.message}\n`;
+
+    if (resultado.olimpistas_errores?.length > 0) {
+      mensaje += `\nErrores en olimpistas:\n`;
+      resultado.olimpistas_errores.forEach((olimpista: any) => {
+        mensaje += `• Fila ${olimpista.fila} (CI: ${olimpista.ci}): ${olimpista.error.join(", ")}\n`;
+      });
+    }
+
+    if (resultado.profesores_errores?.length > 0) {
+      mensaje += `\nErrores en profesores:\n`;
+      resultado.profesores_errores.forEach((prof: any) => {
+        mensaje += `• Fila ${prof.fila}: ${prof.error}\n`;
+      });
+    }
+
+    if (resultado.tutores_errores?.length > 0) {
+      mensaje += `\nErrores en tutores:\n`;
+      resultado.tutores_errores.forEach((tutor: any) => {
+        mensaje += `• Fila ${tutor.fila}: ${tutor.error}\n`;
+      });
+    }
+
+    const hayOmisiones =
+      resultado.profesores_omitidos?.length > 0 || resultado.tutores_omitidos?.length > 0;
+
+    if (hayOmisiones) {
+      mensaje += `\nInformación adicional:\n`;
+    }
+
+    if (resultado.profesores_omitidos?.length > 0) {
+      mensaje += `\nProfesores omitidos:\n`;
+      resultado.profesores_omitidos.forEach((prof: any) => {
+        mensaje += `• CI ${prof.ci}: ${prof.message}\n`;
+      });
+    }
+
+    if (resultado.tutores_omitidos?.length > 0) {
+      mensaje += `\nTutores omitidos:\n`;
+      resultado.tutores_omitidos.forEach((tutor: any) => {
+        mensaje += `• CI ${tutor.ci}: ${tutor.message}\n`;
+      });
+    }
+
+    setErrorMessage(mensaje);
+    setShowErrorModal(true);
+
+  } else if (data?.error) {
+    // Caso 2: error simple, sin resultado
+    const mensajeSimple = `Error: ${data.error}`;
+    setErrorMessage(mensajeSimple);
+    setShowErrorModal(true);
+  } else {
+    // Error inesperado
+    setErrorMessage("Hubo un error al registrar los datos. Verifique el formato del Excel.");
+    setShowErrorModal(true);
   }
-
-  const ciResponsable = watch("ci_responsable");
-  if (!ciResponsable) {
-    alert("Debe ingresar el CI del responsable.");
-    return;
-  }
-
-  try {
-    const response = await axios.post(`${API_URL}/registro/excel`, {
-      ci_responsable_inscripcion: ciResponsable,
-      data: rawDataToSend,
-    });
-
-    alert("Datos registrados correctamente.");
-
-    console.log("Res:", rawDataToSend);
-    console.log("Respuesta del backend:", response.data);
-  } catch (error) {
-    console.error("Error al registrar los datos:", error);
-    alert("Hubo un error al registrar los datos. Verifique el formato del excel y que los campos obligatorios no estén vacíos.");
-  }
-};
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
