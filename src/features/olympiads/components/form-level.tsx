@@ -134,9 +134,9 @@ export const FormLevel = () => {
                 required: 'El nombre es obligatorio',
                 pattern: {
                   value:
-                    /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?:(?: |-| - | -|- | - )[A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
+                    /^[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?:(?: |-| - | -|- | - )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)*$/,
                   message:
-                    'Solo se permiten letras, guion en medio y un solo espacio entre palabras',
+                    'Solo se permiten letras, números, guiones en medio y un solo espacio entre palabras',
                 },
 
                 maxLength: {
