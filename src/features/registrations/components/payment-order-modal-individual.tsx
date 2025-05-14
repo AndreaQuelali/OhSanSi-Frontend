@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import html2pdf from 'html2pdf.js';
 import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
@@ -28,10 +28,13 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
   data,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false); 
 
   if (!isOpen) return null;
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    setIsGeneratingPDF(true);
+    await new Promise((r) => setTimeout(r, 100)); 
     if (contentRef.current) {
       const opt = {
         margin: 0.5,
@@ -40,10 +43,11 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
         html2canvas: { scale: 3 },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
       };
-
-      html2pdf().set(opt).from(contentRef.current).save();
+      await html2pdf().set(opt).from(contentRef.current).save();
     }
+    setIsGeneratingPDF(false); 
   };
+
   const datas = data.niveles.map((nivel, index) => ({
     id: index + 1,
     count: `${index + 1}`,
@@ -94,7 +98,7 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
               <strong>DEBE</strong>
             </p>
           </div>
-          <TableBoleta data={datas} />
+          <TableBoleta data={datas} isForPDF={isGeneratingPDF} />
           <p className=" text-onBack body-sm mb-2">
             <strong className="text-primary">Nota:</strong> No vale como factura
             oficial
