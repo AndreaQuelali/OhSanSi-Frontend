@@ -82,7 +82,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
           apellidos: responsable.apellidos,
           cantidadOlimpistas: detalle_grupo.participantes_unicos,
           total: pago.total_a_pagar,
-          unitario: pago.unitario ?? 0, // O un valor fijo como 0
+          unitario: pago.monto_unitario,
            niveles: [], // No aplica en grupal, pero lo dejas vacío
           totalLiteral: convertirNumeroALetras(pago.total_a_pagar), // si usas función externa
           fecha: new Date(pago.fecha_pago).toLocaleDateString(),
@@ -94,17 +94,19 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
         const response = await axios.get(`${API_URL}/boleta-de-pago-individual/${list.id_lista}`);
         const { responsable, pago, niveles } = response.data;
 
+        const fechaPago = new Date(pago.fecha_pago);
+
         paymentDataTemp = {
           ci: responsable.ci,
           nombres: responsable.nombres,
           apellidos: responsable.apellidos,
-          cantidadOlimpistas: 1,
-          total: pago.total,
-          unitario: pago.unitario,
-          niveles, // <== ahora incluirás los niveles
-          totalLiteral: convertirNumeroALetras(pago.total),
-          fecha: new Date().toLocaleDateString(),
-          hora: new Date().toLocaleTimeString(),
+          cantidadOlimpistas: pago.total_inscripciones ?? 1,
+          total: pago.total_a_pagar,
+          unitario: pago.monto_unitario,
+          niveles,
+          totalLiteral: convertirNumeroALetras(pago.total_a_pagar),
+          fecha: fechaPago.toLocaleDateString(),
+          hora: fechaPago.toLocaleTimeString(),
           nroOrden: pago.referencia,
         };
       }

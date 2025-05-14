@@ -8,6 +8,7 @@ interface PaymentData {
   nombres: string;
   apellidos: string;
   cantidadOlimpistas: number;
+  unitario: number; 
   total: number;
   totalLiteral: string;
   fecha: string;
@@ -86,8 +87,12 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
             </thead>
             <tbody>
                 <tr>
-                <td className="border border-black px-2 py-3 subtitle-md">Cantidad de olimpistas inscritos</td>
+                <td className="border border-black px-2 py-3 subtitle-md">Cantidad de inscripciones</td>
                 <td className="border border-black px-2 py-3 subtitle-md">{data.cantidadOlimpistas}</td>
+                </tr>
+                <tr>
+                  <td className="border border-black px-2 py-3">Monto unitario por inscripción</td>
+                  <td className="border border-black px-2 py-3">{data.unitario}</td>
                 </tr>
                 <tr>
                 <td className="border border-black px-2 py-3"><strong>Total pago:</strong></td>
