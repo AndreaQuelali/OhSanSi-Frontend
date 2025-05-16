@@ -12,8 +12,8 @@ import RegisterParticipantPage from '@/features/participants/pages/register-part
 import RegisterSelectedAreasPage from '@/features/participants/pages/register-selected-areas';
 import RegisterTutorPage from '@/features/participants/pages/register-tutor';
 import GenerateOrderPaymentPage from '@/features/registrations/pages/generate-payment-order-page';
-import PreRegistrationsPage from '@/features/registrations/pages/pre-registrations';
 import RegistrationsPage from '@/features/registrations/pages/registrations';
+import UploadPaymentPage from '@/features/registrations/pages/upload-payment';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
@@ -45,11 +45,11 @@ export default function AppRoutes() {
           />
           <Route path="/register-data-excel" element={<RegisterDataExcel />} />
           <Route path="/registrations" element={<RegistrationsPage />} />
-          <Route path="/pre-registrations" element={<PreRegistrationsPage />} />
           <Route
             path="/generate-order-payment"
             element={<GenerateOrderPaymentPage />}
           />
+          <Route path="/upload-payment" element={<UploadPaymentPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

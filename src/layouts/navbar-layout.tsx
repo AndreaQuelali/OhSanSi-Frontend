@@ -96,7 +96,7 @@ export default function NavbarLayout() {
                       to="/register-selected-areas"
                       className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
-                      Registro Olimpista a Area
+                      Registro Olimpista a Área
                     </Link>
                   </li>
                   <li>
@@ -136,7 +136,15 @@ export default function NavbarLayout() {
                       to="/register-levels-area"
                       className="block px-4 py-2 text-sm text-primary hover:text-secondary"
                     >
-                      Registro de Niveles en Area
+                      Asociación Niveles con Grados
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register-levels-area"
+                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
+                    >
+                      Registro de Niveles en Área
                     </Link>
                   </li>
                 </ul>
