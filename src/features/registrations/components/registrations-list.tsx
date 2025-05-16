@@ -19,6 +19,7 @@ type List = {
   ci: string;
   estado: string;
   id_lista?: number;
+  tipo: "individual" | "grupal";
 };
 
 type RegistrationData = {
@@ -50,8 +51,8 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
     try {
       let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
 
-      if (title === "Inscripciones" && !showGenerateButton) {
-        endpoint = `${API_URL}/inscripciones/${ci}/PAGADO`;
+      if (title === "Registros de Inscripciones" && !showGenerateButton) {
+        endpoint = `${API_URL}/inscripciones/${ci}/TODOS`;
       }
   
       const response = await axios.get(endpoint);
@@ -83,7 +84,8 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
               responsable: responsableName,
               ci: responsable?.ci || "Sin CI",
               estado: item.estado || "Pendiente",
-              id_lista: item.id_lista, // Asegúrate de incluir `id_lista` para inscripciones individuales
+              id_lista: item.id_lista,
+              tipo: "individual", 
             },
             registrations,
           };
@@ -98,6 +100,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
               ci: responsable?.ci || "Sin CI",
               estado: item.estado || "Pendiente",
               id_lista: item.id_lista, // Aquí también
+              tipo: "grupal",
             },
             registrations: [], // No hay detalle de estudiantes en este caso
           };
@@ -125,7 +128,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({ showGenerateButto
     <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mb-32 w-11/12 md:w-9/12 lg:w-10/12"
+        className="mb-32 w-11/12 md:w-9/12 lg:w-full flex flex-col items-center justify-center"
       >
         <h1 className="text-center text-primary mb-8 headline-lg">
           {title}

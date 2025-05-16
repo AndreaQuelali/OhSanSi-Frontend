@@ -18,6 +18,7 @@ type List = {
   ci: string;
   estado: string;
   id_lista?: number;
+  tipo: "individual" | "grupal";
 };
 
 type PaymentData = {
@@ -26,8 +27,8 @@ type PaymentData = {
   apellidos: string;
   cantidadOlimpistas: number;
   total: number;
-  unitario: number; // <-- Agregar esto
-  niveles: { nivel_id: number; nombre_nivel: string; area: string }[]; // <-- Y esto
+  unitario: number; 
+  niveles: { nivel_id: number; nombre_nivel: string; area: string }[]; 
   totalLiteral: string;
   fecha: string;
   hora: string;
@@ -38,29 +39,27 @@ type Props = {
   list: List;
   registrations: Registration[];
   isAlternate?: boolean;
-  showGenerateButton?: boolean; // <-- Nueva prop
+  showGenerateButton?: boolean;
 };
 
-const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, showGenerateButton }) => {
+const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, showGenerateButton}) => {
   console.log("list en RegistrationCard:", list); 
-  const isGroup = list.cantidad > 1;
+  const isGroup = list.tipo === "grupal";
   const [showVisualModal, setShowVisualModal] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
   const [modalTipo, setModalTipo] = useState<"individual" | "grupal" | null>(null);
 
   const convertirNumeroALetras = (monto: number): string => {
-    // Puedes usar librerías como `numero-a-letras` si deseas más precisión
     return `Son: ${monto} Bolivianos`;
   };
 
   const handleOpenVisualModal = async () => {
     try {
-      // 1. Obtener la inscripción del usuario
+      
       const inscripcionResp = await axios.get(`${API_URL}/inscripciones/${list.ci}/PENDIENTE`);
       const listas = inscripcionResp.data.listas;
   
-      // 2. Buscar la lista por ID
       console.log("list.id_lista:", list.id_lista);
       console.log("listas:", listas);
       const listaEncontrada = listas.find((l: any) => l.id_lista === Number(list.id_lista));
@@ -68,7 +67,7 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
       if (!listaEncontrada) throw new Error("No se encontró la lista de inscripción");
   
       const tipo = listaEncontrada.detalle.tipo as "individual" | "grupal";
-      setModalTipo(tipo); // Guardamos tipo para renderizar luego
+      setModalTipo(tipo); 
   
       let paymentDataTemp: PaymentData;
   
@@ -83,8 +82,8 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
           cantidadOlimpistas: detalle_grupo.participantes_unicos,
           total: pago.total_a_pagar,
           unitario: pago.monto_unitario,
-           niveles: [], // No aplica en grupal, pero lo dejas vacío
-          totalLiteral: convertirNumeroALetras(pago.total_a_pagar), // si usas función externa
+           niveles: [], 
+          totalLiteral: convertirNumeroALetras(pago.total_a_pagar), 
           fecha: new Date(pago.fecha_pago).toLocaleDateString(),
           hora: new Date(pago.fecha_pago).toLocaleTimeString(),
           nroOrden: pago.referencia,
@@ -126,12 +125,17 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
       }`}
     >
       <h4 className="subtitle-md text-primary">
-        <strong>{isGroup ? "Inscripción por lista" : "Inscripción"}</strong>
+        <strong>Inscripción</strong>
       </h4>
-      <div className="flex flex-row gap-16">
+      <div className="flex flex-row gap-10">
         <div className="flex flex-col gap-1 min-w-1/4">
           <p className="subtitle-md"><strong>Responsable: </strong>{list.responsable}</p>
           {!isGroup && <p className="subtitle-md"><strong>Estudiante: </strong> {registrations[0]?.nombre}</p>}
+          {!isGroup && (
+            <p className="subtitle-md">
+              <strong>Nro de inscripciones:</strong> {registrations.length}
+            </p>
+          )}
           {isGroup && <p className="subtitle-md"><strong>Nro de inscripciones:</strong> {list.cantidad}</p>}
         </div>
         <div className="flex flex-col gap-1 min-w-1/12">
@@ -139,12 +143,16 @@ const RegistrationCard: React.FC<Props> = ({ list, registrations, isAlternate, s
           {!isGroup && <p className="subtitle-md"><strong>CI:</strong> {registrations[0]?.ci}</p>}
         </div>
         {!isGroup && (
-          <div className="flex flex-col gap-1 min-w-1/6 max-w-1/6">
-            <p className="subtitle-md"><strong>Área:</strong> {registrations[0]?.area}</p>
-            <p className="subtitle-md"><strong>Nivel/Categoría:</strong> {registrations[0]?.categoria}</p>
+          <div className="flex flex-col gap-1 min-w-3/12">
+            {registrations.map((reg, idx) => (
+              <div key={idx}>
+                <p className="subtitle-md"><strong>Área:</strong> {reg.area}</p>
+                <p className="subtitle-md"><strong>Nivel/Categoría:</strong> {reg.categoria}</p>
+              </div>
+            ))}
           </div>
         )}
-        {isGroup && <div className="flex flex-col gap-1 min-w-1/6"></div>}
+        {isGroup && <div className="flex flex-col gap-1 min-w-3/12"></div>}
 
         <div className="flex flex-col gap-1 min-w-1/8">
           <p className="subtitle-md"><strong>Estado:</strong> {list.estado}</p>
