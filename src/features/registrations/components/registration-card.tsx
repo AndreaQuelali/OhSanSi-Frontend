@@ -15,6 +15,7 @@ type Registration = {
 
 type List = {
   cantidad: number;
+  cantidadOlimpistas: number;
   responsable: string;
   ci: string;
   estado: string;
@@ -99,7 +100,7 @@ const RegistrationCard: React.FC<Props> = ({
           ci: responsable.ci,
           nombres: responsable.nombres,
           apellidos: responsable.apellidos,
-          cantidadOlimpistas: detalle_grupo.participantes_unicos,
+          cantidadOlimpistas: pago.total_inscripciones,
           total: pago.total_a_pagar,
           unitario: pago.monto_unitario,
           niveles: [], // No aplica en grupal, pero lo dejas vacío
@@ -170,6 +171,11 @@ const RegistrationCard: React.FC<Props> = ({
           {isGroup && (
             <p className="subtitle-md">
               <strong>Nro de inscripciones:</strong> {list.cantidad}
+            </p>
+          )}
+          {isGroup && (
+            <p className="subtitle-md">
+              <strong>Nro de estudiantes:</strong> {list.cantidadOlimpistas}
             </p>
           )}
         </div>

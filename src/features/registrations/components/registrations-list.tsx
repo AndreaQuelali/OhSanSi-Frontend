@@ -15,6 +15,7 @@ type Registration = {
 
 type List = {
   cantidad: number;
+  cantidadOlimpistas: number;
   responsable: string;
   ci: string;
   estado: string;
@@ -103,7 +104,8 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
           if (item.detalle?.tipo === 'grupal') {
             return {
               list: {
-                cantidad: item.detalle.cantidad_estudiantes || 0,
+                cantidad: item.detalle.cantidad_inscripciones || 0,
+                cantidadOlimpistas: item.detalle.cantidad_estudiantes || 0,
                 responsable: responsableName,
                 ci: responsable?.ci || 'Sin CI',
                 estado: item.estado || 'Pendiente',
