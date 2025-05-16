@@ -93,27 +93,27 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
           </div>
 
           <table className="w-full table-fixed mb-10 mt-10 text-center">
-            <thead className="bg-background">
+            <thead className="">
               <tr>
-                <th className="w-1/3 border-b border-neutral-300 subtitle-sm px-2 py-2 text-onBack text-center"><strong>CANTIDAD</strong></th>
-                <th className="w-1/3 border-b border-neutral-300 subtitle-sm px-2 py-2 text-onBack text-center"><strong>CONCEPTO</strong></th>
-                <th className="w-1/3 border-b border-neutral-300 subtitle-sm px-2 py-2 text-onBack text-center"><strong>P.UNITARIO</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CANTIDAD</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CONCEPTO</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>P.UNITARIO</strong></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center">{data.cantidadOlimpistas}</td>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center">
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.cantidadOlimpistas}</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
                   Inscripciones
                 </td>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center">
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
                   {data.unitario.toFixed(2)} Bs
                 </td>
               </tr>
               <tr>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center">1</td>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center font-semibold">Total</td>
-                <td className="w-1/3 border-b border-neutral-300 px-2 py-3 body-sm text-onBack text-center font-semibold">
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">1</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">Total</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">
                   {data.total.toFixed(2)} Bs
                 </td>
               </tr>
