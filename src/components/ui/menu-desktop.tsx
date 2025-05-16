@@ -43,17 +43,6 @@ export default function DesktopMenu({
           Inscripciones
         </Link>
       </li>
-      <li
-        className={`${location.pathname === '/pre-registrations' ? 'text-red-500' : 'text-primary'}`}
-        ref={adminMenuRef}
-      >
-        <Link
-          to="/pre-registrations"
-          className="hover:text-secondary subtitle-sm"
-        >
-          Preinscripciones
-        </Link>
-      </li>
       <DropdownMenu
         label="Postulante"
         options={[
@@ -62,6 +51,7 @@ export default function DesktopMenu({
           { label: 'Registro de Áreas', path: '/register-selected-areas' },
           { label: 'Registro Excel', path: '/register-data-excel' },
           { label: 'Orden de Pago', path: '/generate-order-payment' },
+          { label: 'Comprobante de Pago', path: '/upload-payment' },
         ]}
       />
       <li
@@ -143,7 +133,7 @@ export default function DesktopMenu({
                 to="/register-levels-grades"
                 className="block px-4 py-2 text-sm hover:text-secondary"
               >
-                Registro Niveles con Grados
+                Asociación Niveles con Grados
               </Link>
             </li>
             <li
@@ -157,7 +147,7 @@ export default function DesktopMenu({
                 to="/register-levels-area"
                 className="block px-4 py-2 text-sm hover:text-secondary"
               >
-                Registro Niveles en Area
+                Registro Niveles en Área
               </Link>
             </li>
           </ul>
