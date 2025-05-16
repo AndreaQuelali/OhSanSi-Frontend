@@ -175,7 +175,7 @@ const RegistrationCard: React.FC<Props> = ({
           )}
           {isGroup && (
             <p className="subtitle-md">
-              <strong>Nro de estudiantes:</strong> {list.cantidadOlimpistas}
+              <strong>Nro de olimpistas:</strong> {list.cantidadOlimpistas}
             </p>
           )}
         </div>
