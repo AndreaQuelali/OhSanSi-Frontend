@@ -2,6 +2,8 @@ import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
 import IconFile from '@/components/icons/icon-file';
 import IconNoFile from '@/components/icons/icon-no-file';
+import { API_URL } from '@/config/api-config';
+import axios from 'axios';
 import { useRef, useState } from 'react';
 
 export const ModalUploadPay = ({ onClose }: ModalProps) => {
@@ -10,6 +12,7 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const ref = useRef<HTMLInputElement>(null);
   const [enhancedPreview, setEnhancedPreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValidImage = (file: File) =>
     file.type === 'image/jpeg' ||
@@ -169,13 +172,51 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
     });
   };
 
+  const handleSubmitImage = async () => {
+    if (!enhancedPreview) {
+      alert('No hay imagen para subir');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const response = await fetch(enhancedPreview);
+      const imageBlob = await response.blob();
+      const formData = new FormData();
+      formData.append('boleta', imageBlob, fileName || 'comprobante.jpg');
+
+      const uploadResponse = await axios.post(
+        `${API_URL}/prueba-ocr`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      if (uploadResponse.status !== 200) {
+        throw new Error('Error al subir la imagen');
+      }
+
+      console.log('Envio!', uploadResponse.data);
+
+      alert('Imagen subida con éxito');
+    } catch (error) {
+      console.error('Error al procesar la imagen:', error);
+      alert('Ocurrió un error al procesar la imagen.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="absolute inset-0 bg-neutral2 opacity-40"
         onClick={onClose}
       />
-      <div className="w-2xl h-auto bg-white rounded-xl p-6 relative z-50 max-w-xl w-full">
+      <div className="w-2xl h-auto bg-white rounded-xl p-6 relative z-50 max-w-xl">
         <div className="w-full flex justify-end">
           <ButtonIcon
             icon={CloseIcon}
@@ -248,7 +289,11 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
         <div className="flex flex-row justify-end space-x-4 mt-6 mb-2">
           <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
-          <Button onClick={onClose} label="Subir archivo" />
+          <Button
+            onClick={handleSubmitImage}
+            label="Subir archivo"
+            disabled={!enhancedPreview || isSubmitting}
+          />
         </div>
       </div>
     </div>
