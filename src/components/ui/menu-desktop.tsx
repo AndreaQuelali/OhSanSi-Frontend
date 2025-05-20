@@ -65,7 +65,8 @@ export default function DesktopMenu({
             location.pathname.startsWith('/register-areas') ||
             location.pathname.startsWith('/register-levels') ||
             location.pathname.startsWith('/register-levels-grades') ||
-            location.pathname.startsWith('/register-levels-area')
+            location.pathname.startsWith('/register-levels-area') ||
+            location.pathname.startsWith('/report-registered-olimpist')
               ? 'text-red-500 border-b-[1px] border-b-red-500'
               : 'text-primary hover:text-secondary'
           }`}
@@ -148,6 +149,20 @@ export default function DesktopMenu({
                 className="block px-4 py-2 text-sm hover:text-secondary"
               >
                 Registro Niveles en Área
+              </Link>
+            </li>
+            <li
+              className={`hover:bg-gray-100 ${
+                location.pathname === '/report-registered-olimpist'
+                  ? 'text-red-500'
+                  : 'text-primary'
+              }`}
+            >
+              <Link
+                to="/report-registered-olimpist"
+                className="block px-4 py-2 text-sm hover:text-secondary"
+              >
+                Reporte Olimpistas Inscritos
               </Link>
             </li>
           </ul>
