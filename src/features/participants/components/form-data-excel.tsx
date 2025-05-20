@@ -85,12 +85,12 @@ export default function FormDataExcel() {
   
     const formData = new FormData();
     formData.append("file", file);
-  
+    
     try {
       const response = await axios.post(`${API_URL}/olimpistas/excel`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+      
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
   
@@ -122,12 +122,20 @@ export default function FormDataExcel() {
     } catch (error: any) {
       console.error("Error al procesar el archivo Excel", error);
 
-      if (error.response?.data?.errors) {
-        const formatoErrors = error.response.data.errors.formato ?? [];
+      const errores = error.response?.data?.errors;
 
-        let mensaje = "Error en el formato del archivo Excel:\n";
-        if (formatoErrors.length > 0) {
-          mensaje += `\n• ${formatoErrors.join("\n• ")}`;
+      if (errores) {
+        let mensaje = "Errores al procesar el archivo Excel:\n";
+
+        const erroresArchivo = errores.archivo ?? [];
+        const erroresFormato = errores.formato ?? [];
+
+        if (erroresArchivo.length > 0) {
+          mensaje += `\n• ${erroresArchivo.join("\n• ")}`;
+        }
+
+        if (erroresFormato.length > 0) {
+          mensaje += `\n• ${erroresFormato.join("\n• ")}`;
         }
 
         setErrorMessage(mensaje);
