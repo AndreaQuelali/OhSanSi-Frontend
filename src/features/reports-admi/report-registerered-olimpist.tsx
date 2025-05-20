@@ -356,9 +356,9 @@ export const ReportRegisterOliPage = () => {
   return (
     <main className="w-full flex flex-col items-center">
       <div className="mx-5 mt-10 mb-32 md:w-11/12 ">
-        <h2 className="headline-lg text-primary text-center mb-4">
+        <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
           Reporte de Olimpistas Inscritos
-        </h2>
+        </h1>
         <div className="w-full flex justify-between items-center gap-2">
           <Dropdown
             name="olympiad"
@@ -394,7 +394,7 @@ export const ReportRegisterOliPage = () => {
             />
           </div>
         </div>
-        <div className="mt-2 md:w-11/12 mx-auto" ref={tableRef}>
+        <div className="mt-2 mx-auto" ref={tableRef}>
           {participants.length > 0 ? (
             <TableRegisterOli data={participants} />
           ) : selectedOlympiadId ? (

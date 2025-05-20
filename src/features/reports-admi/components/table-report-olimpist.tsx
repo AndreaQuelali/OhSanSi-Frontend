@@ -24,7 +24,7 @@ const columns: TableColumn<TableRow>[] = [
   { name: 'Departamento', selector: (row) => row.Departamento, sortable: true },
   { name: 'Provincia', selector: (row) => row.Provincia, sortable: true },
   {
-    name: 'Unidad Educativa',
+    name: 'UU.EE.',
     selector: (row) => row.UnidadEducativa,
     sortable: true,
   },
