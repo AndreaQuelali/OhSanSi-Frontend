@@ -2,8 +2,9 @@ import { CustomPagination } from '@/components';
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 interface TableRow {
-  Nombre: string;
   Apellido: string;
+  Nombre: string;
+  CI: string;
   Departamento: string;
   Provincia: string;
   UnidadEducativa: string;
@@ -17,8 +18,9 @@ type TableProps = {
 };
 
 const columns: TableColumn<TableRow>[] = [
-  { name: 'Nombre(s)', selector: (row) => row.Nombre, sortable: true },
   { name: 'Apellido(s)', selector: (row) => row.Apellido, sortable: true },
+  { name: 'Nombre(s)', selector: (row) => row.Nombre, sortable: true },
+  { name: 'CI', selector: (row) => row.CI, sortable: true },
   { name: 'Departamento', selector: (row) => row.Departamento, sortable: true },
   { name: 'Provincia', selector: (row) => row.Provincia, sortable: true },
   {
@@ -30,7 +32,7 @@ const columns: TableColumn<TableRow>[] = [
 
   { name: 'Área', selector: (row) => row.Area, sortable: true },
   {
-    name: 'Nivel/Categoría',
+    name: 'Nivel',
     selector: (row) => row.NivelCategoria,
     sortable: true,
   },
@@ -40,9 +42,25 @@ const customStyles = {
   headCells: {
     style: {
       fontFamily: 'Lato, sans-serif',
-      fontSize: '16px',
+      fontSize: '14px',
       fontWeight: '500',
+      color: '#26326c',
+      justifyContent: 'center',
+      textAlign: 'center',
+    },
+  },
+  rows: {
+    style: {
+      fontFamily: 'Lato, sans-serif',
+      fontSize: '12px',
       color: '#0e1217',
+      minHeight: '36px',
+    },
+  },
+  cells: {
+    style: {
+      justifyContent: 'center',
+      textAlign: 'center',
     },
   },
 };
