@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import html2pdf from 'html2pdf.js';
 import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
-import { TableBoleta } from './table-boleta';
 
 interface PaymentData {
   ci: string;
@@ -48,12 +47,6 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
     setIsGeneratingPDF(false); 
   };
 
-  const datas = data.niveles.map((nivel, index) => ({
-    id: index + 1,
-    count: `${index + 1}`,
-    concept: nivel.area,
-    money: `${data.unitario.toFixed(2)} Bs`,
-  }));
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
@@ -98,7 +91,28 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
               <strong>DEBE</strong>
             </p>
           </div>
-          <TableBoleta data={datas} isForPDF={isGeneratingPDF} />
+          <table className="w-full table-fixed mb-10 mt-10 text-center">
+            <thead>
+              <tr>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CANTIDAD</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CONCEPTO</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>P.UNITARIO</strong></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.niveles.length}</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">Inscripciones</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.unitario.toFixed(2)} Bs</td>
+              </tr>
+              <tr>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">1</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">Total</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">{data.total.toFixed(2)} Bs</td>
+              </tr>
+            </tbody>
+          </table>
+
           <p className=" text-onBack body-sm mb-2">
             <strong className="text-primary">Nota:</strong> No vale como factura
             oficial
