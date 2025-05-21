@@ -171,6 +171,7 @@ export default function FormDataExcel() {
 
       alert("Datos registrados correctamente.");
       console.log("Respuesta del backend:", response.data);
+      window.location.reload();
     } catch (error: any) {
       console.error("Error al registrar los datos:", error);
 
@@ -178,7 +179,15 @@ export default function FormDataExcel() {
 
       if (data?.resultado) {
         const resultado = data.resultado;
-        let mensaje = `${data.message}\n`;
+        let mensaje = "";
+
+        if (data.message) {
+          mensaje += `${data.message}\n`;
+        }
+
+        if (data.error) {
+          mensaje += `Error: ${data.error}\n`;
+        }
 
         const erroresPorEntidad = [
           { key: 'olimpistas_errores', label: 'Errores en olimpistas' },
@@ -199,18 +208,20 @@ export default function FormDataExcel() {
             errores.forEach((item: any) => {
               const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
               const ci = item.ci ? ` (CI: ${item.ci})` : '';
-              const error = Array.isArray(item.error)
-                ? item.error.join(", ")
-                : item.error;
-              mensaje += `• ${fila}${ci}: ${error}\n`;
+              mensaje += `• ${fila}${ci}:\n`;
+
+              if (Array.isArray(item.error)) {
+                item.error.forEach((e: string) => {
+                  mensaje += `    - ${e}\n`;
+                });
+              } else {
+                mensaje += `    - ${item.error}\n`;
+              }
             });
           }
         }
 
         const infoAdicional = [
-          { key: 'olimpistas_guardados', label: 'Olimpistas guardados' },
-          { key: 'profesores_guardados', label: 'Profesores guardados' },
-          { key: 'tutores_guardados', label: 'Tutores guardados' },
           { key: 'profesores_omitidos', label: 'Profesores omitidos' },
           { key: 'tutores_omitidos', label: 'Tutores omitidos' },
         ];
