@@ -173,7 +173,7 @@ export default function FormLevelsGrades() {
         >
           <div className="flex flex-col">
             <h1 className="text-center text-primary mb-8 headline-lg">
-              Registro de Niveles/Categorías con Grados
+              Asociación de Niveles/Categorías con Grados
             </h1>
 
             <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
