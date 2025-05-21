@@ -224,6 +224,7 @@ export default function FormDataExcel() {
         const infoAdicional = [
           { key: 'profesores_omitidos', label: 'Profesores omitidos' },
           { key: 'tutores_omitidos', label: 'Tutores omitidos' },
+          { key: 'olimpistas_guardados', label: 'Olimpistas guardados' },
         ];
 
         const hayInfo = infoAdicional.some(
@@ -232,15 +233,17 @@ export default function FormDataExcel() {
 
         if (hayInfo) {
           mensaje += `\nInformación adicional:\n`;
+
           for (const { key, label } of infoAdicional) {
             const lista = resultado[key];
             if (Array.isArray(lista) && lista.length > 0) {
               mensaje += `\n${label}:\n`;
               lista.forEach((item: any) => {
+                const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
                 const ci = item.ci || item.CI || "N/A";
                 const detalle =
                   item.message || item.mensaje || item.detalle || JSON.stringify(item);
-                mensaje += `• CI ${ci}: ${detalle}\n`;
+                mensaje += `• ${fila} (CI ${ci}): ${detalle}\n`;
               });
             }
           }
