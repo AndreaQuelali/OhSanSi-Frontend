@@ -1,4 +1,4 @@
-import { ButtonProps } from "@/interfaces";
+import { ButtonProps } from '@/interfaces';
 
 export const Button = ({
   type = 'button',
@@ -7,16 +7,16 @@ export const Button = ({
   onClick,
   disabled = false,
   icon: Icon,
+  className = '',
 }: ButtonProps) => {
   const baseButton =
-    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center cursor-pointer whitespace-nowrap';
+    'button-lg rounded-[20px] h-10 pl-4 pr-5  text-center flex items-center whitespace-nowrap';
 
   const varCol: Record<string, string> = {
-    variant1: 'text-white bg-primary hover:bg-secondary2',
-    variant2:
-      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2',
-    variant3: '',
-    variantDesactivate: 'bg-neutral2',
+    variant1: 'text-white bg-primary hover:bg-secondary2 cursor-pointer',
+    variant2: 'text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
+    variant3: 'text-primary  hover:bg-primary hover:text-white cursor-pointer',
+    variantDesactivate: 'bg-primary text-white opacity-40',
   };
 
   return (
@@ -24,10 +24,10 @@ export const Button = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseButton} ${varCol[variantColor]} flex items-center justify-center`}
+      className={`${baseButton} ${varCol[variantColor]} ${className} flex items-center justify-center`}
     >
-      {Icon && <Icon className="mr-2" />} {/* Renderiza el icono si existe */}
-      <p className="pl-2 text-center text-wrap">{label}</p>
+      {Icon && <Icon className="mr-0" />}
+      <p className="pl-1 text-center text-wrap">{label}</p>
     </button>
   );
 };

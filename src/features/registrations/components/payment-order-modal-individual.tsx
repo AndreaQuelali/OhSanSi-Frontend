@@ -1,0 +1,126 @@
+import React, { useRef, useState } from 'react';
+import html2pdf from 'html2pdf.js';
+import { Button, ButtonIcon } from '@/components';
+import CloseIcon from '@/components/icons/close';
+import { TableBoleta } from './table-boleta';
+
+interface PaymentData {
+  ci: string;
+  nombres: string;
+  apellidos: string;
+  total: number;
+  fecha: string;
+  hora: string;
+  nroOrden: string;
+  unitario: number;
+  niveles: { nivel_id: number; nombre_nivel: string; area: string }[];
+}
+
+interface PaymentPreviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  data: PaymentData;
+}
+
+export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
+  isOpen,
+  onClose,
+  data,
+}) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false); 
+
+  if (!isOpen) return null;
+
+  const handleDownload = async () => {
+    setIsGeneratingPDF(true);
+    await new Promise((r) => setTimeout(r, 100)); 
+    if (contentRef.current) {
+      const opt = {
+        margin: 0.5,
+        filename: `OrdenPago_${data.nroOrden}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+      };
+      await html2pdf().set(opt).from(contentRef.current).save();
+    }
+    setIsGeneratingPDF(false); 
+  };
+
+  const datas = data.niveles.map((nivel, index) => ({
+    id: index + 1,
+    count: `${index + 1}`,
+    concept: nivel.area,
+    money: `${data.unitario.toFixed(2)} Bs`,
+  }));
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="absolute inset-0 bg-neutral2 opacity-40"
+        onClick={onClose}
+      />
+      <div className="w-4xl bg-white rounded-xl p-6 relative z-50">
+        <div className="w-full flex justify-end">
+          <ButtonIcon
+            icon={CloseIcon}
+            onClick={onClose}
+            variantColor="variant2"
+          />
+        </div>
+        <div ref={contentRef} className="px-6">
+          <img
+            src="/assets/images/logoUMSS (1).png"
+            alt="Logo UMSS"
+            className="w-40"
+          />
+          <p className="text-right subtitle-md text-secondary">
+            N° {data.nroOrden}
+          </p>
+          <h2 className="headline-md text-primary text-center mb-3">
+            ORDEN DE PAGO
+          </h2>
+
+          <div className="mb-2 subtitle-sm flex justify-between">
+            <p className=" text-onBack ">
+              <strong className="text-primary">Señor(es):</strong>{' '}
+              {data.nombres} {data.apellidos}
+            </p>
+            <p className=" text-onBack pr-10">
+              <strong className="text-primary">CI:</strong> {data.ci}
+            </p>
+          </div>
+          <div className="mb-2 subtitle-sm flex justify-between">
+            <p className=" text-primary">
+              <strong>Por lo siguiente:</strong>
+            </p>
+            <p className=" pr-10 text-primary">
+              <strong>DEBE</strong>
+            </p>
+          </div>
+          <TableBoleta data={datas} isForPDF={isGeneratingPDF} />
+          <p className=" text-onBack body-sm mb-2">
+            <strong className="text-primary">Nota:</strong> No vale como factura
+            oficial
+          </p>
+          <p className=" text-onBack subtitle-sm mb-2 ">
+            <strong className="text-primary">Son:</strong> {data.total}{' '}
+            Bolivianos
+          </p>
+          <div className="mb-2 subtitle-sm flex space-x-10">
+            <p className=" text-onBack">
+              <strong className="text-primary">Fecha:</strong> {data.fecha}
+            </p>
+            <p className=" text-onBack">
+              <strong className="text-primary">Hora:</strong> {data.hora}
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-end space-x-4 mt-6 px-6">
+          <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
+          <Button onClick={handleDownload} label="Descargar" />
+        </div>
+      </div>
+    </div>
+  );
+};

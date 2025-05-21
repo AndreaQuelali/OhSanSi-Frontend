@@ -1,31 +1,44 @@
+import { FieldValues } from 'react-hook-form';
+
 import { DropdownProps } from '@/interfaces';
 
-export const Dropdown = ({
+export const Dropdown = <T extends FieldValues>({
   name,
   label,
   options = [],
-  value,
-  onChange,
-  placeholder = '',
+  placeholder = 'Selecciona una opción',
+  displayKey,
   valueKey,
+  register,
   errors = {},
+  validationRules = {},
   className = '',
-}: DropdownProps) => {
+  isRequired = true,
+  disabled = false,
+  value,
+  disablePlaceholder = true,
+}: DropdownProps<T> & { disabled?: boolean }) => {
   return (
     <div className="flex flex-col">
       {label && (
-        <label htmlFor={name} className=" py-1 text-primary subtitle-md ">
-          {label} <span className="text-error">*</span>
+        <label htmlFor={name} className="py-1 text-primary subtitle-md">
+          {label} {isRequired && <span className="text-error">*</span>}
         </label>
       )}
       <select
         id={name}
-        name={name}
-        className={`h-[50px] bg-transparent outline-none rounded border-b-[1px] border-neutral font-body placeholder-neutral text-onBack p-2 ${className}`}
         value={value}
-        onChange={onChange}
+        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral  p-2 ${className} ${
+          errors[name] ? 'border-error' : ''
+        } ${value === '' ? 'text-neutral' : 'text-onBack'}`}
+        {...register(name, validationRules)}
+        disabled={disabled}
       >
-        <option value="" disabled className="bg-neutral2 text-white">
+        <option
+          value=""
+          disabled={disablePlaceholder}
+          className="bg-neutral2 text-white"
+        >
           {placeholder}
         </option>
         {options.map((option, index) => (
@@ -33,12 +46,30 @@ export const Dropdown = ({
             key={index}
             value={option[valueKey]}
             className="bg-neutral2 text-onBack"
-          ></option>
+          >
+            {option[displayKey]}
+          </option>
         ))}
       </select>
-      {errors?.[name] && (
-        <span className="text-error">{errors[name]?.message as string}</span>
-      )}
+      <div className="h-[25px]">
+        {name
+          .split('.')
+          .reduce(
+            (acc: Record<string, any>, key: string) => acc?.[key],
+            errors,
+          ) && (
+          <span className="text-error subtitle-sm">
+            {String(
+              name
+                .split('.')
+                .reduce(
+                  (acc: Record<string, any>, key: string) => acc?.[key],
+                  errors,
+                )?.message,
+            )}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
