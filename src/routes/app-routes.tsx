@@ -94,7 +94,11 @@ export default function AppRoutes() {
           />
           <Route
             path="/report-registered-olimpist"
-            element={<ReportRegisterOliPage />}
+            element={
+              <RegistrationGuard>
+                <ReportRegisterOliPage />
+              </RegistrationGuard>
+            }
           />
         </Route>
       </Routes>
