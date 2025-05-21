@@ -11,12 +11,14 @@ export default function FormInfo() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const [olimpiadasExistentes, setOlimpiadasExistentes] = useState<Array<{
-    id_olimpiada: number;
-    gestion: number;  // Cambiado de 'year' (string) a 'gestion' (number)
-    fecha_inicio: string;
-    fecha_fin: string;
-  }>>([]);
+  const [olimpiadasExistentes, setOlimpiadasExistentes] = useState<
+    Array<{
+      id_olimpiada: number;
+      gestion: number; // Cambiado de 'year' (string) a 'gestion' (number)
+      fecha_inicio: string;
+      fecha_fin: string;
+    }>
+  >([]);
   const {
     register,
     handleSubmit,
@@ -52,6 +54,8 @@ export default function FormInfo() {
 
   const onConfirm = async () => {
     if (!formData) return;
+    const now = new Date();
+    const boliviaTime = new Date(now.getTime() - 4 * 60 * 60 * 1000);
 
     const payload = {
       gestion: Number(formData.year),
@@ -59,8 +63,10 @@ export default function FormInfo() {
       fecha_inicio: formData.dateIni,
       fecha_fin: formData.dateEnd,
       max_categorias_olimpista: Number(formData.limitAreas),
-      nombre_olimpiada: formData.inputNameOlimpiada
+      nombre_olimpiada: formData.inputNameOlimpiada,
+      creado_en: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
     };
+    console.log(payload);
 
     try {
       const response = await submitForm(payload);
@@ -90,23 +96,27 @@ export default function FormInfo() {
     setShowModal(false);
   };
 
-  const validateDates = async (dateIni: string, dateEnd: string, year: string) => {
+  const validateDates = async (
+    dateIni: string,
+    dateEnd: string,
+    year: string,
+  ) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-  
+
     // Convertir el año del formulario a número para comparar
     const yearNumber = Number(year);
-  
+
     // Validación de solapamiento
-    const overlaps = olimpiadasExistentes.some(olimpiada => {
+    const overlaps = olimpiadasExistentes.some((olimpiada) => {
       // Solo comparar con olimpiadas del mismo año
       if (olimpiada.gestion !== yearNumber) return false;
-  
+
       const oIni = new Date(olimpiada.fecha_inicio);
       const oEnd = new Date(olimpiada.fecha_fin);
       const startDate = new Date(dateIni);
       const endDate = new Date(dateEnd);
-      
+
       return (
         (startDate >= oIni && startDate <= oEnd) ||
         (endDate >= oIni && endDate <= oEnd) ||
@@ -114,11 +124,11 @@ export default function FormInfo() {
         (oEnd >= startDate && oEnd <= endDate)
       );
     });
-  
+
     if (overlaps) {
       return 'Las fechas se solapan con otra olimpiada existente';
     }
-  
+
     return true;
   };
 
@@ -179,7 +189,7 @@ export default function FormInfo() {
                 required: 'Debe seleccionar un año/gestión',
               }}
             />
-          <InputText
+            <InputText
               label="Nombre de la Olimpiada"
               name="inputNameOlimpiada"
               placeholder="Ingresar nombre de la Olimpiada"
@@ -191,7 +201,8 @@ export default function FormInfo() {
                 required: 'El nombre es obligatorio',
                 pattern: {
                   value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
-                  message: 'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
+                  message:
+                    'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
                 },
                 maxLength: {
                   value: 50,
@@ -201,7 +212,7 @@ export default function FormInfo() {
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
-          <InputText
+            <InputText
               label="Costo de Inscripción"
               name="cost"
               placeholder="0.00"
@@ -244,7 +255,7 @@ export default function FormInfo() {
                 max: {
                   value: 100,
                   message: 'Se debe ingresar un valor menor a 100',
-                }
+                },
               }}
               errors={errors}
               onInput={(e) => {
@@ -272,17 +283,20 @@ export default function FormInfo() {
                     return 'Debe seleccionar un año/gestión primero';
                   }
 
-                  const inputYear = value.split('-')[0]; 
+                  const inputYear = value.split('-')[0];
 
                   if (inputYear !== selectedYear) {
                     return `La fecha de inicio debe estar dentro del año ${selectedYear}`;
                   }
                   if (!year) return 'Seleccione un año primero';
-                  
+
                   // Validación completa
-                  return await validateDates(value, getValues('dateEnd') || value, year);
-                }
-            
+                  return await validateDates(
+                    value,
+                    getValues('dateEnd') || value,
+                    year,
+                  );
+                },
               }}
               errors={errors}
             />
@@ -329,9 +343,7 @@ export default function FormInfo() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-9 mb-6">
-            
-          </div>
+          <div className="grid grid-cols-1 gap-9 mb-6"></div>
 
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
             <Button
