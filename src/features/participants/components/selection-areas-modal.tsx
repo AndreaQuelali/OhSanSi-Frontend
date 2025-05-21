@@ -156,8 +156,8 @@ export default function AreaSelectionModal({
           ))}
         </div>
         <div className="flex justify-end gap-4 mt-4">
-          <Button label="Cancelar" variantColor="variant2" onClick={onCancel} />
           <Button
+            className="w-32"
             label="Aceptar"
             variantColor={
               nivelesSeleccionadosTemp.length > 0 || isDeselecting
