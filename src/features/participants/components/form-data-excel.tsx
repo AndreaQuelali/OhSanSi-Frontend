@@ -85,12 +85,12 @@ export default function FormDataExcel() {
   
     const formData = new FormData();
     formData.append("file", file);
-  
+    
     try {
       const response = await axios.post(`${API_URL}/olimpistas/excel`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+      
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
   
@@ -122,12 +122,20 @@ export default function FormDataExcel() {
     } catch (error: any) {
       console.error("Error al procesar el archivo Excel", error);
 
-      if (error.response?.data?.errors) {
-        const formatoErrors = error.response.data.errors.formato ?? [];
+      const errores = error.response?.data?.errors;
 
-        let mensaje = "Error en el formato del archivo Excel:\n";
-        if (formatoErrors.length > 0) {
-          mensaje += `\n• ${formatoErrors.join("\n• ")}`;
+      if (errores) {
+        let mensaje = "Errores al procesar el archivo Excel:\n";
+
+        const erroresArchivo = errores.archivo ?? [];
+        const erroresFormato = errores.formato ?? [];
+
+        if (erroresArchivo.length > 0) {
+          mensaje += `\n• ${erroresArchivo.join("\n• ")}`;
+        }
+
+        if (erroresFormato.length > 0) {
+          mensaje += `\n• ${erroresFormato.join("\n• ")}`;
         }
 
         setErrorMessage(mensaje);
@@ -163,6 +171,7 @@ export default function FormDataExcel() {
 
       alert("Datos registrados correctamente.");
       console.log("Respuesta del backend:", response.data);
+      window.location.reload();
     } catch (error: any) {
       console.error("Error al registrar los datos:", error);
 
@@ -170,7 +179,15 @@ export default function FormDataExcel() {
 
       if (data?.resultado) {
         const resultado = data.resultado;
-        let mensaje = `${data.message}\n`;
+        let mensaje = "";
+
+        if (data.message) {
+          mensaje += `${data.message}\n`;
+        }
+
+        if (data.error) {
+          mensaje += `Error: ${data.error}\n`;
+        }
 
         const erroresPorEntidad = [
           { key: 'olimpistas_errores', label: 'Errores en olimpistas' },
@@ -191,18 +208,20 @@ export default function FormDataExcel() {
             errores.forEach((item: any) => {
               const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
               const ci = item.ci ? ` (CI: ${item.ci})` : '';
-              const error = Array.isArray(item.error)
-                ? item.error.join(", ")
-                : item.error;
-              mensaje += `• ${fila}${ci}: ${error}\n`;
+              mensaje += `• ${fila}${ci}:\n`;
+
+              if (Array.isArray(item.error)) {
+                item.error.forEach((e: string) => {
+                  mensaje += `    - ${e}\n`;
+                });
+              } else {
+                mensaje += `    - ${item.error}\n`;
+              }
             });
           }
         }
 
         const infoAdicional = [
-          { key: 'olimpistas_guardados', label: 'Olimpistas guardados' },
-          { key: 'profesores_guardados', label: 'Profesores guardados' },
-          { key: 'tutores_guardados', label: 'Tutores guardados' },
           { key: 'profesores_omitidos', label: 'Profesores omitidos' },
           { key: 'tutores_omitidos', label: 'Tutores omitidos' },
         ];

@@ -43,7 +43,7 @@ export default function ErrorModal({
       />
       <div
         ref={modalRef}
-        className="w-10/12 md:w-8/12 lg:w-4/12 bg-white rounded-xl p-6 relative z-50 max-h-[90vh] flex flex-col"
+        className="w-10/12 md:w-8/12 lg:w-6/12 bg-white rounded-xl p-6 relative z-50 max-h-[90vh] flex flex-col"
       >
         <div className="w-full flex justify-end">
           <ButtonIcon
