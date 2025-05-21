@@ -2,7 +2,7 @@ import { Button } from '@/components';
 import IconClose from '@/components/icons/icon-close';
 import { InputText } from '@/components';
 import { FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface NivelType {
   id_nivel: number;
@@ -44,6 +44,20 @@ export default function AreaSelectionModal({
         defaultValue: '',
       })
     : '';
+  const [isDeselecting, setIsDeselecting] = useState(false);
+
+  useEffect(() => {
+    if (nivelesSeleccionadosTemp.length > 0) {
+      setIsDeselecting(false);
+    }
+  }, [nivelesSeleccionadosTemp]);
+
+  const handleToggleNivel = (nivel: NivelType) => {
+    if (nivelesSeleccionadosTemp.some((n) => n.id_nivel === nivel.id_nivel)) {
+      setIsDeselecting(true);
+    }
+    onToggleNivel(nivel);
+  };
 
   useEffect(() => {
     if (clearTutorError && (!tutorCi || tutorCi === '')) {
@@ -109,7 +123,7 @@ export default function AreaSelectionModal({
                     'Este nivel ya está registrado y no se puede deseleccionar.',
                   );
                 } else {
-                  onToggleNivel(nivel);
+                  handleToggleNivel(nivel);
                 }
               }}
             >
@@ -143,7 +157,16 @@ export default function AreaSelectionModal({
         </div>
         <div className="flex justify-end gap-4 mt-4">
           <Button label="Cancelar" variantColor="variant2" onClick={onCancel} />
-          <Button label="Aceptar" variantColor="variant1" onClick={onAccept} />
+          <Button
+            label="Aceptar"
+            variantColor={
+              nivelesSeleccionadosTemp.length > 0 || isDeselecting
+                ? 'variant1'
+                : 'variantDesactivate'
+            }
+            onClick={onAccept}
+            disabled={nivelesSeleccionadosTemp.length === 0 && !isDeselecting}
+          />
         </div>
       </div>
     </div>
