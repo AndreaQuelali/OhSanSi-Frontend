@@ -96,10 +96,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex flex-col items-center">
+      <div className="w-full h-full flex flex-col items-center justify-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-5 mt-10 md:w-9/12 lg:w-9/12"
+          className="mx-5 mt-10 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
         >
           {viewTB && (
             <h1 className="text-center text-primary mb-8 md:mb-20 headline-lg">

@@ -30,3 +30,20 @@ export type UnidadEducativa = {
   nombre_colegio: string;
   id_provincia: number;
 };
+
+export type FormValues = {
+  olimpista: {
+    ci: string;
+    citutor: string;
+    name: string;
+    lastname: string;
+    email: string;
+    birthday: string;
+    phone: string;
+    depa: string;
+    prov: string;
+    colegio: string;
+    grade: string;
+    existing: boolean;
+  };
+};
