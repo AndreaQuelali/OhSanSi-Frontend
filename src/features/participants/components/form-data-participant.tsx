@@ -19,8 +19,10 @@ export default function FormDataPart() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     setError,
     clearErrors,
+    reset,
     formState: { errors, isValid },
     watch,
   } = useForm<FormValues>({ mode: 'onChange' });
@@ -44,69 +46,148 @@ export default function FormDataPart() {
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
 
-  const existingOlimpista = watch('olimpista.existing');
-  const [showFormFields, setShowFormFields] = useState(false);
+  const existingOlimpista = watch('olimpista.existing');const [showFormFields, setShowFormFields] = useState(false);
+  const [formKey, setFormKey] = useState('');
+  const resetDataRef = useRef<any | null>(null);
+  const prevCiWasRegisteredRef = useRef(false);
+
+  const reanimateFormFields = () => {
+    setShowFormFields(false);
+    setTimeout(() => {
+      setShowFormFields(true);
+    }, 50);
+  };
+
+  useEffect(() => {
+    if (showFormFields && resetDataRef.current) {
+      const currentCi = getValues('olimpista.ci');
+      const incomingCi = resetDataRef.current.olimpista?.ci;
+      const shouldReset = !incomingCi || incomingCi === currentCi;
+
+      if (shouldReset) {
+        reset({
+          ...resetDataRef.current,
+          olimpista: {
+            ...resetDataRef.current.olimpista,
+            ci: currentCi,
+          },
+        });
+
+        if (resetDataRef.current.olimpista?.existing) {
+          setError('olimpista.ci', {
+            type: 'manual',
+            message: 'Este número de cédula ya está registrado.',
+          });
+        }
+      }
+
+      resetDataRef.current = null;
+    }
+  }, [showFormFields]);
 
   const debouncedCheckCiRef = useRef(
     debounce(async (ciValue: string) => {
-      if (!ciValue || ciValue.length < 4 || ciValue.length > 8) {
-        return;
-      }
+      if (!ciValue || ciValue.length < 4 || ciValue.length > 8) return;
 
       try {
         const response = await axios.get(`${API_URL}/olimpistas/cedula/${ciValue}`);
 
         if (response.data) {
           const data = response.data;
+          prevCiWasRegisteredRef.current = true;
 
-          // 1. Mostrar error de CI ya registrado
           setError('olimpista.ci', {
             type: 'manual',
             message: 'Este número de cédula ya está registrado.',
           });
 
-          // 2. Autocompletar los datos del olimpista
-          setValue('olimpista.name', data.nombres);
-          setValue('olimpista.lastname', data.apellidos);
-          setValue('olimpista.email', data.correo_electronico);
-          setValue('olimpista.birthday', data.fecha_nacimiento);
-          setValue('olimpista.phone', data.celular);
-          setValue('olimpista.citutor', data.ci_tutor_legal);
-          setValue('olimpista.depa', '5');
-          setValue('olimpista.prov', '5');
-          setValue('olimpista.colegio', '5');
-          setValue('olimpista.grade', '5');
+          resetDataRef.current = {
+            olimpista: {
+              ci: data.ci,
+              name: data.nombres,
+              lastname: data.apellidos,
+              email: data.correo_electronico,
+              birthday: data.fecha_nacimiento,
+              phone: data.celular,
+              citutor: data.ci_tutor_legal,
+              depa: '5',
+              prov: '5',
+              colegio: '5',
+              grade: '5',
+              existing: true,
+            },
+          };
 
-          // 3. (Opcional) Marcar como existente para deshabilitar campos si quieres
-          setValue('olimpista.existing', true);
-          setShowFormFields(true);
+          setFormKey(ciValue);
+          reanimateFormFields();
         } else {
-          // Si no hay datos, asegurarse de limpiar el error
           const currentError = errors?.olimpista?.ci?.type;
           if (currentError === 'manual') {
             clearErrors('olimpista.ci');
           }
 
-          // Limpiar posibles datos autocompletados previos
-          setValue('olimpista.name', '');
-          setValue('olimpista.lastname', '');
-          setValue('olimpista.email', '');
-          setValue('olimpista.birthday', '');
-          setValue('olimpista.phone', '');
-          setValue('olimpista.citutor', '');
-          setValue('olimpista.depa', '');
-          setValue('olimpista.prov', '');
-          setValue('olimpista.colegio', '');
-          setValue('olimpista.grade', '');
-          setValue('olimpista.existing', false);
-          setShowFormFields(true);
+          if (!showFormFields) {
+            setShowFormFields(true);
+          }
+
+          if (prevCiWasRegisteredRef.current) {
+            prevCiWasRegisteredRef.current = false;
+
+            resetDataRef.current = {
+              olimpista: {
+                ci: ciValue,
+                name: '',
+                lastname: '',
+                email: '',
+                birthday: '',
+                phone: '',
+                citutor: '',
+                depa: '',
+                prov: '',
+                colegio: '',
+                grade: '',
+                existing: false,
+              },
+            };
+
+            setFormKey(ciValue);
+            reanimateFormFields();
+          }
         }
       } catch (error) {
         console.error('Error al verificar el CI:', error);
+
         const currentError = errors?.olimpista?.ci?.type;
-        setShowFormFields(true);
         if (currentError === 'manual') {
           clearErrors('olimpista.ci');
+        }
+
+        if (!showFormFields) {
+          setShowFormFields(true);
+        }
+
+        if (prevCiWasRegisteredRef.current) {
+          prevCiWasRegisteredRef.current = false;
+
+          resetDataRef.current = {
+            olimpista: {
+              ci: ciValue,
+              name: '',
+              lastname: '',
+              email: '',
+              birthday: '',
+              phone: '',
+              citutor: '',
+              depa: '',
+              prov: '',
+              colegio: '',
+              grade: '',
+              existing: false,
+            },
+          };
+
+          setFormKey(ciValue);
+          reanimateFormFields();
         }
       }
     }, 500)
@@ -300,7 +381,7 @@ export default function FormDataPart() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full mr-10">
       <div className="flex flex-col items-center ">
         <form
           onSubmit={handleSubmit(() => setShowModal(true))}
@@ -331,15 +412,18 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
-                onBlur: checkCi,
+                onchange: checkCi,
               }}
               errors={errors}
             />
           </div>
           <div
+            key={formKey}
             className={`
               transition-all duration-500 ease-in-out transform overflow-hidden
-              ${showFormFields ? 'opacity-100 translate-y-0 max-h-[1000px]' : 'opacity-0 -translate-y-5 max-h-0'}
+              ${showFormFields
+                ? 'opacity-100 translate-y-0 max-h-full pointer-events-auto'
+                : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
             `}
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
