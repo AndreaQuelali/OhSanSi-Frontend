@@ -110,10 +110,10 @@ export default function FormDataPart() {
               birthday: data.fecha_nacimiento,
               phone: data.celular,
               citutor: data.ci_tutor_legal,
-              depa: '5',
-              prov: '5',
-              colegio: '5',
-              grade: '5',
+              depa: data.id_departamento,
+              prov: data.id_provincia,
+              colegio: data.id_colegio,
+              grade: data.id_grado,
               existing: true,
             },
           };
@@ -391,6 +391,7 @@ export default function FormDataPart() {
             Registro de Datos de Olimpista
           </h1>
           <h2 className="text-primary headline-sm mb-2 ">Datos personales</h2>
+          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del olimpista a registrar</h2>
           <div className="grid grid-cols-1 lg:gap-9 mb-6">
             <InputText
               label="Cédula de identidad"
@@ -426,6 +427,21 @@ export default function FormDataPart() {
                 : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
             `}
           >
+            {existingOlimpista && (
+              <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
+                <p>
+                  Este número de cédula ya está registrado. Si deseas inscribir a este olimpista
+                  en áreas de competencia, puedes continuar con el siguiente paso.
+                </p>
+                <div className="mt-3 flex justify-end">
+                  <Button
+                    label="Ir a registro de olimpista en áreas de competencia"
+                    onClick={() => navigate(`/register-selected-areas`)}
+                    variantColor="variant4"
+                  />
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
               <InputText
                 label="Nombre(s)"
@@ -687,24 +703,36 @@ export default function FormDataPart() {
                 errors={errors}
               />
             </div>
-            <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-              <Button
-                label="Cancelar"
-                variantColor="variant2"
-                className="mt-5 md:mt-0"
-                onClick={() => navigate('/')}
-              />
-              <Button
-                type="submit"
-                label="Registrar"
-                disabled={!isValid || Object.keys(errors).length > 0}
-                variantColor={
-                  !isValid || Object.keys(errors).length > 0
-                    ? 'variantDesactivate'
-                    : 'variant1'
-                }
-              />
-            </div>
+            {!existingOlimpista && (
+              <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  className="mt-5 md:mt-0"
+                  onClick={() => navigate('/')}
+                />
+                <Button
+                  type="submit"
+                  label="Registrar"
+                  disabled={!isValid || Object.keys(errors).length > 0}
+                  variantColor={
+                    !isValid || Object.keys(errors).length > 0
+                      ? 'variantDesactivate'
+                      : 'variant1'
+                  }
+                />
+              </div>
+            )}
+
+            {existingOlimpista && (
+              <div className="flex justify-end mt-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={() => navigate('/')}
+                />
+              </div>
+            )}
           </div>
         </form>
         {showModal && (
