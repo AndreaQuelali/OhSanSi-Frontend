@@ -145,15 +145,15 @@ const RegistrationCard: React.FC<Props> = ({
 
   return (
     <div
-      className={`card w-full h-full flex flex-col gap-4 py-6 px-10 rounded-2xl ${
+      className={`card w-full h-full flex flex-col gap-4 py-6 px-6 md:px-10 rounded-2xl ${
         isAlternate ? 'bg-surface' : 'bg-white'
       }`}
     >
       <h4 className="subtitle-md text-primary">
         <strong>Inscripción</strong>
       </h4>
-      <div className="flex flex-row gap-10">
-        <div className="flex flex-col gap-1 min-w-1/4">
+      <div className="flex flex-col md:flex-row gap-0 md:gap-10">
+        <div className="flex flex-col md:gap-1 min-w-1/5">
           <p className="subtitle-md">
             <strong>Responsable: </strong>
             {list.responsable}
@@ -179,18 +179,18 @@ const RegistrationCard: React.FC<Props> = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-1 min-w-1/12">
+        <div className="flex flex-col gap-1 min-w-1/6">
           <p className="subtitle-md">
-            <strong>CI:</strong> {list.ci}
+            <strong>CI Responsable:</strong> {list.ci}
           </p>
           {!isGroup && (
             <p className="subtitle-md">
-              <strong>CI:</strong> {registrations[0]?.ci}
+              <strong>CI Estudiante:</strong> {registrations[0]?.ci}
             </p>
           )}
         </div>
         {!isGroup && (
-          <div className="flex flex-col gap-1 min-w-3/12">
+          <div className="flex flex-col gap-1 min-w-2/11">
             {registrations.map((reg, idx) => (
               <div key={idx}>
                 <p className="subtitle-md">
@@ -205,13 +205,13 @@ const RegistrationCard: React.FC<Props> = ({
         )}
         {isGroup && <div className="flex flex-col gap-1 min-w-3/12"></div>}
 
-        <div className="flex flex-col gap-1 min-w-1/8">
+        <div className="flex flex-col gap-1 min-w-1/7">
           <p className="subtitle-md">
             <strong>Estado:</strong> {list.estado}
           </p>
         </div>
         {showGenerateButton && (
-          <div className="flex flex-col gap-2 ml-auto w-full">
+          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full">
             <Button
               className="w-auto"
               label={isGroup ? 'Generar boleta' : 'Generar boleta'}
@@ -220,7 +220,7 @@ const RegistrationCard: React.FC<Props> = ({
           </div>
         )}
         {showUploadButton && (
-          <div className="flex flex-col gap-2 ml-auto w-full">
+          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full">
             <Button
               className="w-auto"
               label="Subir comprobante"

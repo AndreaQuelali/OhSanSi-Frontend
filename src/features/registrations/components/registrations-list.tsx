@@ -139,10 +139,10 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
     <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mb-32 w-11/12 md:w-9/12 lg:w-full flex flex-col items-center justify-center"
+        className="mb-32 w-11/12 md:w-10/12 lg:w-full flex flex-col items-center justify-center"
       >
         <h1 className="text-center text-primary mb-8 headline-lg">{title}</h1>
-        <div className="flex flex-row gap-16 w-10/12 items-center justify-center">
+        <div className="flex flex-col md:flex-row md:gap-5 lg:gap-16 w-full lg:w-10/12 items-center justify-center">
           <InputText
             label="Ingrese el CI del responsable para ver las inscripciones asociadas al mismo"
             name="ci"
@@ -155,9 +155,16 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
               minLength: { value: 4, message: 'Debe tener al menos 4 dígitos' },
             }}
           />
-          <Button type="submit" label="Consultar" disabled={loading} />
+          <div className="flex flex-col w-full md:w-auto">
+            <Button 
+              type="submit" 
+              label="Consultar" 
+              variantColor={loading ? "variantDesactivate" : "variant1"}
+              disabled={loading} 
+            />
+          </div>
         </div>
-        <div className="mt-10 min-w-10/12 mx-auto">
+        <div className="mt-10 min-w-11/12 md:min-w-10/12 mx-auto">
           {data.map((item, index) => (
             <RegistrationCard
               key={index}
