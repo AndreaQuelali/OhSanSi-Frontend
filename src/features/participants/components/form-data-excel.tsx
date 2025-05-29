@@ -42,7 +42,7 @@ export default function FormDataExcel() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid: formFieldsValid },
+    formState: { errors, isValid},
     watch,
   } = useForm<FormFields>({
     mode: 'all',
@@ -85,12 +85,12 @@ export default function FormDataExcel() {
   
     const formData = new FormData();
     formData.append("file", file);
-  
+    
     try {
       const response = await axios.post(`${API_URL}/olimpistas/excel`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+      
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
   
@@ -122,12 +122,20 @@ export default function FormDataExcel() {
     } catch (error: any) {
       console.error("Error al procesar el archivo Excel", error);
 
-      if (error.response?.data?.errors) {
-        const formatoErrors = error.response.data.errors.formato ?? [];
+      const errores = error.response?.data?.errors;
 
-        let mensaje = "Error en el formato del archivo Excel:\n";
-        if (formatoErrors.length > 0) {
-          mensaje += `\n• ${formatoErrors.join("\n• ")}`;
+      if (errores) {
+        let mensaje = "Errores al procesar el archivo Excel:\n";
+
+        const erroresArchivo = errores.archivo ?? [];
+        const erroresFormato = errores.formato ?? [];
+
+        if (erroresArchivo.length > 0) {
+          mensaje += `\n• ${erroresArchivo.join("\n• ")}`;
+        }
+
+        if (erroresFormato.length > 0) {
+          mensaje += `\n• ${erroresFormato.join("\n• ")}`;
         }
 
         setErrorMessage(mensaje);
@@ -155,79 +163,101 @@ export default function FormDataExcel() {
       return;
     }
 
-try {
-  const response = await axios.post(`${API_URL}/registro/excel`, {
-    ci_responsable_inscripcion: ciResponsable,
-    data: rawDataToSend,
-  });
-
-  alert("Datos registrados correctamente.");
-  console.log("Respuesta del backend:", response.data);
-} catch (error: any) {
-  console.error("Error al registrar los datos:", error);
-
-  const data = error.response?.data;
-
-  // Caso 1: error con estructura completa
-  if (data?.resultado) {
-    const resultado = data.resultado;
-    let mensaje = `${data.message}\n`;
-
-    if (resultado.olimpistas_errores?.length > 0) {
-      mensaje += `\nErrores en olimpistas:\n`;
-      resultado.olimpistas_errores.forEach((olimpista: any) => {
-        mensaje += `• Fila ${olimpista.fila} (CI: ${olimpista.ci}): ${olimpista.error.join(", ")}\n`;
+    try {
+      const response = await axios.post(`${API_URL}/registro/excel`, {
+        ci_responsable_inscripcion: ciResponsable,
+        data: rawDataToSend,
       });
-    }
 
-    if (resultado.profesores_errores?.length > 0) {
-      mensaje += `\nErrores en profesores:\n`;
-      resultado.profesores_errores.forEach((prof: any) => {
-        mensaje += `• Fila ${prof.fila}: ${prof.error}\n`;
-      });
-    }
+      alert("Datos registrados correctamente.");
+      console.log("Respuesta del backend:", response.data);
+      window.location.reload();
+    } catch (error: any) {
+      console.error("Error al registrar los datos:", error);
 
-    if (resultado.tutores_errores?.length > 0) {
-      mensaje += `\nErrores en tutores:\n`;
-      resultado.tutores_errores.forEach((tutor: any) => {
-        mensaje += `• Fila ${tutor.fila}: ${tutor.error}\n`;
-      });
-    }
+      const data = error.response?.data;
 
-    const hayOmisiones =
-      resultado.profesores_omitidos?.length > 0 || resultado.tutores_omitidos?.length > 0;
+      if (data?.resultado) {
+        const resultado = data.resultado;
+        let mensaje = "";
 
-    if (hayOmisiones) {
-      mensaje += `\nInformación adicional:\n`;
-    }
+        if (data.message) {
+          mensaje += `${data.message}\n`;
+        }
 
-    if (resultado.profesores_omitidos?.length > 0) {
-      mensaje += `\nProfesores omitidos:\n`;
-      resultado.profesores_omitidos.forEach((prof: any) => {
-        mensaje += `• CI ${prof.ci}: ${prof.message}\n`;
-      });
-    }
+        if (data.error) {
+          mensaje += `Error: ${data.error}\n`;
+        }
 
-    if (resultado.tutores_omitidos?.length > 0) {
-      mensaje += `\nTutores omitidos:\n`;
-      resultado.tutores_omitidos.forEach((tutor: any) => {
-        mensaje += `• CI ${tutor.ci}: ${tutor.message}\n`;
-      });
-    }
+        const erroresPorEntidad = [
+          { key: 'olimpistas_errores', label: 'Errores en olimpistas' },
+          { key: 'profesores_errores', label: 'Errores en profesores' },
+          { key: 'tutores_errores', label: 'Errores en tutores' },
+          { key: 'inscripciones_errores', label: 'Errores en inscripciones' },
+          { key: 'Colegio_errores', label: 'Errores en unidad educativa' },
+          { key: 'Departamento_errores', label: 'Errores en departamento' },
+          { key: 'Provincia_errores', label: 'Errores en provincia' },
+          { key: 'Nivel_errores', label: 'Errores en nivel' },
+          { key: 'Grado_errores', label: 'Errores en grado' },
+        ];
 
-    setErrorMessage(mensaje);
-    setShowErrorModal(true);
+        for (const { key, label } of erroresPorEntidad) {
+          const errores = resultado[key];
+          if (Array.isArray(errores) && errores.length > 0) {
+            mensaje += `\n${label}:\n`;
+            errores.forEach((item: any) => {
+              const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
+              const ci = item.ci ? ` (CI: ${item.ci})` : '';
+              mensaje += `• ${fila}${ci}:\n`;
 
-  } else if (data?.error) {
-    // Caso 2: error simple, sin resultado
-    const mensajeSimple = `Error: ${data.error}`;
-    setErrorMessage(mensajeSimple);
-    setShowErrorModal(true);
-  } else {
-    // Error inesperado
-    setErrorMessage("Hubo un error al registrar los datos. Verifique el formato del Excel.");
-    setShowErrorModal(true);
-  }
+              if (Array.isArray(item.error)) {
+                item.error.forEach((e: string) => {
+                  mensaje += `    - ${e}\n`;
+                });
+              } else {
+                mensaje += `    - ${item.error}\n`;
+              }
+            });
+          }
+        }
+
+        const infoAdicional = [
+          { key: 'profesores_omitidos', label: 'Profesores omitidos' },
+          { key: 'tutores_omitidos', label: 'Tutores omitidos' },
+          { key: 'olimpistas_guardados', label: 'Olimpistas guardados' },
+        ];
+
+        const hayInfo = infoAdicional.some(
+          ({ key }) => Array.isArray(resultado[key]) && resultado[key].length > 0
+        );
+
+        if (hayInfo) {
+          mensaje += `\nInformación adicional:\n`;
+
+          for (const { key, label } of infoAdicional) {
+            const lista = resultado[key];
+            if (Array.isArray(lista) && lista.length > 0) {
+              mensaje += `\n${label}:\n`;
+              lista.forEach((item: any) => {
+                const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
+                const ci = item.ci || item.CI || "N/A";
+                const detalle =
+                  item.message || item.mensaje || item.detalle || JSON.stringify(item);
+                mensaje += `• ${fila} (CI ${ci}): ${detalle}\n`;
+              });
+            }
+          }
+        }
+
+        setErrorMessage(mensaje);
+        setShowErrorModal(true);
+      } else if (data?.error) {
+        setErrorMessage(`Error: ${data.error}`);
+        setShowErrorModal(true);
+      } else {
+        setErrorMessage("Hubo un error al registrar los datos. Verifique el formato del Excel.");
+        setShowErrorModal(true);
+      }
     }
   };
 

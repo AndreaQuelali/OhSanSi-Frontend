@@ -16,9 +16,7 @@ const columns: TableColumn<TableRow>[] = [
     name: 'Área',
     selector: (row) => row.area,
     sortable: true,
-    cell: (row) => (
-      <div className="text-center w-full p-4">{row.area}</div>
-    ),
+    cell: (row) => <div className="text-center w-full p-4">{row.area}</div>,
   },
 ];
 
@@ -28,7 +26,8 @@ const customStyles = {
       fontFamily: 'Lato, sans-serif',
       fontSize: '16px',
       fontWeight: '500',
-      color: '#0e1217',
+      color: '#26326c',
+      justifyContent: 'center',
     },
   },
 };

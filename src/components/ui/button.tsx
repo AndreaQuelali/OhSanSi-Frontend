@@ -14,8 +14,10 @@ export const Button = ({
 
   const varCol: Record<string, string> = {
     variant1: 'text-white bg-primary hover:bg-secondary2 cursor-pointer',
-    variant2: 'text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
-    variant3: 'text-primary  hover:bg-primary hover:text-white cursor-pointer',
+    variant2:
+      'text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
+    variant3: 'text-primary hover:bg-primary hover:text-white cursor-pointer',
+    variant4: 'text-primary hover:text-secondary2 cursor-pointer',
     variantDesactivate: 'bg-primary text-white opacity-40',
   };
 
