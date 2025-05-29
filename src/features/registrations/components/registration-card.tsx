@@ -20,7 +20,7 @@ type List = {
   ci: string;
   estado: string;
   id_lista?: number;
-  tipo: "individual" | "grupal";
+  tipo: 'individual' | 'grupal';
 };
 
 type PaymentData = {
@@ -29,8 +29,8 @@ type PaymentData = {
   apellidos: string;
   cantidadOlimpistas: number;
   total: number;
-  unitario: number; 
-  niveles: { nivel_id: number; nombre_nivel: string; area: string }[]; 
+  unitario: number;
+  niveles: { nivel_id: number; nombre_nivel: string; area: string }[];
   totalLiteral: string;
   fecha: string;
   hora: string;
@@ -53,7 +53,7 @@ const RegistrationCard: React.FC<Props> = ({
   showUploadButton,
 }) => {
   console.log('list en RegistrationCard:', list);
-  const isGroup = list.tipo === "grupal";
+  const isGroup = list.tipo === 'grupal';
   const [showVisualModal, setShowVisualModal] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
@@ -69,6 +69,18 @@ const RegistrationCard: React.FC<Props> = ({
 
   const handleOpenVisualModal = async () => {
     try {
+      if (showUploadButton) {
+        const checkPagoResp = await axios.get(
+          `${API_URL}/consulta-pago/${list.ci}`,
+        );
+
+        const comprobante = checkPagoResp.data;
+
+        if (!comprobante.existe) {
+          alert(comprobante.mensaje); // o usa una notificación más elegante si tienes
+          return; // no continuar si no hay comprobante
+        }
+      }
       // 1. Obtener la inscripción del usuario
       const inscripcionResp = await axios.get(
         `${API_URL}/inscripciones/${list.ci}/PENDIENTE`,
@@ -194,11 +206,11 @@ const RegistrationCard: React.FC<Props> = ({
             {registrations.map((reg, idx) => (
               <div key={idx}>
                 <p className="subtitle-md">
-              <strong>Área:</strong> {reg.area}
-            </p>
+                  <strong>Área:</strong> {reg.area}
+                </p>
                 <p className="subtitle-md">
-              <strong>Nivel/Categoría:</strong> {reg.categoria}
-            </p>
+                  <strong>Nivel/Categoría:</strong> {reg.categoria}
+                </p>
               </div>
             ))}
           </div>
