@@ -11,20 +11,33 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import axios from 'axios';
+import { Departamento, Provincia, UnidadEducativa } from '../participants';
 
 interface FormData {
   olympiad: string;
+  area: string;
+  level: string;
+  depa: string;
+  prov: string;
+  colegio: string;
 }
 
 export const ReportRegisterOliPage = () => {
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
       olympiad: '',
+      area: '',
+      level: '',
+      depa: '',
+      prov: '',
+      colegio: '',
     },
   });
   const [participants, setParticipants] = useState<typeof data>([]);
@@ -38,9 +51,11 @@ export const ReportRegisterOliPage = () => {
   });
 
   const selectedOlympiadId = watch('olympiad');
+
   const { data: olympiads } = useFetchData<
     { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
   >(`${API_URL}/olimpiadas`);
+  //const [loadingOli, setLoadingOli] = useState(false);
 
   const selectedOlympiad = olympiads?.find(
     (o) => o.id_olimpiada === Number(selectedOlympiadId),
@@ -48,6 +63,76 @@ export const ReportRegisterOliPage = () => {
   const olympiadTitle = selectedOlympiad
     ? `${selectedOlympiad.gestion} - ${selectedOlympiad.nombre_olimpiada}`
     : 'Olimpiada no seleccionada';
+
+  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
+    `${API_URL}/areas`,
+  );
+
+  //const [loadingAreas, setLoadingAreas] = useState(false);
+
+  const { data: levels } = useFetchData<{
+    niveles: { id_nivel: number; nombre: string }[];
+  }>(`${API_URL}/get-niveles`);
+
+  //const [loadingLevels, setLoaodingLevels] = useState(false);
+
+  const { data: departamentos, loading: loadingDepartamentos } =
+    useFetchData<Departamento[]>('/departamentos');
+
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [loadingProvincias, setLoadingProvincias] = useState(false);
+
+  const [colegios, setColegios] = useState<UnidadEducativa[]>([]);
+  const [loadingColegios, setLoadingColegios] = useState(false);
+
+  const selectedDepartment = watch('depa');
+  const selectedProv = watch('prov');
+
+  useEffect(() => {
+    if (selectedDepartment) {
+      const fetchProvincias = async () => {
+        setLoadingProvincias(true);
+        try {
+          const response = await axios.get(
+            `${API_URL}/provincias/${selectedDepartment}`,
+          );
+          setProvincias(response.data);
+        } catch (error) {
+          console.error('Error al cargar las provincias:', error);
+          setProvincias([]);
+        } finally {
+          setLoadingProvincias(false);
+        }
+      };
+
+      fetchProvincias();
+    } else {
+      setProvincias([]);
+    }
+  }, [selectedDepartment]);
+
+  useEffect(() => {
+    if (selectedProv) {
+      const fetchColegios = async () => {
+        setLoadingColegios(true);
+        try {
+          const response = await axios.get(
+            `${API_URL}/colegios/${selectedProv}`,
+          );
+          setColegios(response.data);
+        } catch (error) {
+          console.error('Error al cargar las unidades educativas:', error);
+          setColegios([]);
+        } finally {
+          setLoadingColegios(false);
+        }
+      };
+
+      fetchColegios();
+    } else {
+      setColegios([]);
+    }
+  }, [selectedProv]);
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -84,6 +169,36 @@ export const ReportRegisterOliPage = () => {
 
     fetchParticipants();
   }, [selectedOlympiadId]);
+
+  const handleDepartamentoChange = (id_departamento: string) => {
+    setValue('depa', id_departamento, { shouldValidate: true });
+    setValue('prov', '');
+    setValue('colegio', '');
+    const savedData = localStorage.getItem('participantData');
+    const formData = savedData ? JSON.parse(savedData) : {};
+    formData.depa = parseInt(id_departamento, 10);
+    formData.prov = '';
+    formData.colegio = '';
+    localStorage.setItem('participantData', JSON.stringify(formData));
+  };
+
+  const handleProvinciaChange = (id_provincia: string) => {
+    setValue('prov', id_provincia, { shouldValidate: true });
+    setValue('colegio', '');
+    const savedData = localStorage.getItem('participantData');
+    const formData = savedData ? JSON.parse(savedData) : {};
+    formData.prov = parseInt(id_provincia, 10);
+    formData.colegio = '';
+    localStorage.setItem('participantData', JSON.stringify(formData));
+  };
+
+  const handleColegioChange = (id_colegio: string) => {
+    setValue('colegio', id_colegio, { shouldValidate: true });
+    const savedData = localStorage.getItem('participantData');
+    const formData = savedData ? JSON.parse(savedData) : {};
+    formData.colegio = parseInt(id_colegio, 10);
+    localStorage.setItem('participantData', JSON.stringify(formData));
+  };
 
   const handlePrint = () => {
     if (!participants.length) return;
@@ -136,104 +251,6 @@ export const ReportRegisterOliPage = () => {
     doc.autoPrint();
     window.open(doc.output('bloburl'), '_blank');
   };
-
-  /*
-  const handlePrint = () => {
-    if (!participants || participants.length === 0) {
-      alert('No hay datos para imprimir.');
-      return;
-    }
-
-    const olympiadTitle = selectedOlympiad
-      ? `${selectedOlympiad.gestion} - ${selectedOlympiad.nombre_olimpiada}`
-      : 'Olimpiada no seleccionada';
-
-    const printWindow = window.open('', '', 'width=900,height=650');
-    if (!printWindow) return;
-
-    const tableHTML = `
-      <html>
-      <head>
-        <title>Reporte de Olimpistas Inscritos</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-          }
-          h2 {
-            text-align: center;
-            margin-bottom: 5px;
-          }
-          h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: normal;
-            font-size: 16px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-          }
-          th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-            font-size: 12px;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-        </style>
-      </head>
-      <body>
-      <h2>Universidad Mayor de San Simón</h2>
-        <h2>Reporte de Olimpistas Inscritos</h2>
-        <h3>${olympiadTitle}</h3>
-        <h3>Fecha: ${currentDate}</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Apellido(s)</th>
-              <th>Nombre(s)</th>
-              <th>CI</th>
-              <th>Departamento</th>
-              <th>Provincia</th>
-              <th>Unidad Educativa</th>
-              <th>Grado</th>
-              <th>Área</th>
-              <th>Nivel</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${participants
-              .map(
-                (row) => `
-              <tr>
-                <td>${row.Apellido}</td>
-                <td>${row.Nombre}</td>
-                <td>${row.CI}</td>
-                <td>${row.Departamento}</td>
-                <td>${row.Provincia}</td>
-                <td>${row.UnidadEducativa}</td>
-                <td>${row.Grado}</td>
-                <td>${row.Area}</td>
-                <td>${row.NivelCategoria}</td>
-              </tr>`,
-              )
-              .join('')}
-          </tbody>
-        </table>
-      </body>
-      </html>
-    `;
-
-    printWindow.document.write(tableHTML);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };*/
 
   const handleDownload = () => {
     if (formatSelected === 'pdf') {
@@ -359,26 +376,156 @@ export const ReportRegisterOliPage = () => {
         <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
           Reporte de Olimpistas Inscritos
         </h1>
-        <div className="w-full flex justify-between items-center gap-2">
-          <Dropdown
-            name="olympiad"
-            label="Olimpiada"
-            placeholder="Seleccionar olimpiada"
-            className="w-full"
-            options={
-              olympiads?.map((olimpiada) => ({
-                id: olimpiada.id_olimpiada.toString(),
-                name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
-              })) || []
-            }
-            displayKey="name"
-            valueKey="id"
-            register={register}
-            errors={errors}
-            validationRules={{
-              required: 'Debe seleccionar un año/gestión',
-            }}
-          />
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-4">
+            <Dropdown
+              name="olympiad"
+              label="Olimpiada"
+              placeholder="Seleccionar olimpiada"
+              className="w-full"
+              options={
+                olympiads?.map((olimpiada) => ({
+                  id: olimpiada.id_olimpiada.toString(),
+                  name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
+                })) || []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              errors={errors}
+              validationRules={{
+                required: 'Debe seleccionar un año/gestión',
+              }}
+            />
+            <Dropdown
+              name="area"
+              label="Área"
+              className="w-full"
+              placeholder="Seleccionar área"
+              options={
+                areas?.map((area) => ({
+                  id: area.id_area.toString(),
+                  name: area.nombre,
+                })) || []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              validationRules={{
+                required: 'Debe seleccionar un área',
+              }}
+              errors={errors}
+            />
+            <Dropdown
+              label="Nivel/Categoría"
+              className="w-full"
+              name="level"
+              placeholder="Seleccionar nivel o categoría"
+              options={
+                levels?.niveles.map((level) => ({
+                  id: level.id_nivel.toString(),
+                  name: level.nombre,
+                })) || []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              validationRules={{
+                required: 'Debe seleccionar un nivel o categoría',
+              }}
+              errors={errors}
+            />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-4">
+            <Dropdown
+              label="Departamento"
+              placeholder="Seleccionar departamento"
+              className="w-ful"
+              value={watch('depa') ?? ''}
+              options={
+                departamentos
+                  ? departamentos.map((departamento) => ({
+                      id: departamento.id_departamento.toString(),
+                      name: departamento.nombre_departamento,
+                    }))
+                  : []
+              }
+              displayKey="name"
+              valueKey="id"
+              register={register}
+              {...register('depa', {
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleDepartamentoChange(e.target.value),
+              })}
+              disabled={loadingDepartamentos}
+              errors={errors}
+            />
+            <div>
+              <Dropdown
+                label="Provincia"
+                placeholder="Seleccionar provincia"
+                className="w-full"
+                value={watch('prov') ?? ''}
+                options={
+                  provincias
+                    ? provincias.map((provincia) => ({
+                        id: provincia.id_provincia.toString(),
+                        name: provincia.nombre_provincia,
+                      }))
+                    : []
+                }
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                {...register('prov', {
+                  onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                    handleProvinciaChange(e.target.value),
+                })}
+                disabled={loadingProvincias}
+                errors={errors}
+              />
+              <div>
+                {!selectedDepartment && (
+                  <span className="text-neutral subtitle-sm">
+                    Primero seleccione un departamento.
+                  </span>
+                )}
+              </div>
+            </div>
+            <div>
+              <Dropdown
+                label="Unidad educativa"
+                placeholder="Seleccionar unidad educativa"
+                className="w-full"
+                value={watch('colegio') ?? ''}
+                options={
+                  colegios
+                    ? colegios.map((colegio) => ({
+                        id: colegio.id_colegio.toString(),
+                        name: colegio.nombre_colegio,
+                      }))
+                    : []
+                }
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                {...register('colegio', {
+                  onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
+                    handleColegioChange(e.target.value),
+                })}
+                disabled={loadingColegios}
+                errors={errors}
+              />
+              <div>
+                {!selectedProv && (
+                  <span className="text-neutral subtitle-sm">
+                    Primero seleccione una provincia.
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="flex justify-end gap-2 items-end">
             <Button
               variantColor="variant4"
