@@ -106,7 +106,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
               Registro de Datos de Tutor
             </h1>
           )}
-          <div className="grid lg:grid-cols-3 lg:gap-12 lg:mb-5">
+          <div className="grid grid-cols-1 lg:gap-12 lg:mb-5">
             <InputText
               label="Número de cédula de identidad"
               name="ci"
@@ -130,6 +130,8 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
               }}
               errors={errors}
             />
+          </div>
+          <div className="grid lg:grid-cols-2 lg:gap-12 lg:mb-5">
             <InputText
               label="Nombre(s)"
               name="name"
