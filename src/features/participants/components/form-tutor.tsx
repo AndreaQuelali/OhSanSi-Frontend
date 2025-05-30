@@ -16,6 +16,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     handleSubmit,
     watch,
     setError,
+    setValue,
     clearErrors,
     formState: { errors, isValid },
   } = useForm<FormData>({
@@ -28,6 +29,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
   const { submitForm } = useApiForm('/tutores');
+  const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     setFormData(data);
@@ -66,33 +68,53 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
 
     setShowModal(false);
   };
+  
+useEffect(() => {
+  const verificarCI = async () => {
+    if (!ciValue || String(ciValue).length < 4) {
+      clearErrors('ci');
+      setIsRegisteredTutor(false);
+      return;
+    }
 
-  useEffect(() => {
-    const verificarCI = async () => {
-      if (!ciValue || String(ciValue).length < 4) {
-        if (errors.ci?.type === 'manual') {
-          clearErrors('ci');
-        }
-        return;
+    try {
+      const response = await getData(`/tutores/cedula/${ciValue}`);
+      if (response && response.tutor) {
+        // Tutor registrado → rellenar campos
+        setValue('name', response.tutor.nombres || '');
+        setValue('lastname', response.tutor.apellidos || '');
+        setValue('email', response.tutor.correo_electronico || '');
+        setValue('phone', response.tutor.celular || '');
+
+        setError('ci', {
+          type: 'manual',
+          message: 'Este número de cédula ya está registrado',
+        });
+
+        setIsRegisteredTutor(true);
+      } else {
+        // Tutor NO registrado: limpiar los campos que fueron autocompletados previamente
+        clearErrors('ci');
+        setIsRegisteredTutor(false);
+
+        // Aquí limpiamos solo si el CI cambió a uno NO registrado
+        // para evitar confusiones
+        setValue('name', '');
+        setValue('lastname', '');
+        setValue('email', '');
+        setValue('phone', '');
       }
-  
-      try {
-        const response = await getData(`/tutores/cedula/${ciValue}`);
-        if (response) {
-          setError('ci', {
-            type: 'manual',
-            message: 'Este número de cédula ya está registrado',
-          });
-        }
-      } catch (error) {
-        if (errors.ci?.type === 'manual') {
-          clearErrors('ci');
-        }
-      }
-    };
-  
-    verificarCI();
-  }, [ciValue, setError, clearErrors]);  
+    } catch (error: any) {
+      clearErrors('ci');
+      setIsRegisteredTutor(false);
+      // En caso de error de red: no limpiar datos escritos manualmente
+    }
+  };
+
+  verificarCI();
+}, [ciValue, setError, clearErrors, setValue]);
+
+
 
   return (
     <div className="flex flex-col w-full">
@@ -147,6 +169,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
             <InputText
               label="Apellido(s)"
@@ -163,6 +186,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
           </div>
           <div className="grid md:grid-cols-2 md:gap-12 mb-5">
@@ -180,6 +204,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
             <InputText
               label="Correo electrónico"
@@ -197,6 +222,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
           </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
