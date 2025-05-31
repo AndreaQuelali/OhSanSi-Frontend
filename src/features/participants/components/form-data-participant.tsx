@@ -391,7 +391,7 @@ export default function FormDataPart() {
             Registro de Datos de Olimpista
           </h1>
           <h2 className="text-primary headline-sm mb-2 ">Datos personales</h2>
-          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del olimpista a registrar</h2>
+          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del olimpista que desea registrar.</h2>
           <div className="grid grid-cols-1 lg:gap-9 mb-6">
             <InputText
               label="Cédula de identidad"

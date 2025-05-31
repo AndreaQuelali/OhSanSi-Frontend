@@ -30,6 +30,9 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const [formData, setFormData] = useState<FormData | null>(null);
   const { submitForm } = useApiForm('/tutores');
   const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
+  const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
+  const [ciConfirmed, setCiConfirmed] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     setFormData(data);
@@ -67,67 +70,93 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     }
 
     setShowModal(false);
-  };
-  
-useEffect(() => {
-  const verificarCI = async () => {
-    if (!ciValue || String(ciValue).length < 4) {
-      clearErrors('ci');
-      setIsRegisteredTutor(false);
-      return;
-    }
+    };
+      
+    useEffect(() => {
+      const verificarCI = async () => {
+        if (!ciValue || String(ciValue).length < 4) {
+          clearErrors('ci');
+          setIsRegisteredTutor(false);
+          setCiTutorFound(null);
+          return;
+        }
 
-    try {
-      const response = await getData(`/tutores/cedula/${ciValue}`);
-      if (response && response.tutor) {
-        // Tutor registrado → rellenar campos
-        setValue('name', response.tutor.nombres || '');
-        setValue('lastname', response.tutor.apellidos || '');
-        setValue('email', response.tutor.correo_electronico || '');
-        setValue('phone', response.tutor.celular || '');
+        try {
+          const response = await getData(`/tutores/cedula/${ciValue}`);
+          if (response && response.tutor) {
+            setValue('name', response.tutor.nombres || '');
+            setValue('lastname', response.tutor.apellidos || '');
+            setValue('email', response.tutor.correo_electronico || '');
+            setValue('phone', response.tutor.celular || '');
 
-        setError('ci', {
-          type: 'manual',
-          message: 'Este número de cédula ya está registrado',
-        });
+            setError('ci', {
+              type: 'manual',
+              message: 'Este número de cédula ya está registrado',
+            });
+            setIsRegisteredTutor(true);
+            setCiTutorFound(ciValue); 
+          } else {
+            clearErrors('ci');
+            setIsRegisteredTutor(false);
+            setCiTutorFound(null);
 
-        setIsRegisteredTutor(true);
-      } else {
-        // Tutor NO registrado: limpiar los campos que fueron autocompletados previamente
+            setValue('name', '');
+            setValue('lastname', '');
+            setValue('email', '');
+            setValue('phone', '');
+          }
+        } catch (error: any) {
+          clearErrors('ci');
+          setIsRegisteredTutor(false);
+          setCiTutorFound(null);
+        }
+      };
+
+      verificarCI();
+    }, [ciValue, setError, clearErrors, setValue]);
+
+    useEffect(() => {
+      if (ciTutorFound && ciValue !== ciTutorFound) {
         clearErrors('ci');
         setIsRegisteredTutor(false);
-
-        // Aquí limpiamos solo si el CI cambió a uno NO registrado
-        // para evitar confusiones
+        setCiTutorFound(null);
         setValue('name', '');
         setValue('lastname', '');
         setValue('email', '');
         setValue('phone', '');
       }
-    } catch (error: any) {
-      clearErrors('ci');
-      setIsRegisteredTutor(false);
-      // En caso de error de red: no limpiar datos escritos manualmente
-    }
-  };
+    }, [ciValue, ciTutorFound, clearErrors, setValue]);
 
-  verificarCI();
-}, [ciValue, setError, clearErrors, setValue]);
+    useEffect(() => {
+      if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
+        setCiConfirmed(true);
+      } else {
+        setCiConfirmed(false);
+      }
+    }, [ciValue]);
 
-
+    useEffect(() => {
+      if (isRegisteredTutor) {
+        setShowMessage(true); 
+      } else {
+        const timeout = setTimeout(() => setShowMessage(false), 50); 
+        return () => clearTimeout(timeout);
+      }
+    }, [isRegisteredTutor]);
 
   return (
     <div className="flex flex-col w-full">
       <div className="w-full h-full flex flex-col items-center justify-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-5 mt-10 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
+          className="mx-5 mt-5 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
         >
           {viewTB && (
-            <h1 className="text-center text-primary mb-8 md:mb-20 headline-lg">
+            <h1 className="text-center text-primary mb-8 md:mb-10 headline-lg">
               Registro de Datos de Tutor
             </h1>
           )}
+          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del tutor que desea registrar.</h2>
           <div className="grid grid-cols-1 lg:gap-12 lg:mb-5">
             <InputText
               label="Número de cédula de identidad"
@@ -153,6 +182,35 @@ useEffect(() => {
               errors={errors}
             />
           </div>
+          <div
+            className={`
+              transition-all duration-1000 ease-in-out transform overflow-hidden
+              ${ciConfirmed
+                ? 'opacity-100 translate-y-0 max-h-[1000px] pointer-events-auto'
+                : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
+            `}
+          >
+          <div
+            className={`
+              overflow-hidden transition-all duration-500 ease-in-out
+              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+            `}
+          >
+            <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
+              <p>
+                Este número de cédula ya está registrado. Si deseas registrar a un olimpista, 
+                puedes continuar con el siguiente paso.
+              </p>
+              <div className="mt-3 flex justify-end">
+                <Button
+                  label="Ir a formulario de registro de olimpista"
+                  onClick={() => navigate(`/register-olimpists`)}
+                  variantColor="variant4"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="grid lg:grid-cols-2 lg:gap-12 lg:mb-5">
             <InputText
               label="Nombre(s)"
@@ -226,7 +284,7 @@ useEffect(() => {
             />
           </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            {viewTB ? (
+            {!isRegisteredTutor ? (
               <>
                 <Button
                   label="Cancelar"
@@ -242,14 +300,16 @@ useEffect(() => {
                 />
               </>
             ) : (
-              <Button
-                type="submit"
-                label="Registrar tutor"
-                disabled={!isValid}
-                variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
-              />
+              <div className="flex justify-end mt-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={() => navigate('/')}
+                />
+              </div>
             )}
           </div>
+        </div>
         </form>
         {showModal && (
           <Modal
