@@ -75,12 +75,13 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     useEffect(() => {
       const verificarCI = async () => {
         if (!ciValue || String(ciValue).length < 4) {
-          clearErrors('ci');
           setIsRegisteredTutor(false);
           setCiTutorFound(null);
+          if (errors.ci?.type === 'ci-duplicado') {
+            clearErrors('ci');
+          }
           return;
         }
-
         try {
           const response = await getData(`/tutores/cedula/${ciValue}`);
           if (response && response.tutor) {
@@ -89,14 +90,18 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             setValue('email', response.tutor.correo_electronico || '');
             setValue('phone', response.tutor.celular || '');
 
+          if (!errors.ci || errors.ci?.type === 'ci-duplicado') {
             setError('ci', {
-              type: 'manual',
+              type: 'ci-duplicado',
               message: 'Este número de cédula ya está registrado',
             });
+          }
             setIsRegisteredTutor(true);
             setCiTutorFound(ciValue); 
           } else {
-            clearErrors('ci');
+            if (errors.ci?.type === 'ci-duplicado') {
+              clearErrors('ci');
+            }
             setIsRegisteredTutor(false);
             setCiTutorFound(null);
 
@@ -106,7 +111,9 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             setValue('phone', '');
           }
         } catch (error: any) {
+        if (errors.ci?.type === 'ci-duplicado') {
           clearErrors('ci');
+        }
           setIsRegisteredTutor(false);
           setCiTutorFound(null);
         }
@@ -117,7 +124,9 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
 
     useEffect(() => {
       if (ciTutorFound && ciValue !== ciTutorFound) {
-        clearErrors('ci');
+        if (errors.ci?.type === 'ci-duplicado') {
+          clearErrors('ci');
+        }
         setIsRegisteredTutor(false);
         setCiTutorFound(null);
         setValue('name', '');
