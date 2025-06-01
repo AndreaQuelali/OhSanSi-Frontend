@@ -45,40 +45,114 @@ export default function FormDataPart() {
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
 
+  const ciValue = watch('olimpista.ci') || '';
+  const [isRegisteredOlimpista, setIsRegisteredOlimpista] = useState(false);
+  const [ciOlimpistaFound, setCiOlimpistaFound] = useState<string | null>(null);
+  const [ciConfirmed, setCiConfirmed] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+
   const debouncedCheckCiRef = useRef(
     debounce(async (ciValue: string) => {
-      if (!ciValue || ciValue.length < 4) {
-        return;
-      }
-
-      if (ciValue.length > 8) {
+      if (!ciValue || ciValue.length < 4 || ciValue.length > 8) {
+        setIsRegisteredOlimpista(false);
+        setCiOlimpistaFound(null);
+        if (errors?.olimpista?.ci?.type === 'manual') {
+          clearErrors('olimpista.ci');
+        }
         return;
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/olimpistas/cedula/${ciValue}`,
-        );
+        const response = await axios.get(`${API_URL}/olimpistas/cedula/${ciValue}`);
         if (response.data) {
+          const data = response.data;
+
+          // Autocompletar datos
+          setValue('olimpista.name', data.nombres || '');
+          setValue('olimpista.lastname', data.apellidos || '');
+          setValue('olimpista.birthday', data.fecha_nacimiento || '');
+          setValue('olimpista.email', data.correo_electronico || '');
+          setValue('olimpista.phone', data.celular || '');
+          setValue('olimpista.citutor', data.ci_tutor_legal || '');
+          setValue('olimpista.depa', data.id_departamento || '');
+          setValue('olimpista.prov', data.id_provincia || '');
+          setValue('olimpista.colegio', data.id_colegio || '');
+          setValue('olimpista.grade', data.id_grado || '');
           setError('olimpista.ci', {
             type: 'manual',
             message: 'Este número de cédula ya está registrado.',
           });
+          setIsRegisteredOlimpista(true);
+          setCiOlimpistaFound(ciValue);
         } else {
-          const currentError = errors?.olimpista?.ci?.type;
-          if (currentError === 'manual') {
+          if (errors?.olimpista?.ci?.type === 'manual') {
             clearErrors('olimpista.ci');
           }
+          setIsRegisteredOlimpista(false);
+          setCiOlimpistaFound(null);
+          setValue('olimpista.name', '');
+          setValue('olimpista.lastname', '');
+          setValue('olimpista.birthday', '');
+          setValue('olimpista.email', '');
+          setValue('olimpista.phone', '');
+          setValue('olimpista.citutor', '');
+          setValue('olimpista.depa', '');
+          setValue('olimpista.prov', '');
+          setValue('olimpista.colegio', '');
+          setValue('olimpista.grade', '');
         }
       } catch (error) {
         console.error('Error al verificar el CI:', error);
-        const currentError = errors?.olimpista?.ci?.type;
-        if (currentError === 'manual') {
+        if (errors?.olimpista?.ci?.type === 'manual') {
           clearErrors('olimpista.ci');
         }
+        setIsRegisteredOlimpista(false);
+        setCiOlimpistaFound(null);
       }
-    }, 500),
+    }, 500)
   );
+
+  useEffect(() => {
+    debouncedCheckCiRef.current(ciValue);
+  }, [ciValue]);
+
+  useEffect(() => {
+    if (ciOlimpistaFound && ciValue !== ciOlimpistaFound) {
+      if (errors?.olimpista?.ci?.type === 'manual') {
+        clearErrors('olimpista.ci');
+      }
+      setIsRegisteredOlimpista(false);
+      setCiOlimpistaFound(null);
+
+      setValue('olimpista.name', '');
+      setValue('olimpista.lastname', '');
+      setValue('olimpista.birthday', '');
+      setValue('olimpista.email', '');
+      setValue('olimpista.phone', '');
+      setValue('olimpista.citutor', '');
+      setValue('olimpista.depa', '');
+      setValue('olimpista.prov', '');
+      setValue('olimpista.colegio', '');
+      setValue('olimpista.grade', '');
+    }
+  }, [ciValue, ciOlimpistaFound, clearErrors, setValue]);
+
+  useEffect(() => {
+    if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
+      setCiConfirmed(true);
+    } else {
+      setCiConfirmed(false);
+    }
+  }, [ciValue]);
+
+  useEffect(() => {
+    if (isRegisteredOlimpista) {
+      setShowMessage(true);
+    } else {
+      const timeout = setTimeout(() => setShowMessage(false), 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [isRegisteredOlimpista]);
 
   const debouncedCheckCiTutorRef = useRef(
     debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
@@ -305,6 +379,34 @@ export default function FormDataPart() {
               errors={errors}
             />
           </div>
+          <div
+            className={`
+              transition-all duration-1000 ease-in-out transform overflow-hidden
+              ${ciConfirmed
+                ? 'opacity-100 translate-y-0 max-h-[1000px] pointer-events-auto'
+                : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
+            `}
+          >
+          <div
+            className={`
+              overflow-hidden transition-all duration-500 ease-in-out
+              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+            `}
+          >
+            <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
+              <p>
+                  Este número de cédula ya está registrado. Si deseas inscribir a este olimpista
+                  en áreas de competencia, puedes continuar con el siguiente paso.
+              </p>
+              <div className="mt-3 flex justify-end">
+                <Button
+                  label="Ir a registro de olimpista en áreas de competencia"
+                  onClick={() => navigate(`/register-selected-areas`)}
+                  variantColor="variant4"
+                />
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
             <InputText
               label="Nombre(s)"
@@ -321,6 +423,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             <InputText
               label="Apellido(s)"
@@ -337,6 +440,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
@@ -366,6 +470,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             <InputText
               label="Correo electrónico"
@@ -383,6 +488,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             <InputText
               label="Cédula de identidad del tutor legal"
@@ -410,6 +516,7 @@ export default function FormDataPart() {
                 onBlur: checkCiTutor,
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             {ci && citutor && ci === citutor && (
               <InputText
@@ -426,6 +533,7 @@ export default function FormDataPart() {
                   },
                 }}
                 errors={errors}
+                disabled={isRegisteredOlimpista}
               />
             )}
           </div>
@@ -451,7 +559,7 @@ export default function FormDataPart() {
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleDepartamentoChange(e.target.value),
               })}
-              disabled={loadingDepartamentos}
+              disabled={loadingDepartamentos || isRegisteredOlimpista}
               errors={errors}
               validationRules={{
                 required: 'El departamento es obligatorio',
@@ -478,7 +586,7 @@ export default function FormDataPart() {
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleProvinciaChange(e.target.value),
                 })}
-                disabled={loadingProvincias}
+                disabled={loadingProvincias || isRegisteredOlimpista}
                 errors={errors}
                 validationRules={{
                   required: 'La provincia es obligatoria',
@@ -515,7 +623,7 @@ export default function FormDataPart() {
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleColegioChange(e.target.value),
                 })}
-                disabled={loadingColegios}
+                disabled={loadingColegios || isRegisteredOlimpista}
                 errors={errors}
                 validationRules={{
                   required: 'La unidad educativa es obligatoria',
@@ -550,27 +658,36 @@ export default function FormDataPart() {
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleGradoChange(e.target.value),
               })}
-              disabled={loading}
+              disabled={loading || isRegisteredOlimpista}
               errors={errors}
             />
           </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            <Button
-              label="Cancelar"
-              variantColor="variant2"
-              className="mt-5 md:mt-0"
-              onClick={() => navigate('/')}
-            />
-            <Button
-              type="submit"
-              label="Registrar"
-              disabled={!isValid || Object.keys(errors).length > 0}
-              variantColor={
-                !isValid || Object.keys(errors).length > 0
-                  ? 'variantDesactivate'
-                  : 'variant1'
-              }
-            />
+            {!isRegisteredOlimpista ? (
+              <>
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  className="mt-5 md:mt-0"
+                  onClick={() => navigate('/')}
+                />
+                <Button
+                  type="submit"
+                  label="Registrar"
+                  disabled={!isValid || Object.keys(errors).length > 0}
+                  variantColor={!isValid || Object.keys(errors).length > 0 ? 'variantDesactivate' : 'variant1'}
+                />
+              </>
+            ) : (
+              <div className="flex justify-end mt-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={() => navigate('/')}
+                />
+              </div>
+            )}
+          </div>
           </div>
         </form>
         {showModal && (
