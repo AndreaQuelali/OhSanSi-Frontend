@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
@@ -27,12 +27,10 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
   data,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false); 
 
   if (!isOpen) return null;
 
   const handleDownload = async () => {
-    setIsGeneratingPDF(true);
     await new Promise((r) => setTimeout(r, 100)); 
     if (contentRef.current) {
       const opt = {
@@ -44,7 +42,6 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
       };
       await html2pdf().set(opt).from(contentRef.current).save();
     }
-    setIsGeneratingPDF(false); 
   };
 
   return (
