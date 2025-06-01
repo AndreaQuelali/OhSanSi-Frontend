@@ -65,9 +65,9 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
             alt="Logo UMSS"
             className="w-40"
           />
-          <p className="text-right subtitle-md text-secondary">
+          {/* <p className="text-right subtitle-md text-secondary">
             N° {data.nroOrden}
-          </p>
+          </p> */}
           <h2 className="headline-md text-primary text-center mb-3">
             ORDEN DE PAGO
           </h2>
