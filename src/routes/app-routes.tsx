@@ -15,7 +15,7 @@ import RegisterTutorPage from '@/features/participants/pages/register-tutor';
 import GenerateOrderPaymentPage from '@/features/registrations/pages/generate-payment-order-page';
 import RegistrationsPage from '@/features/registrations/pages/registrations';
 import UploadPaymentPage from '@/features/registrations/pages/upload-payment';
-import { ReportRegisterOliPage } from '@/features/reports-admi/report-registerered-olimpist';
+import { ReportRegisterOliPage } from '@/features/olympiads/pages/report-registerered-olimpist';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 

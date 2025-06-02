@@ -383,7 +383,7 @@ export default function FormDataPart() {
             className={`
               transition-all duration-1000 ease-in-out transform overflow-hidden
               ${ciConfirmed
-                ? 'opacity-100 translate-y-0 max-h-[1000px] pointer-events-auto'
+                ? 'opacity-100 translate-y-0 max-h-full pointer-events-auto'
                 : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
             `}
           >

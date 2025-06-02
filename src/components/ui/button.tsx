@@ -18,6 +18,7 @@ export const Button = ({
       'text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
     variant3: 'text-primary hover:bg-primary hover:text-white cursor-pointer',
     variant4: 'text-primary hover:text-secondary2 cursor-pointer',
+    variant5: 'text-primary opacity-40',
     variantDesactivate: 'bg-primary text-white opacity-40',
   };
 
