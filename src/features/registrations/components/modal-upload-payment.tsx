@@ -5,6 +5,8 @@ import IconNoFile from '@/components/icons/icon-no-file';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
 import { useRef, useState } from 'react';
+import { ErrorAnimation, ScanningAnimation, SuccessAnimation } from './scanning-animation';
+
 
 export const ModalUploadPay = ({ onClose }: ModalProps) => {
   const [dragActive, setDragActive] = useState(false);
@@ -13,6 +15,9 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const [enhancedPreview, setEnhancedPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const isValidImage = (file: File) =>
     file.type === 'image/jpeg' ||
@@ -180,6 +185,10 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
     try {
       setIsSubmitting(true);
+      setVerificationResult(null);
+      setShowSuccess(false);
+      setShowError(false);
+
       const response = await fetch(enhancedPreview);
       const imageBlob = await response.blob();
       const formData = new FormData();
@@ -199,15 +208,42 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
         throw new Error('Error al subir la imagen');
       }
 
-      console.log('Envio!', uploadResponse.data);
+      const result = uploadResponse.data;
+      setVerificationResult(result);
+      console.log('Resultado de la verificación:', result);
 
-      alert('Imagen subida con éxito');
+      if (result.verificacion_pago === null) {
+        setShowError(true);
+        return;
+      }
+
+      if (
+        result.verificacion_pago?.verificado &&
+        !result.verificacion_pago?.mensaje?.includes('ya había sido verificado')
+      ) {
+        setShowSuccess(true);
+        setTimeout(() => {
+          onClose();
+        }, 3000);
+      } else {
+        setShowError(true);
+      }
     } catch (error) {
       console.error('Error al procesar la imagen:', error);
-      alert('Ocurrió un error al procesar la imagen.');
+      setShowError(true);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleRetry = () => {
+    setShowError(false);
+    setShowSuccess(false);
+    setVerificationResult(null);
+    setFileName(null);
+    setImagePreview(null);
+    setEnhancedPreview(null);
+    if (ref.current) ref.current.value = '';
   };
 
   return (
@@ -236,7 +272,7 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
               setDragActive(true);
             }}
             onDragLeave={() => setDragActive(false)}
-            className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition duration-200 ${
+            className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition duration-200 relative ${
               dragActive
                 ? 'border-secondary2 bg-secondary2/25'
                 : imagePreview
@@ -245,22 +281,36 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
             }`}
           >
             {imagePreview && enhancedPreview ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 w-full">
-                <div className="flex flex-col items-center">
-                  <p className="body-sm mb-1">Original</p>
-                  <img
-                    src={imagePreview}
-                    alt="Original"
-                    className="w-full max-h-64 object-contain rounded-md border border-neutral2"
-                  />
-                </div>
-                <div className="flex flex-col items-center">
-                  <p className="body-sm mb-1">Mejorada</p>
+              <div className="flex flex-col items-center relative w-full">
+                <div className="flex flex-col items-center relative w-full h-64">
                   <img
                     src={enhancedPreview}
                     alt="Mejorada"
-                    className="w-full max-h-64 object-contain rounded-md border border-green-400"
+                    className="w-full h-full object-contain rounded-md border border-green-400"
                   />
+
+                  {isSubmitting && <ScanningAnimation />}
+
+                  {showSuccess && verificationResult?.verificacion_pago && (
+                    <SuccessAnimation
+                      message={verificationResult?.verificacion_pago.mensaje}
+                    />
+                  )}
+
+                  {showError && (
+                    <ErrorAnimation
+                      message={
+                        verificationResult?.verificacion_pago === null
+                          ? 'Por favor, sube un comprobante de pago válido.'
+                          : verificationResult?.verificacion_pago?.mensaje ||
+                            'Error al verificar el pago'
+                      }
+                      errors={
+                        verificationResult?.verificacion_pago?.detalle_errores
+                      }
+                      onRetry={handleRetry}
+                    />
+                  )}
                 </div>
               </div>
             ) : (
@@ -271,7 +321,7 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
                     {fileName || 'Ningún archivo seleccionado'}
                   </p>
                   <p className="body-md text-primary hover:text-secondary2 mt-1 underline transition">
-                    Selecciona o arrastra el archivo aquí
+                    Selecciona o arrastra la imagen aquí
                   </p>
                 </div>
               </div>
@@ -288,14 +338,34 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
         </div>
 
         <div className="flex flex-row justify-end space-x-4 mt-6 mb-2">
-          <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
+          <Button
+            onClick={onClose}
+            label="Cancelar"
+            variantColor="variant2"
+            disabled={isSubmitting}
+          />
           <Button
             onClick={handleSubmitImage}
-            label="Subir archivo"
+            label={isSubmitting ? 'Verificando...' : 'Subir Imagen'}
             disabled={!enhancedPreview || isSubmitting}
+            variantColor={showSuccess ? 'variant3' : 'variant1'}
           />
         </div>
       </div>
+
+      <style>{`
+        @keyframes scan {
+          0% {
+            top: 0;
+          }
+          50% {
+            top: 50%;
+          }
+          100% {
+            top: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 };
