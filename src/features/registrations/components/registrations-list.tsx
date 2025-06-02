@@ -4,39 +4,8 @@ import { Button, InputText } from '@/components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
+import { Registration, RegistrationData, RegistrationsListProps } from '../interfaces/registrations';
 
-// Tipos para los datos de inscripción
-type Registration = {
-  nombre: string;
-  ci: string;
-  area: string;
-  categoria: string;
-};
-
-type List = {
-  cantidad: number;
-  cantidadOlimpistas: number;
-  responsable: string;
-  ci: string;
-  estado: string;
-  id_lista?: number;
-  tipo: "individual" | "grupal";
-};
-
-type RegistrationData = {
-  list: List;
-  registrations: Registration[];
-};
-
-type FormData = {
-  ci: string;
-};
-
-type RegistrationsListProps = {
-  showGenerateButton?: boolean; // opcional, por defecto false
-  showUploadButton?: boolean;
-  title?: string;
-};
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
   showGenerateButton = false,
@@ -51,13 +20,36 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
 
   const [data, setData] = useState<RegistrationData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const getRegistrations = async (ci: string) => {
     setLoading(true);
+    setErrorMessage('');
     try {
+      if (showUploadButton || title.includes('Subir comprobante de pago')) {
+        try {
+          console.log('PASasaaaa');
+          const paymentResponse = await axios.get(
+            `${API_URL}/consulta-pago/${ci}`,
+          );
+          const paymentData = paymentResponse.data;
+
+          if (!paymentData.existe) {
+            setErrorMessage(paymentData.mensaje);
+            setData([]);
+            return;
+          }
+        } catch (paymentErr: any) {
+          console.error('Error al consultar pago:', paymentErr);
+          setErrorMessage('Error al consultar el estado del pago.');
+          setData([]);
+          return;
+        }
+      }
+
       let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
 
-      if (title === "Registros de Inscripciones" && !showGenerateButton) {
+      if (title === 'Registros de Inscripciones' && !showGenerateButton) {
         endpoint = `${API_URL}/inscripciones/${ci}/TODOS`;
       }
 
@@ -94,7 +86,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
                 ci: responsable?.ci || 'Sin CI',
                 estado: item.estado || 'Pendiente',
                 id_lista: item.id_lista,
-                tipo: 'individual', 
+                tipo: 'individual',
               },
               registrations,
             };
@@ -109,10 +101,10 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
                 responsable: responsableName,
                 ci: responsable?.ci || 'Sin CI',
                 estado: item.estado || 'Pendiente',
-                id_lista: item.id_lista, // Aquí también
+                id_lista: item.id_lista,
                 tipo: 'grupal',
-            },
-              registrations: [], // No hay detalle de estudiantes en este caso
+              },
+              registrations: [],
             };
           }
 
@@ -121,9 +113,32 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         .filter(Boolean) as RegistrationData[];
 
       setData(mapped);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error al obtener inscripciones', err);
       setData([]);
+
+      if (
+        !showUploadButton &&
+        !title.includes('Verificar') &&
+        (err.response?.status === 404 || !err.response)
+      ) {
+        try {
+          const paymentResponse = await axios.get(
+            `${API_URL}/consulta-pago/${ci}`,
+          );
+          const paymentData = paymentResponse.data;
+
+          if (!paymentData.existe) {
+            setErrorMessage(paymentData.mensaje);
+          } else {
+            setErrorMessage('No se encontraron inscripciones asociadas.');
+          }
+        } catch (paymentErr: any) {
+          setErrorMessage('No se encontraron inscripciones asociadas.');
+        }
+      } else {
+        setErrorMessage('Error al consultar las inscripciones.');
+      }
     } finally {
       setLoading(false);
     }
@@ -156,11 +171,11 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
             }}
           />
           <div className="flex flex-col w-full md:w-auto">
-            <Button 
-              type="submit" 
-              label="Consultar" 
-              variantColor={loading ? "variantDesactivate" : "variant1"}
-              disabled={loading} 
+            <Button
+              type="submit"
+              label="Consultar"
+              variantColor={loading ? 'variantDesactivate' : 'variant1'}
+              disabled={loading}
             />
           </div>
         </div>
@@ -175,15 +190,12 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
               showUploadButton={showUploadButton}
             />
           ))}
-          {!loading && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-8">
-              No se encontraron inscripciones asociadas.
-            </p>
+          {!loading && data.length === 0 && errorMessage && (
+            <p className="text-center text-gray-500 mt-8">{errorMessage}</p>
           )}
         </div>
       </form>
     </div>
   );
 };
-
 export default RegistrationsList;
