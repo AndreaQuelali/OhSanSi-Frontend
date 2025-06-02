@@ -6,6 +6,7 @@ export interface ButtonProps {
     | 'variant2'
     | 'variant3'
     | 'variant4'
+    | 'variant5'
     | 'variantDesactivate';
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';

@@ -13,7 +13,7 @@ export const ButtonIcon = ({
   const varCol: Record<string, string> = {
     variant1: 'text-white bg-primary hover:bg-secondary2 transition',
     variant2: 'text-primary hover:bg-primary hover:text-white transition',
-    variant3: '',
+    variant3: 'text-primary hover:text-secondary2',
     variantDesactivate: 'text-neutral2',
   };
 
