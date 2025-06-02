@@ -506,7 +506,7 @@ export const ReportRegisterOliPage = () => {
             />
           </div>
 
-          {selectedOlympiadId && (
+          {selectedOlympiadId && participants.length != 0 && (
             <div className="flex flex-wrap gap-4">
               <p className="body-lg text-primary">Filtrar por: </p>
               <Button
@@ -563,12 +563,14 @@ export const ReportRegisterOliPage = () => {
               label="Imprimir"
               icon={IconPrint}
               onClick={handlePrint}
+              disabled={participants.length === 0}
             />
             <Button
               variantColor={participants.length === 0 ? 'variant5' : 'variant4'}
               label="Descargar"
               icon={IconDownloadB}
               onClick={() => setShowModal(true)}
+              disabled={participants.length === 0}
             />
           </div>
         </div>
