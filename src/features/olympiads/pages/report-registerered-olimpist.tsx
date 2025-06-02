@@ -224,16 +224,42 @@ export const ReportRegisterOliPage = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(14);
-    doc.text('Universidad Mayor de San Simón', 15, 12); // Izquierda (x=15)
-    doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' }); // Derecha (x=195)
+    doc.text('Universidad Mayor de San Simón', 15, 12); // Izquierda
+    doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' }); // Derecha
 
     doc.setFontSize(16);
     doc.text('Reporte de Olimpistas Inscritos', 105, 20, { align: 'center' });
     doc.setFontSize(12);
-
     doc.text(olympiadTitle, 105, 28, { align: 'center' });
+
     doc.setFontSize(10);
     doc.text(`Fecha: ${currentDate}`, 105, 36, { align: 'center' });
+
+    const filtersSummary: string[] = [];
+
+    if (selectedAreas.length > 0)
+      filtersSummary.push(`Área(s): ${selectedAreas.join(' - ')}`);
+    if (selectedLevels.length > 0)
+      filtersSummary.push(`Nivel(es): ${selectedLevels.join(' - ')}`);
+    if (selectedGrades.length > 0)
+      filtersSummary.push(`Grado(s): ${selectedGrades.join(' - ')}`);
+    if (selectedDepartamentos.length > 0)
+      filtersSummary.push(
+        `Departamento(s): ${selectedDepartamentos.join(' - ')}`,
+      );
+    if (selectedProvincias.length > 0)
+      filtersSummary.push(`Provincia(s): ${selectedProvincias.join(' - ')}`);
+    if (selectedColegios.length > 0)
+      filtersSummary.push(
+        `Unidad(es) Educativa(s): ${selectedColegios.join(' - ')}`,
+      );
+
+    let currentY = 44;
+
+    filtersSummary.forEach((line) => {
+      doc.text(line, 15, currentY);
+      currentY += 6;
+    });
 
     const columns = [
       'Apellido(s)',
@@ -260,8 +286,18 @@ export const ReportRegisterOliPage = () => {
     autoTable(doc, {
       head: [columns],
       body: rows,
-      startY: 44,
-      styles: { fontSize: 8 },
+      startY: currentY + 2,
+      styles: {
+        fontSize: 8,
+        textColor: [0, 0, 0],
+        fillColor: [255, 255, 255],
+      },
+      headStyles: {
+        fillColor: [38, 50, 108],
+        textColor: [255, 255, 255],
+        halign: 'center',
+        valign: 'middle',
+      },
     });
 
     doc.autoPrint();
@@ -269,18 +305,48 @@ export const ReportRegisterOliPage = () => {
   };
 
   const handleDownload = () => {
+    const getFiltersSummary = () => {
+      const summary = [];
+
+      if (selectedAreas.length > 0)
+        summary.push(`Área(s): ${selectedAreas.join(' - ')}`);
+      if (selectedLevels.length > 0)
+        summary.push(`Nivel(es): ${selectedLevels.join(' - ')}`);
+      if (selectedGrades.length > 0)
+        summary.push(`Grado(s): ${selectedGrades.join(' - ')}`);
+      if (selectedDepartamentos.length > 0)
+        summary.push(`Departamento(s): ${selectedDepartamentos.join(' - ')}`);
+      if (selectedProvincias.length > 0)
+        summary.push(`Provincia(s): ${selectedProvincias.join(' - ')}`);
+      if (selectedColegios.length > 0)
+        summary.push(
+          `Unidad(es) Educativa(s): ${selectedColegios.join(' - ')}`,
+        );
+
+      return summary;
+    };
+
+    const filtersSummary = getFiltersSummary();
+
     if (formatSelected === 'pdf') {
       const doc = new jsPDF();
       doc.setFontSize(14);
-      doc.text('Universidad Mayor de San Simón', 15, 12); // Izquierda (x=15)
-      doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' }); // Derecha (x=195)
+      doc.text('Universidad Mayor de San Simón', 15, 12);
+      doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' });
 
       doc.setFontSize(16);
       doc.text('Reporte de Olimpistas Inscritos', 105, 20, { align: 'center' });
       doc.setFontSize(12);
       doc.text(olympiadTitle, 105, 28, { align: 'center' });
+
       doc.setFontSize(10);
       doc.text(`Fecha: ${currentDate}`, 105, 36, { align: 'center' });
+
+      let y = 44;
+      filtersSummary.forEach((line) => {
+        doc.text(line, 15, y);
+        y += 6;
+      });
 
       const columns = [
         'Apellido(s)',
@@ -307,8 +373,18 @@ export const ReportRegisterOliPage = () => {
       autoTable(doc, {
         head: [columns],
         body: rows,
-        startY: 44,
-        styles: { fontSize: 8 },
+        startY: y + 2,
+        styles: {
+          fontSize: 8,
+          textColor: [0, 0, 0],
+          fillColor: [255, 255, 255],
+        },
+        headStyles: {
+          fillColor: [38, 50, 108],
+          textColor: [255, 255, 255],
+          halign: 'center',
+          valign: 'middle',
+        },
       });
 
       doc.save('reporte_olimpistas_inscritos.pdf');
@@ -318,18 +394,26 @@ export const ReportRegisterOliPage = () => {
         ['Reporte de Olimpistas Inscritos'],
         [olympiadTitle],
         [`Fecha: ${currentDate}`],
-        [],
-        [
-          'Apellido(s)',
-          'Nombre(s)',
-          'Departamento',
-          'Provincia',
-          'Unidad Educativa',
-          'Grado',
-          'Área',
-          'Nivel',
-        ],
       ];
+
+      filtersSummary.forEach((line) => {
+        headerRows.push([line]);
+      });
+
+      headerRows.push([]);
+
+      const columnTitles = [
+        'Apellido(s)',
+        'Nombre(s)',
+        'Departamento',
+        'Provincia',
+        'Unidad Educativa',
+        'Grado',
+        'Área',
+        'Nivel',
+      ];
+
+      headerRows.push(columnTitles);
 
       const dataRows = participants.map((row) => [
         row.Apellido,
@@ -344,26 +428,7 @@ export const ReportRegisterOliPage = () => {
 
       const allRows = [...headerRows, ...dataRows];
       const worksheet = XLSX.utils.aoa_to_sheet(allRows);
-      const boldCells = [
-        'A1',
-        'A2',
-        'A3',
-        'A5',
-        'B5',
-        'C5',
-        'D5',
-        'E5',
-        'F5',
-        'G5',
-        'H5',
-        'I5', // quitar uno?
-      ];
-      boldCells.forEach((cell) => {
-        if (!worksheet[cell]) return;
-        worksheet[cell].s = {
-          font: { bold: true },
-        };
-      });
+
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
 
@@ -494,13 +559,13 @@ export const ReportRegisterOliPage = () => {
           )}
           <div className="flex justify-end gap-2 items-end">
             <Button
-              variantColor="variant4"
+              variantColor={participants.length === 0 ? 'variant5' : 'variant4'}
               label="Imprimir"
               icon={IconPrint}
               onClick={handlePrint}
             />
             <Button
-              variantColor="variant4"
+              variantColor={participants.length === 0 ? 'variant5' : 'variant4'}
               label="Descargar"
               icon={IconDownloadB}
               onClick={() => setShowModal(true)}
