@@ -1,6 +1,7 @@
 import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
-import React from 'react';
+import { SearchInput } from '@/components/ui/search';
+import { useEffect, useMemo, useState } from 'react';
 
 type FilterProps<T> = {
   label: string;
@@ -23,11 +24,42 @@ export const FilterModal = <T extends Record<string, any>>({
   onClose,
   onConfirm,
 }: FilterProps<T>) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentValues, setCurrentValues] = useState<string[]>(selectedValues);
+
+  useEffect(() => {
+    setCurrentValues([...selectedValues]);
+  }, [selectedValues]);
+
+  const hasChanges = useMemo(() => {
+    if (currentValues.length !== selectedValues.length) return true;
+
+    const currentSet = new Set(currentValues);
+    return selectedValues.some((val) => !currentSet.has(val));
+  }, [currentValues, selectedValues]);
+
+  const filteredOptions = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    const seen = new Set();
+    return options.filter((option) => {
+      const label = String(option[labelKey]).toLowerCase();
+      const value = String(option[valueKey]);
+      const match = label.includes(term);
+      const isUnique = !seen.has(value);
+      if (match && isUnique) {
+        seen.add(value);
+        return true;
+      }
+      return false;
+    });
+  }, [options, labelKey, valueKey, searchTerm]);
+
   const handleCheckboxChange = (value: string) => {
-    const isSelected = selectedValues.includes(value);
+    const isSelected = currentValues.includes(value);
     const updatedValues = isSelected
-      ? selectedValues.filter((v) => v !== value)
-      : [...selectedValues, value];
+      ? currentValues.filter((v) => v !== value)
+      : [...currentValues, value];
+    setCurrentValues(updatedValues);
     onChange(updatedValues);
   };
 
@@ -45,12 +77,15 @@ export const FilterModal = <T extends Record<string, any>>({
             variantColor="variant2"
           />
         </div>
-        <h2 className="subtitle-md mb-4">{label}</h2>
+        <h2 className="subtitle-md mb-4 text-primary">{label}</h2>
+        {options.length > 15 && (
+          <SearchInput value={searchTerm} onChange={setSearchTerm} />
+        )}
         <div className="max-h-64 overflow-y-auto pr-2 space-y-3 body-md">
-          {options.map((option) => {
+          {filteredOptions.map((option) => {
             const value = option[valueKey] as string;
             const label = option[labelKey] as string;
-            const isChecked = selectedValues.includes(value);
+            const isChecked = currentValues.includes(value);
 
             return (
               <label
@@ -64,7 +99,7 @@ export const FilterModal = <T extends Record<string, any>>({
                   value={value}
                   checked={isChecked}
                   onChange={() => handleCheckboxChange(value)}
-                  className="accent-indigo-900 w-4 h-4 border border-gray-400 rounded focus:ring-indigo-500"
+                  className="accent-primary w-4 h-4 border border-gray-400 rounded focus:ring-indigo-500"
                 />
                 {label}
               </label>
