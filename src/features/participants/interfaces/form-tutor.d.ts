@@ -1,8 +1,8 @@
 export type FormData = {
-    ci: number;
+    ci: string;
     name: string;
     lastname: string;
-    phone: number;
+    phone: string;
     email: string;
   };
   

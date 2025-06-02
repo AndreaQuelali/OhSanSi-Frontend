@@ -15,7 +15,7 @@ import RegisterTutorPage from '@/features/participants/pages/register-tutor';
 import GenerateOrderPaymentPage from '@/features/registrations/pages/generate-payment-order-page';
 import RegistrationsPage from '@/features/registrations/pages/registrations';
 import UploadPaymentPage from '@/features/registrations/pages/upload-payment';
-import { ReportRegisterOliPage } from '@/features/reports-admi/report-registerered-olimpist';
+import { ReportRegisterOliPage } from '@/features/olympiads/pages/report-registerered-olimpist';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
@@ -39,9 +39,9 @@ export default function AppRoutes() {
           <Route
             path="/register-olimpists"
             element={
-              <RegistrationGuard>
-                <RegisterParticipantPage />
-              </RegistrationGuard>
+              //  <RegistrationGuard>
+              <RegisterParticipantPage />
+              // </RegistrationGuard>
             }
           />
           <Route
@@ -55,9 +55,9 @@ export default function AppRoutes() {
           <Route
             path="/register-selected-areas"
             element={
-              <RegistrationGuard>
-                <RegisterSelectedAreasPage />
-              </RegistrationGuard>
+              //    <RegistrationGuard>
+              <RegisterSelectedAreasPage />
+              //    </RegistrationGuard>
             }
           />
           <Route
@@ -79,26 +79,22 @@ export default function AppRoutes() {
           <Route
             path="/generate-order-payment"
             element={
-              <RegistrationGuard>
-                <GenerateOrderPaymentPage />
-              </RegistrationGuard>
+              // <RegistrationGuard>
+              <GenerateOrderPaymentPage />
+              //   </RegistrationGuard>
             }
           />
           <Route
             path="/upload-payment"
             element={
-              <RegistrationGuard>
-                <UploadPaymentPage />
-              </RegistrationGuard>
+              //  <RegistrationGuard>
+              <UploadPaymentPage />
+              //  </RegistrationGuard>
             }
           />
           <Route
             path="/report-registered-olimpist"
-            element={
-              <RegistrationGuard>
-                <ReportRegisterOliPage />
-              </RegistrationGuard>
-            }
+            element={<ReportRegisterOliPage />}
           />
         </Route>
       </Routes>

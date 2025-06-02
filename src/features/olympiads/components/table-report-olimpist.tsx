@@ -4,7 +4,6 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 interface TableRow {
   Apellido: string;
   Nombre: string;
-  CI: string;
   Departamento: string;
   Provincia: string;
   UnidadEducativa: string;
@@ -20,7 +19,6 @@ type TableProps = {
 const columns: TableColumn<TableRow>[] = [
   { name: 'Apellido(s)', selector: (row) => row.Apellido, sortable: true },
   { name: 'Nombre(s)', selector: (row) => row.Nombre, sortable: true },
-  { name: 'CI', selector: (row) => row.CI, sortable: true },
   { name: 'Departamento', selector: (row) => row.Departamento, sortable: true },
   { name: 'Provincia', selector: (row) => row.Provincia, sortable: true },
   {
