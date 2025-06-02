@@ -198,7 +198,7 @@ export default function FormInfo() {
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre es obligatorio',
+                required: 'El nombre de la olimpiada es obligatorio',
                 pattern: {
                   value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
                   message:
