@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
 import { getData } from '@/services/api-service';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 type FormTutorProps = {
   viewTB: boolean;
@@ -33,10 +34,26 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const onSubmit = async (data: FormData) => {
     setFormData(data);
     setShowModal(true);
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
+  };
+
+  const handleNextStep = () => {
+    navigate('/register-olimpists');
   };
 
   const onCloseModal = () => {
@@ -57,18 +74,19 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     try {
       const response = await submitForm(payload);
       if (response) {
-        alert('Registro exitoso del tutor');
-        window.location.reload();
+        setConfirmationStatus('success');
+        setConfirmationMessage('Registro exitoso del tutor. Si desea registrar a un olimpista, puede continuar con el siguiente paso.');
       }
     } catch (error: any) {
+      setConfirmationStatus('error');
       if (error.data?.errors) {
         const messages = Object.values(error.data.errors).flat().join('\n');
-        alert(messages);
+        setConfirmationMessage(messages);
       } else {
-        alert(error.data?.message || 'Ocurrió un error. Intenta de nuevo.');
+        setConfirmationMessage(error.data?.message || 'Ocurrió un error. Intenta de nuevo.');
       }
     }
-
+    setShowConfirmationModal(true);
     setShowModal(false);
     };
       
@@ -207,7 +225,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
           >
             <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
               <p>
-                Este número de cédula ya está registrado. Si deseas registrar a un olimpista, 
+                Este número de cédula ya está registrado. Si desea registrar a un olimpista, 
                 puedes continuar con el siguiente paso.
               </p>
               <div className="mt-3 flex justify-end">
@@ -325,6 +343,15 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             onClose={onCloseModal}
             text="¿Estás seguro de registrar los datos del tutor?"
             onConfirm={onConfirm}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
+            nextStepText={confirmationStatus === 'success' ? 'Ir a formulario de registro de olimpista' : undefined}
+            onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
           />
         )}
       </div>

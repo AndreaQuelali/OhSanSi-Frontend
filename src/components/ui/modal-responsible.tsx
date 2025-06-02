@@ -132,15 +132,17 @@ export default function ResponsiblePersonModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-amber-50 bg-opacity-75 flex justify-center items-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        ref={modalRef}
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md"
-      >
+        className="absolute inset-0 bg-neutral2 opacity-40"
+      />
+        <div
+          ref={modalRef}
+          className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md z-50"
+        >
         <h2 className="text-primary text-xl font-semibold mb-4">
           Cédula de identidad del responsable de la inscripción
         </h2>
-
         <InputText
           label="CI del responsable"
           name="responsibleCi"

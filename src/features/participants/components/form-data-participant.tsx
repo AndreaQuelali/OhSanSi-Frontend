@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
 import { debounce } from 'lodash';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 export default function FormDataPart() {
   const {
@@ -50,6 +51,9 @@ export default function FormDataPart() {
   const [ciOlimpistaFound, setCiOlimpistaFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const debouncedCheckCiRef = useRef(
     debounce(async (ciValue: string) => {
@@ -332,13 +336,32 @@ export default function FormDataPart() {
 
     try {
       const response = await submitForm(payload);
-      console.log('Se envio correctamente', response);
-      alert('Olimpista registrado correctamente');
-      window.location.reload();
-    } catch (error) {
+      console.log('Se envió correctamente', response);
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.');
+    } catch (error: any) {
       console.error('Error al registrar al olimpista:', error);
-      alert('Error al registrar al olimpista');
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        error.data?.message || 'Error al registrar al olimpista'
+      );
+    } finally {
+      setShowConfirmationModal(true);
+      setShowModal(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
+  };
+
+  const handleNextStep = () => {
+    navigate('/register-selected-areas');
   };
 
   return (
@@ -395,8 +418,8 @@ export default function FormDataPart() {
           >
             <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
               <p>
-                  Este número de cédula ya está registrado. Si deseas inscribir a este olimpista
-                  en áreas de competencia, puedes continuar con el siguiente paso.
+                  Este número de cédula ya está registrado. Si desea inscribir al olimpista
+                  en áreas de competencia, puede continuar con el siguiente paso.
               </p>
               <div className="mt-3 flex justify-end">
                 <Button
@@ -695,6 +718,15 @@ export default function FormDataPart() {
             onClose={() => setShowModal(false)}
             text="¿Estás seguro de que deseas registrar esta información?"
             onConfirm={handleSubmit(handleRegister)}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
+            nextStepText={confirmationStatus === 'success' ? 'Ir a registro de olimpista en áreas de competencia' : undefined}
+            onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
           />
         )}
       </div>

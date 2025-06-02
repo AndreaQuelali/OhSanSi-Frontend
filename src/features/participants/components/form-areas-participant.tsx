@@ -14,6 +14,7 @@ import AreasGridSection from './selection-grid-areas';
 import AreaSelectionModal from './selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
 import ResponsiblePersonModal from '@/components/ui/modal-responsible';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 export default function FormAreaPart() {
   const {
@@ -33,6 +34,9 @@ export default function FormAreaPart() {
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const {
     areasDisponibles,
@@ -93,6 +97,15 @@ export default function FormAreaPart() {
     } else {
       setNivelesSeleccionadosTemp([...nivelesYaRegistrados, nivel]);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.href = '/register-selected-areas';
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   const handleModalAceptar = () => {
@@ -238,7 +251,7 @@ export default function FormAreaPart() {
               ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
               : {}),
           }));
-      },
+      }
     );
 
     const payload = {
@@ -250,15 +263,20 @@ export default function FormAreaPart() {
     try {
       const response = await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
-        payload,
+        payload
       );
-
-      alert('Registro exitoso');
       console.log(response);
-      window.location.href = '/register-selected-areas';
-    } catch (err) {
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso.');
+    } catch (err: any) {
       console.error('Error:', err);
-      alert('Error al realizar el registro. Por favor intente nuevamente.');
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        err.response?.data?.message || 'Error al realizar el registro. Por favor intente nuevamente.'
+      );
+    } finally {
+      setShowResponsibleModal(false);
+      setShowConfirmationModal(true);
     }
   };
 
@@ -308,6 +326,13 @@ export default function FormAreaPart() {
         onClose={() => setShowResponsibleModal(false)}
         onConfirm={handleResponsibleConfirm}
       />
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
+        />
+      )}
     </div>
   );
 }

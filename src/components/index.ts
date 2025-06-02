@@ -1,6 +1,7 @@
 export * from './icons/close';
 export * from './icons/icon-add';
 export * from './icons/icon-close';
+export * from './icons/icon-check';
 export * from './icons/icon-delete';
 export * from './icons/icon-down';
 export * from './icons/icon-download';
