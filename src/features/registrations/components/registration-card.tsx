@@ -219,7 +219,7 @@ const RegistrationCard: React.FC<Props> = ({
           />
         )}
         {showModalUpload && (
-          <ModalUploadPay onClose={() => setShowModalUpload(false)} />
+          <ModalUploadPay onClose={() => setShowModalUpload(false)} id_lista={list.id_lista} />
         )}
       </div>
     </div>

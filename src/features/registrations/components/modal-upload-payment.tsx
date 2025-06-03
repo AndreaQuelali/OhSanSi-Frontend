@@ -5,10 +5,18 @@ import IconNoFile from '@/components/icons/icon-no-file';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
 import { useRef, useState } from 'react';
-import { ErrorAnimation, ScanningAnimation, SuccessAnimation } from './scanning-animation';
+import {
+  ErrorAnimation,
+  ScanningAnimation,
+  SuccessAnimation,
+} from './scanning-animation';
 
+interface ModalProps {
+  onClose: () => void;
+  id_lista?: string | number;
+}
 
-export const ModalUploadPay = ({ onClose }: ModalProps) => {
+export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -18,6 +26,8 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
   const [verificationResult, setVerificationResult] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
   const isValidImage = (file: File) =>
     file.type === 'image/jpeg' ||
@@ -124,10 +134,9 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          // 🔍 APLICAR FILTRO DE NITIDEZ (convolución 3x3)
           const imageData = ctx.getImageData(0, 0, width, height);
           const data = imageData.data;
-          const copy = new Uint8ClampedArray(data); // para no modificar original en tiempo real
+          const copy = new Uint8ClampedArray(data);
 
           const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 
@@ -183,6 +192,9 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
       return;
     }
 
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
       setIsSubmitting(true);
       setVerificationResult(null);
@@ -194,6 +206,10 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
       const formData = new FormData();
       formData.append('boleta', imageBlob, fileName || 'comprobante.jpg');
 
+      if (id_lista) {
+        formData.append('id_lista', id_lista.toString());
+      }
+
       const uploadResponse = await axios.post(
         `${API_URL}/prueba-ocr`,
         formData,
@@ -201,6 +217,7 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          signal: controller.signal,
         },
       );
 
@@ -210,7 +227,6 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
       const result = uploadResponse.data;
       setVerificationResult(result);
-      console.log('Resultado de la verificación:', result);
 
       if (result.verificacion_pago === null) {
         setShowError(true);
@@ -224,16 +240,43 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
         setShowSuccess(true);
         setTimeout(() => {
           onClose();
+          window.location.reload();
         }, 3000);
       } else {
         setShowError(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError' || error.name === 'CanceledError') {
+        console.log('Subida cancelada por el usuario');
+        return;
+      }
       console.error('Error al procesar la imagen:', error);
       setShowError(true);
     } finally {
       setIsSubmitting(false);
+      setAbortController(null);
     }
+  };
+
+  const handleCancel = () => {
+    if (abortController) {
+      abortController.abort();
+    }
+
+    setIsSubmitting(false);
+    setShowError(false);
+    setShowSuccess(false);
+    setVerificationResult(null);
+    setFileName(null);
+    setImagePreview(null);
+    setEnhancedPreview(null);
+    setAbortController(null);
+
+    if (ref.current) {
+      ref.current.value = '';
+    }
+
+    onClose();
   };
 
   const handleRetry = () => {
@@ -339,16 +382,21 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
         <div className="flex flex-row justify-end space-x-4 mt-6 mb-2">
           <Button
-            onClick={onClose}
-            label="Cancelar"
+            onClick={handleCancel}
+            label={isSubmitting ? 'Cancelar Subida' : 'Cancelar'}
             variantColor="variant2"
-            disabled={isSubmitting}
           />
           <Button
             onClick={handleSubmitImage}
             label={isSubmitting ? 'Verificando...' : 'Subir Imagen'}
-            disabled={!enhancedPreview || isSubmitting}
-            variantColor={showSuccess ? 'variant3' : 'variant1'}
+            disabled={!enhancedPreview || isSubmitting || !imagePreview}
+            variantColor={
+              showSuccess
+                ? 'variant3'
+                : !enhancedPreview || !imagePreview
+                  ? 'variantDesactivate'
+                  : 'variant1'
+            }
           />
         </div>
       </div>
