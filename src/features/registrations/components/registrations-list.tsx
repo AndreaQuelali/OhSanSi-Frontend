@@ -4,8 +4,11 @@ import { Button, InputText } from '@/components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-import { Registration, RegistrationData, RegistrationsListProps } from '../interfaces/registrations';
-
+import {
+  Registration,
+  RegistrationData,
+  RegistrationsListProps,
+} from '../interfaces/registrations';
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
   showGenerateButton = false,
@@ -28,7 +31,6 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
     try {
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
         try {
-          console.log('PASasaaaa');
           const paymentResponse = await axios.get(
             `${API_URL}/consulta-pago/${ci}`,
           );
@@ -39,8 +41,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
             setData([]);
             return;
           }
-        } catch (paymentErr: any) {
-          console.error('Error al consultar pago:', paymentErr);
+        } catch {
           setErrorMessage('Error al consultar el estado del pago.');
           setData([]);
           return;
@@ -49,7 +50,12 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
 
       let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
 
-      if (title === 'Registros de Inscripciones' && !showGenerateButton) {
+      if (showUploadButton || title.includes('Subir comprobante de pago')) {
+        endpoint = `${API_URL}/inscripciones-pendiente/${ci}`;
+      } else if (
+        title === 'Registros de Inscripciones' &&
+        !showGenerateButton
+      ) {
         endpoint = `${API_URL}/inscripciones/${ci}/TODOS`;
       }
 
@@ -60,13 +66,11 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         throw new Error("El campo 'listas' no es un arreglo.");
       }
 
-      // Obtenemos el responsable antes de usarlo
       const responsableName =
         `${responsable?.nombres || ''} ${responsable?.apellidos || ''}`.trim();
 
       const mapped: RegistrationData[] = listas
         .map((item: any) => {
-          // Individual
           if (item.detalle?.tipo === 'individual') {
             const olimpista = item.detalle.olimpista;
             const niveles = item.detalle.niveles || [];
@@ -92,7 +96,6 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
             };
           }
 
-          // Grupal
           if (item.detalle?.tipo === 'grupal') {
             return {
               list: {
@@ -120,6 +123,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
       if (
         !showUploadButton &&
         !title.includes('Verificar') &&
+        !title.includes('Subir comprobante de pago') &&
         (err.response?.status === 404 || !err.response)
       ) {
         try {
@@ -133,7 +137,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
           } else {
             setErrorMessage('No se encontraron inscripciones asociadas.');
           }
-        } catch (paymentErr: any) {
+        } catch {
           setErrorMessage('No se encontraron inscripciones asociadas.');
         }
       } else {
