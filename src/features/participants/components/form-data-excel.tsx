@@ -96,7 +96,9 @@ export default function FormDataExcel() {
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
   
-      const parsedData: OlimpistaRow[] = rawData.map((row) => ({
+      const parsedData: OlimpistaRow[] = rawData
+      .filter((row) => row.some((cell) => cell !== null && cell !== ""))
+      .map((row) => ({
         Nombre: row[0] ?? "",
         Apellido: row[1] ?? "",
         CIOlimpista: row[2]?.toString() ?? "",
