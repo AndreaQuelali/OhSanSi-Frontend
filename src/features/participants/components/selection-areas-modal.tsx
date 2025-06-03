@@ -3,6 +3,7 @@ import IconClose from '@/components/icons/icon-close';
 import { InputText } from '@/components';
 import { FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 interface NivelType {
   id_nivel: number;
@@ -45,6 +46,7 @@ export default function AreaSelectionModal({
       })
     : '';
   const [isDeselecting, setIsDeselecting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (nivelesSeleccionadosTemp.length > 0) {
@@ -65,6 +67,10 @@ export default function AreaSelectionModal({
     }
   }, [tutorCi, clearTutorError]);
 
+  const onNextStep = () => {
+    navigate('/register-tutor');
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center">
       <div
@@ -81,7 +87,7 @@ export default function AreaSelectionModal({
 
         <h3 className="text-lg font-semibold mb-4">Área: {selectedArea}</h3>
 
-        <div className="mb-6">
+        <div className="mb-0">
           <InputText
             label="Cédula de identidad del tutor académico (Opcional)"
             name="tutor.ci"
@@ -99,6 +105,18 @@ export default function AreaSelectionModal({
           />
           {tutorError && tutorCi && (
             <p className="text-error subtitle-sm mt-1">{tutorError}</p>
+          )}
+        </div>
+
+        <div>
+          {tutorError && tutorCi && (
+            <div className="flex justify-end -my-3">
+            <Button
+              label="Ir a registro de tutor"
+              onClick={onNextStep}
+              variantColor="variant4"
+            />
+            </div>
           )}
         </div>
 

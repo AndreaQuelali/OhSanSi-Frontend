@@ -15,6 +15,7 @@ import AreaSelectionModal from './selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
 import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { useNavigate } from 'react-router';
 
 export default function FormAreaPart() {
   const {
@@ -37,6 +38,7 @@ export default function FormAreaPart() {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
+  const navigate = useNavigate();
 
   const {
     areasDisponibles,
@@ -267,7 +269,7 @@ export default function FormAreaPart() {
       );
       console.log(response);
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso.');
+      setConfirmationMessage('Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.');
     } catch (err: any) {
       console.error('Error:', err);
       setConfirmationStatus('error');
@@ -278,6 +280,10 @@ export default function FormAreaPart() {
       setShowResponsibleModal(false);
       setShowConfirmationModal(true);
     }
+  };
+
+  const handleNextStep = () => {
+    navigate('/generate-order-payment');
   };
 
   return (
@@ -331,6 +337,8 @@ export default function FormAreaPart() {
           onClose={handleCloseConfirmationModal}
           status={confirmationStatus || 'error'}
           message={confirmationMessage}
+          nextStepText={confirmationStatus === 'success' ? 'Ir a generar boleta de orden de pago.' : undefined}
+          onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
         />
       )}
     </div>

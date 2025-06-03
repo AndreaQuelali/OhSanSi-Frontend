@@ -54,6 +54,8 @@ export default function FormDataPart() {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
+  const [isTutorRegistered, setIsTutorRegistered] = useState(false);
+
 
   const debouncedCheckCiRef = useRef(
     debounce(async (ciValue: string) => {
@@ -179,17 +181,20 @@ export default function FormDataPart() {
         );
         if (response.data) {
           clearErrors('olimpista.citutor');
+          setIsTutorRegistered(false);
         } else {
           setError('olimpista.citutor', {
             type: 'manual',
             message: 'Este CI de tutor no está registrado.',
           });
+          setIsTutorRegistered(true);
         }
       } catch {
         setError('olimpista.citutor', {
           type: 'manual',
           message: 'Este CI de tutor no está registrado.',
         });
+        setIsTutorRegistered(true);
       }
     }, 500),
   );
@@ -364,6 +369,10 @@ export default function FormDataPart() {
     navigate('/register-selected-areas');
   };
 
+  const onNextStep = () => {
+    navigate('/register-tutor');
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center ">
@@ -430,6 +439,7 @@ export default function FormDataPart() {
               </div>
             </div>
           </div>
+          <h2 className="text-primary subtitle-sm mb-2 ">Antes de completar el formulario, asegúrate de haber registrado a un tutor. Si eres tu propio tutor, puedes ingresar tu propio número de cédula de identidad.</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
             <InputText
               label="Nombre(s)"
@@ -513,34 +523,49 @@ export default function FormDataPart() {
               errors={errors}
               disabled={isRegisteredOlimpista}
             />
-            <InputText
-              label="Cédula de identidad del tutor legal"
-              name="olimpista.citutor"
-              placeholder="Ingresar ci del tutor legal"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
-                },
-                validate: (value: string) => {
-                  return value === ci ? true : undefined;
-                },
-                onBlur: checkCiTutor,
-              }}
-              errors={errors}
-              disabled={isRegisteredOlimpista}
-            />
+            <div className="flex flex-col">
+              <InputText
+                label="Cédula de identidad del tutor legal"
+                name="olimpista.citutor"
+                placeholder="Ingresar ci del tutor legal"
+                className="w-full "
+                register={register}
+                validationRules={{
+                  required: 'El número de cédula es obligatorio',
+                  minLength: {
+                    value: 4,
+                    message: 'Debe tener al menos 4 dígitos',
+                  },
+                  maxLength: {
+                    value: 8,
+                    message: 'No puede tener más de 8 dígitos',
+                  },
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Solo se permiten números',
+                  },
+                  validate: (value: string) => {
+                    return value === ci ? true : undefined;
+                  },
+                  onBlur: checkCiTutor,
+                }}
+                errors={errors}
+                disabled={isRegisteredOlimpista}
+              />
+              <div>
+                {isTutorRegistered && (ci && citutor && ci != citutor) && (
+                  <div className="flex justify-end -my-2">
+                  <Button
+                    label="Ir a registro de tutor"
+                    onClick={onNextStep}
+                    variantColor="variant4"
+                  />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
             {ci && citutor && ci === citutor && (
               <InputText
                 label="Número de celular"
