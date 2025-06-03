@@ -5,45 +5,7 @@ import { API_URL } from '@/config/api-config';
 import axios from 'axios';
 import { PaymentOrderModalInd } from './payment-order-modal-individual';
 import { ModalUploadPay } from './modal-upload-payment';
-
-type Registration = {
-  nombre: string;
-  ci: string;
-  area: string;
-  categoria: string;
-};
-
-type List = {
-  cantidad: number;
-  cantidadOlimpistas: number;
-  responsable: string;
-  ci: string;
-  estado: string;
-  id_lista?: number;
-  tipo: 'individual' | 'grupal';
-};
-
-type PaymentData = {
-  ci: string;
-  nombres: string;
-  apellidos: string;
-  cantidadOlimpistas: number;
-  total: number;
-  unitario: number;
-  niveles: { nivel_id: number; nombre_nivel: string; area: string }[];
-  totalLiteral: string;
-  fecha: string;
-  hora: string;
-  nroOrden: string;
-};
-
-type Props = {
-  list: List;
-  registrations: Registration[];
-  isAlternate?: boolean;
-  showGenerateButton?: boolean;
-  showUploadButton?: boolean;
-};
+import { PaymentData, Props } from '../interfaces/registrations';
 
 const RegistrationCard: React.FC<Props> = ({
   list,
@@ -106,7 +68,7 @@ const RegistrationCard: React.FC<Props> = ({
         const response = await axios.get(
           `${API_URL}/boleta-de-pago-grupal/${list.id_lista}`,
         );
-        const { responsable, pago, detalle_grupo } = response.data;
+        const { responsable, pago } = response.data;
 
         paymentDataTemp = {
           ci: responsable.ci,
