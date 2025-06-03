@@ -1,6 +1,6 @@
 import { Button, Dropdown, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
@@ -11,6 +11,7 @@ interface FormData {
   level: string;
   gmin: string;
   gmax: string;
+  olympiad: string;
 }
 
 export default function FormLevelsGrades() {
@@ -27,11 +28,13 @@ export default function FormLevelsGrades() {
       level: '',
       gmin: '',
       gmax: '',
+      olympiad: ''
     },
   });
 
   const navigate = useNavigate();
   const minGrade = watch('gmin');
+  const selectedOlympiad = watch('olympiad');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableData, setTableData] = useState<
@@ -41,6 +44,10 @@ export default function FormLevelsGrades() {
   const { data: levels } = useFetchData<{
     niveles: { id_nivel: number; nombre: string }[];
   }>(`${API_URL}/get-niveles`);
+
+  const { data: olympiads } = useFetchData<{
+    id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
+  >(`${API_URL}/olimpiadas`);
 
   const { data: grades } = useFetchData<
     {
@@ -61,9 +68,12 @@ export default function FormLevelsGrades() {
     }
   }, [minGrade]);
 
-  const fetchTableData = async () => {
+  const fetchTableData = useCallback(async (olympiadId: number) => {
+    if (!olympiadId) {
+      return;
+    }
     try {
-      const response = await axios.get(`${API_URL}/grados-niveles`);
+      const response = await axios.get(`${API_URL}/grados-niveles/${olympiadId}`);
       const levelstable = response.data;
 
       const formatted = levelstable.map((nivel: any) => ({
@@ -75,16 +85,19 @@ export default function FormLevelsGrades() {
               }`
             : nivel.grados[0].nombre_grado,
       }));
-
       setTableData(formatted);
     } catch (error) {
       console.error('Error al obtener los niveles con sus grados:', error);
     }
-  };
+
+  }, []);
 
   useEffect(() => {
-    fetchTableData();
-  }, []);
+    if (selectedOlympiad) {
+      console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
+      fetchTableData(Number(selectedOlympiad));
+    }
+  }, [selectedOlympiad, fetchTableData]);
 
   const handleRegister = async (data: FormData) => {
     const levelId = levels?.niveles.find(
@@ -92,6 +105,7 @@ export default function FormLevelsGrades() {
     )?.id_nivel;
     const gminId = Number(data.gmin);
     const gmaxId = data.gmax ? Number(data.gmax) : Number(data.gmin);
+    const olympiadId = Number(data.olympiad);
 
     if (!levelId) {
       alert('Datos inválidos');
@@ -150,6 +164,7 @@ export default function FormLevelsGrades() {
       id_nivel: levelId,
       id_grado_min: gminId,
       id_grado_max: gmaxId,
+      id_olimpiada: olympiadId,
     };
     setIsSubmitting(true);
 
@@ -176,7 +191,26 @@ export default function FormLevelsGrades() {
               Asociación de Niveles/Categorías con Grados
             </h1>
 
-            <div className="grid lg:grid-cols-3 lg:gap-9 mb-6">
+            <div className="grid lg:grid-cols-4 lg:gap-9 mb-6">
+              <Dropdown
+                name="olympiad"
+                label="Olimpiada"
+                placeholder="Seleccionar olimpiada"
+                className="w-full"
+                options={
+                  olympiads?.map((olimpiada) => ({
+                    id: olimpiada.id_olimpiada.toString(),
+                    name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
+                  })) || []
+                }
+                displayKey="name"
+                valueKey="id"
+                register={register}
+                errors={errors}
+                validationRules={{
+                  required: 'Debe seleccionar un año/gestión',
+                }}
+              />
               <Dropdown
                 label="Nivel/Categoría"
                 className="w-full"
@@ -285,7 +319,17 @@ export default function FormLevelsGrades() {
               Niveles/Categorías asociadas con grados
             </h2>
             <div className="mt-2 md:w-11/12 mx-auto">
-              <Table data={tableData} />
+              {tableData.length > 0 ? (
+                <Table data={tableData} />
+              ) : selectedOlympiad ? (
+                <p className="text-center py-4 text-neutral">
+                  No hay asociacion de niveles con grados para esta olimpiada
+                </p>
+              ) : (
+                <p className="text-center py-4 text-neutral">
+                  Seleccione una olimpiada para ver datos
+                </p>
+              )}
             </div>
           </div>
         </form>
