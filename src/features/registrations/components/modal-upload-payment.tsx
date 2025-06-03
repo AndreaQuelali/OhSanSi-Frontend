@@ -5,10 +5,18 @@ import IconNoFile from '@/components/icons/icon-no-file';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
 import { useRef, useState } from 'react';
-import { ErrorAnimation, ScanningAnimation, SuccessAnimation } from './scanning-animation';
+import {
+  ErrorAnimation,
+  ScanningAnimation,
+  SuccessAnimation,
+} from './scanning-animation';
 
+interface ModalProps {
+  onClose: () => void;
+  id_lista?: string | number;
+}
 
-export const ModalUploadPay = ({ onClose }: ModalProps) => {
+export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -124,10 +132,9 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          // 🔍 APLICAR FILTRO DE NITIDEZ (convolución 3x3)
           const imageData = ctx.getImageData(0, 0, width, height);
           const data = imageData.data;
-          const copy = new Uint8ClampedArray(data); // para no modificar original en tiempo real
+          const copy = new Uint8ClampedArray(data); 
 
           const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 
@@ -194,6 +201,10 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
       const formData = new FormData();
       formData.append('boleta', imageBlob, fileName || 'comprobante.jpg');
 
+      if (id_lista) {
+        formData.append('id_lista', id_lista.toString());
+      }
+
       const uploadResponse = await axios.post(
         `${API_URL}/prueba-ocr`,
         formData,
@@ -210,7 +221,6 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
 
       const result = uploadResponse.data;
       setVerificationResult(result);
-      console.log('Resultado de la verificación:', result);
 
       if (result.verificacion_pago === null) {
         setShowError(true);
@@ -224,6 +234,7 @@ export const ModalUploadPay = ({ onClose }: ModalProps) => {
         setShowSuccess(true);
         setTimeout(() => {
           onClose();
+          window.location.reload();
         }, 3000);
       } else {
         setShowError(true);
