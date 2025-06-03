@@ -389,8 +389,14 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
           <Button
             onClick={handleSubmitImage}
             label={isSubmitting ? 'Verificando...' : 'Subir Imagen'}
-            disabled={!enhancedPreview || isSubmitting}
-            variantColor={showSuccess ? 'variant3' : 'variant1'}
+            disabled={!enhancedPreview || isSubmitting || !imagePreview}
+            variantColor={
+              showSuccess
+                ? 'variant3'
+                : !enhancedPreview || !imagePreview
+                  ? 'variantDesactivate'
+                  : 'variant1'
+            }
           />
         </div>
       </div>
