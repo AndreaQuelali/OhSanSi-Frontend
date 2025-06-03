@@ -8,6 +8,7 @@ import {
   Registration,
   RegistrationData,
   RegistrationsListProps,
+  FormData,
 } from '../interfaces/registrations';
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
@@ -183,7 +184,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
             />
           </div>
         </div>
-        <div className="mt-10 min-w-11/12 md:min-w-10/12 mx-auto">
+        <div className="mt-10 min-w-11/12 md:min-w-10/12">
           {data.map((item, index) => (
             <RegistrationCard
               key={index}
