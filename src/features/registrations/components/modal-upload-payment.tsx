@@ -26,6 +26,8 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
   const [verificationResult, setVerificationResult] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
   const isValidImage = (file: File) =>
     file.type === 'image/jpeg' ||
@@ -134,7 +136,7 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
 
           const imageData = ctx.getImageData(0, 0, width, height);
           const data = imageData.data;
-          const copy = new Uint8ClampedArray(data); 
+          const copy = new Uint8ClampedArray(data);
 
           const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 
@@ -190,6 +192,9 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
       return;
     }
 
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
       setIsSubmitting(true);
       setVerificationResult(null);
@@ -212,6 +217,7 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          signal: controller.signal,
         },
       );
 
@@ -239,12 +245,38 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
       } else {
         setShowError(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError' || error.name === 'CanceledError') {
+        console.log('Subida cancelada por el usuario');
+        return;
+      }
       console.error('Error al procesar la imagen:', error);
       setShowError(true);
     } finally {
       setIsSubmitting(false);
+      setAbortController(null);
     }
+  };
+
+  const handleCancel = () => {
+    if (abortController) {
+      abortController.abort();
+    }
+
+    setIsSubmitting(false);
+    setShowError(false);
+    setShowSuccess(false);
+    setVerificationResult(null);
+    setFileName(null);
+    setImagePreview(null);
+    setEnhancedPreview(null);
+    setAbortController(null);
+
+    if (ref.current) {
+      ref.current.value = '';
+    }
+
+    onClose();
   };
 
   const handleRetry = () => {
@@ -350,10 +382,9 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
 
         <div className="flex flex-row justify-end space-x-4 mt-6 mb-2">
           <Button
-            onClick={onClose}
-            label="Cancelar"
+            onClick={handleCancel}
+            label={isSubmitting ? 'Cancelar Subida' : 'Cancelar'}
             variantColor="variant2"
-            disabled={isSubmitting}
           />
           <Button
             onClick={handleSubmitImage}
