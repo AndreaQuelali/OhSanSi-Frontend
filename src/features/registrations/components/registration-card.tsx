@@ -106,7 +106,7 @@ const RegistrationCard: React.FC<Props> = ({
         const response = await axios.get(
           `${API_URL}/boleta-de-pago-grupal/${list.id_lista}`,
         );
-        const { responsable, pago, detalle_grupo } = response.data;
+        const { responsable, pago } = response.data;
 
         paymentDataTemp = {
           ci: responsable.ci,
@@ -157,15 +157,15 @@ const RegistrationCard: React.FC<Props> = ({
 
   return (
     <div
-      className={`card w-full h-full flex flex-col gap-4 py-6 px-6 md:px-10 rounded-2xl ${
+      className={`card w-full h-full p-6 md:p-8 rounded-2xl shadow-md border border-surface hover:shadow-lg transition-shadow ${
         isAlternate ? 'bg-surface' : 'bg-white'
       }`}
     >
-      <h4 className="subtitle-md text-primary">
+      <h4 className="subtitle-md mb-2 text-primary">
         <strong>Inscripción</strong>
       </h4>
       <div className="flex flex-col md:flex-row gap-0 md:gap-10">
-        <div className="flex flex-col md:gap-1 min-w-1/5">
+        <div className="flex flex-col gap-1 flex-1">
           <p className="subtitle-md">
             <strong>Responsable: </strong>
             {list.responsable}
@@ -191,7 +191,7 @@ const RegistrationCard: React.FC<Props> = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-1 min-w-1/6">
+        <div className="flex flex-col gap-1 flex-1">
           <p className="subtitle-md">
             <strong>CI Responsable:</strong> {list.ci}
           </p>
@@ -202,7 +202,7 @@ const RegistrationCard: React.FC<Props> = ({
           )}
         </div>
         {!isGroup && (
-          <div className="flex flex-col gap-1 min-w-2/11">
+          <div className="flex flex-col gap-1 flex-1">
             {registrations.map((reg, idx) => (
               <div key={idx}>
                 <p className="subtitle-md">
@@ -215,15 +215,15 @@ const RegistrationCard: React.FC<Props> = ({
             ))}
           </div>
         )}
-        {isGroup && <div className="flex flex-col gap-1 min-w-3/12"></div>}
+        {isGroup && <div className="flex flex-col gap-1 flex-1"></div>}
 
-        <div className="flex flex-col gap-1 min-w-1/7">
+        <div className="flex flex-col gap-1 flex-1">
           <p className="subtitle-md">
             <strong>Estado:</strong> {list.estado}
           </p>
         </div>
         {showGenerateButton && (
-          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full">
+          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full md:w-auto">
             <Button
               className="w-auto"
               label={isGroup ? 'Generar boleta' : 'Generar boleta'}
@@ -232,7 +232,7 @@ const RegistrationCard: React.FC<Props> = ({
           </div>
         )}
         {showUploadButton && (
-          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full">
+          <div className="flex flex-col mt-5 md:mt-0 gap-2 ml-auto w-full md:w-auto">
             <Button
               className="w-auto"
               label="Subir comprobante"

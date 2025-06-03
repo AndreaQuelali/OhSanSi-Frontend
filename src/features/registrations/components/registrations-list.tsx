@@ -4,7 +4,7 @@ import { Button, InputText } from '@/components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-import { Registration, RegistrationData, RegistrationsListProps } from '../interfaces/registrations';
+import { Registration, RegistrationData, RegistrationsListProps, FormData } from '../interfaces/registrations';
 
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
@@ -179,7 +179,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
             />
           </div>
         </div>
-        <div className="mt-10 min-w-11/12 md:min-w-10/12 mx-auto">
+        <div className="mt-10 min-w-11/12 md:min-w-10/12">
           {data.map((item, index) => (
             <RegistrationCard
               key={index}
