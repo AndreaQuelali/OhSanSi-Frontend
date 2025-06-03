@@ -9,6 +9,7 @@ import { TablaOlimpistas } from "./table-data-excel";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useForm } from "react-hook-form";
 import ErrorModal from "./modal-error";
+import { ConfirmationModal } from "@/components/ui/modal-confirmation";
 
 interface OlimpistaRow {
   Nombre: string;
@@ -41,8 +42,7 @@ interface FormFields {
 export default function FormDataExcel() {
   const {
     register,
-    handleSubmit,
-    formState: { errors, isValid},
+    formState: { errors },
     watch,
   } = useForm<FormFields>({
     mode: 'all',
@@ -57,6 +57,8 @@ export default function FormDataExcel() {
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleClearFile = () => {
     setFileName(null);
@@ -169,9 +171,9 @@ export default function FormDataExcel() {
         data: rawDataToSend,
       });
 
-      alert("Datos registrados correctamente.");
+      setSuccessMessage("Datos registrados correctamente.");
+      setShowSuccessModal(true);
       console.log("Respuesta del backend:", response.data);
-      window.location.reload();
     } catch (error: any) {
       console.error("Error al registrar los datos:", error);
 
@@ -218,34 +220,6 @@ export default function FormDataExcel() {
                 mensaje += `    - ${item.error}\n`;
               }
             });
-          }
-        }
-
-        const infoAdicional = [
-          { key: 'profesores_omitidos', label: 'Profesores omitidos' },
-          { key: 'tutores_omitidos', label: 'Tutores omitidos' },
-          { key: 'olimpistas_guardados', label: 'Olimpistas guardados' },
-        ];
-
-        const hayInfo = infoAdicional.some(
-          ({ key }) => Array.isArray(resultado[key]) && resultado[key].length > 0
-        );
-
-        if (hayInfo) {
-          mensaje += `\nInformación adicional:\n`;
-
-          for (const { key, label } of infoAdicional) {
-            const lista = resultado[key];
-            if (Array.isArray(lista) && lista.length > 0) {
-              mensaje += `\n${label}:\n`;
-              lista.forEach((item: any) => {
-                const fila = item.fila !== undefined ? `Fila ${item.fila}` : '';
-                const ci = item.ci || item.CI || "N/A";
-                const detalle =
-                  item.message || item.mensaje || item.detalle || JSON.stringify(item);
-                mensaje += `• ${fila} (CI ${ci}): ${detalle}\n`;
-              });
-            }
           }
         }
 
@@ -362,6 +336,16 @@ export default function FormDataExcel() {
           onClose={() => setShowErrorModal(false)}
           errorMessage={errorMessage}
           title="Error en el archivo Excel"
+        />
+      )}
+      {showSuccessModal && (
+        <ConfirmationModal
+          onClose={() => {
+            setShowSuccessModal(false);
+            window.location.reload();
+          }}
+          status="success"
+          message={successMessage}
         />
       )}
     </div>
