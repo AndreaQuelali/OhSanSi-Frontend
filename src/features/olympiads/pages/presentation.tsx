@@ -6,7 +6,7 @@ export const Presentation = () => {
   localStorage.setItem('userRole', 'user');
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
-      <section className="text-center w-9/12 flex items-center space-x-10">
+      <section className="text-center w-10/12 flex items-center space-x-10">
         <div>
           <h1 className="headline-lg text-primary mb-4">
             OLIMPIADA CIENTÍFICA NACIONAL
@@ -37,8 +37,8 @@ export const Presentation = () => {
         </div>
         <img src="/assets/images/ohsansi2.png" className="mb-10 w-80" />
       </section>
-      <section className="text-center mb-10 w-9/12">
-        <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
+      {/**    <section className="text-center mb-10 w-10/12">
+     <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
         <div className="flex flex-col items-start">
           <p className="text-base mb-1">
             La fecha de inscripción inicia el{' '}
@@ -58,13 +58,21 @@ export const Presentation = () => {
           </p>
         </div>
       </section>
-
-      <section className="text-center mb-10 w-9/12">
-        <h1 className="headline-lg text-primary mb-4">Áreas disponibles</h1>
-        <div className="overflow-x-auto">hola</div>
+      */}
+      <section className="text-center mb-10 w-10/12">
+        <h1 className="headline-lg text-primary mb-4">Convocatoria</h1>
+        <div className="flex flex-col items-center">
+          <p className="w-full text-start mb-4">
+            Puedes descargar la convocatoria de la olimpiada.
+          </p>
+          <Button
+            label="Descargar Convocatoria"
+            variantColor="variantDesactivate"
+          />
+        </div>
       </section>
 
-      <section className="text-center mb-10 w-9/12">
+      <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Prerrequisitos</h1>
         <div className="flex flex-col items-start">
           <p>
