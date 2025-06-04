@@ -14,7 +14,17 @@ import AreasGridSection from './selection-grid-areas';
 import AreaSelectionModal from './selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
 import ResponsiblePersonModal from '@/components/ui/modal-responsible';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { useNavigate } from 'react-router';
 
+interface DefeaultValues {
+  olimpista: {
+    ci: string;
+  };
+  tutor: {
+    ci: string;
+  };
+}
 export default function FormAreaPart() {
   const {
     register,
@@ -23,16 +33,24 @@ export default function FormAreaPart() {
     watch,
     control,
     setValue,
-  } = useForm({
+  } = useForm<DefeaultValues>({
     mode: 'all',
     defaultValues: {
-      'olimpista.ci': '',
-      'tutor.ci': '',
+      olimpista: {
+        ci: '',
+      },
+      tutor: {
+        ci: '',
+      },
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
+  const navigate = useNavigate();
 
   const {
     areasDisponibles,
@@ -93,6 +111,15 @@ export default function FormAreaPart() {
     } else {
       setNivelesSeleccionadosTemp([...nivelesYaRegistrados, nivel]);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.href = '/register-selected-areas';
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   const handleModalAceptar = () => {
@@ -238,7 +265,7 @@ export default function FormAreaPart() {
               ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
               : {}),
           }));
-      },
+      }
     );
 
     const payload = {
@@ -250,16 +277,25 @@ export default function FormAreaPart() {
     try {
       const response = await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
-        payload,
+        payload
       );
-
-      alert('Registro exitoso');
       console.log(response);
-      window.location.href = '/register-selected-areas';
-    } catch (err) {
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.');
+    } catch (err: any) {
       console.error('Error:', err);
-      alert('Error al realizar el registro. Por favor intente nuevamente.');
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        err.response?.data?.message || 'Error al realizar el registro. Por favor intente nuevamente.'
+      );
+    } finally {
+      setShowResponsibleModal(false);
+      setShowConfirmationModal(true);
     }
+  };
+
+  const handleNextStep = () => {
+    navigate('/generate-order-payment');
   };
 
   return (
@@ -308,6 +344,15 @@ export default function FormAreaPart() {
         onClose={() => setShowResponsibleModal(false)}
         onConfirm={handleResponsibleConfirm}
       />
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
+          nextStepText={confirmationStatus === 'success' ? 'Ir a generar boleta de orden de pago.' : undefined}
+          onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
+        />
+      )}
     </div>
   );
 }

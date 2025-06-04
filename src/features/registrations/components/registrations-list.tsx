@@ -4,37 +4,12 @@ import { Button, InputText } from '@/components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-
-// Tipos para los datos de inscripción
-type Registration = {
-  nombre: string;
-  ci: string;
-  area: string;
-  categoria: string;
-};
-
-type List = {
-  cantidad: number;
-  responsable: string;
-  ci: string;
-  estado: string;
-  id_lista?: number;
-};
-
-type RegistrationData = {
-  list: List;
-  registrations: Registration[];
-};
-
-type FormData = {
-  ci: string;
-};
-
-type RegistrationsListProps = {
-  showGenerateButton?: boolean; // opcional, por defecto false
-  showUploadButton?: boolean;
-  title?: string;
-};
+import {
+  Registration,
+  RegistrationData,
+  RegistrationsListProps,
+  FormData,
+} from '../interfaces/registrations';
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
   showGenerateButton = false,
@@ -49,14 +24,40 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
 
   const [data, setData] = useState<RegistrationData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const getRegistrations = async (ci: string) => {
     setLoading(true);
+    setErrorMessage('');
     try {
+      if (showUploadButton || title.includes('Subir comprobante de pago')) {
+        try {
+          const paymentResponse = await axios.get(
+            `${API_URL}/consulta-pago/${ci}`,
+          );
+          const paymentData = paymentResponse.data;
+
+          if (!paymentData.existe) {
+            setErrorMessage(paymentData.mensaje);
+            setData([]);
+            return;
+          }
+        } catch {
+          setErrorMessage('Error al consultar el estado del pago.');
+          setData([]);
+          return;
+        }
+      }
+
       let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
 
-      if (title === 'Inscripciones' && !showGenerateButton) {
-        endpoint = `${API_URL}/inscripciones/${ci}/PAGADO`;
+      if (showUploadButton || title.includes('Subir comprobante de pago')) {
+        endpoint = `${API_URL}/inscripciones-pendiente/${ci}`;
+      } else if (
+        title === 'Registros de Inscripciones' &&
+        !showGenerateButton
+      ) {
+        endpoint = `${API_URL}/inscripciones/${ci}/TODOS`;
       }
 
       const response = await axios.get(endpoint);
@@ -66,13 +67,11 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         throw new Error("El campo 'listas' no es un arreglo.");
       }
 
-      // Obtenemos el responsable antes de usarlo
       const responsableName =
         `${responsable?.nombres || ''} ${responsable?.apellidos || ''}`.trim();
 
       const mapped: RegistrationData[] = listas
         .map((item: any) => {
-          // Individual
           if (item.detalle?.tipo === 'individual') {
             const olimpista = item.detalle.olimpista;
             const niveles = item.detalle.niveles || [];
@@ -91,23 +90,25 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
                 responsable: responsableName,
                 ci: responsable?.ci || 'Sin CI',
                 estado: item.estado || 'Pendiente',
-                id_lista: item.id_lista, // Asegúrate de incluir `id_lista` para inscripciones individuales
+                id_lista: item.id_lista,
+                tipo: 'individual',
               },
               registrations,
             };
           }
 
-          // Grupal
           if (item.detalle?.tipo === 'grupal') {
             return {
               list: {
-                cantidad: item.detalle.cantidad_estudiantes || 0,
+                cantidad: item.detalle.cantidad_inscripciones || 0,
+                cantidadOlimpistas: item.detalle.cantidad_estudiantes || 0,
                 responsable: responsableName,
                 ci: responsable?.ci || 'Sin CI',
                 estado: item.estado || 'Pendiente',
-                id_lista: item.id_lista, // Aquí también
+                id_lista: item.id_lista,
+                tipo: 'grupal',
               },
-              registrations: [], // No hay detalle de estudiantes en este caso
+              registrations: [],
             };
           }
 
@@ -116,9 +117,33 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         .filter(Boolean) as RegistrationData[];
 
       setData(mapped);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error al obtener inscripciones', err);
       setData([]);
+
+      if (
+        !showUploadButton &&
+        !title.includes('Verificar') &&
+        !title.includes('Subir comprobante de pago') &&
+        (err.response?.status === 404 || !err.response)
+      ) {
+        try {
+          const paymentResponse = await axios.get(
+            `${API_URL}/consulta-pago/${ci}`,
+          );
+          const paymentData = paymentResponse.data;
+
+          if (!paymentData.existe) {
+            setErrorMessage(paymentData.mensaje);
+          } else {
+            setErrorMessage('No se encontraron inscripciones asociadas.');
+          }
+        } catch {
+          setErrorMessage('No se encontraron inscripciones asociadas.');
+        }
+      } else {
+        setErrorMessage('Error al consultar las inscripciones.');
+      }
     } finally {
       setLoading(false);
     }
@@ -134,10 +159,10 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
     <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mb-32 w-11/12 md:w-9/12 lg:w-10/12"
+        className="mb-32 w-11/12 md:w-10/12 lg:w-full flex flex-col items-center justify-center"
       >
         <h1 className="text-center text-primary mb-8 headline-lg">{title}</h1>
-        <div className="flex flex-row gap-16 w-10/12 items-center justify-center">
+        <div className="flex flex-col md:flex-row md:gap-5 lg:gap-16 w-full lg:w-10/12 items-center justify-center">
           <InputText
             label="Ingrese el CI del responsable para ver las inscripciones asociadas al mismo"
             name="ci"
@@ -150,9 +175,16 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
               minLength: { value: 4, message: 'Debe tener al menos 4 dígitos' },
             }}
           />
-          <Button type="submit" label="Consultar" disabled={loading} />
+          <div className="flex flex-col w-full md:w-auto">
+            <Button
+              type="submit"
+              label="Consultar"
+              variantColor={loading ? 'variantDesactivate' : 'variant1'}
+              disabled={loading}
+            />
+          </div>
         </div>
-        <div className="mt-10 min-w-10/12 mx-auto">
+        <div className="mt-10 min-w-11/12 md:min-w-10/12">
           {data.map((item, index) => (
             <RegistrationCard
               key={index}
@@ -163,15 +195,12 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
               showUploadButton={showUploadButton}
             />
           ))}
-          {!loading && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-8">
-              No se encontraron inscripciones asociadas.
-            </p>
+          {!loading && data.length === 0 && errorMessage && (
+            <p className="text-center text-gray-500 mt-8">{errorMessage}</p>
           )}
         </div>
       </form>
     </div>
   );
 };
-
 export default RegistrationsList;

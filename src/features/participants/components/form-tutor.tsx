@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
 import { getData } from '@/services/api-service';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 type FormTutorProps = {
   viewTB: boolean;
@@ -16,6 +17,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     handleSubmit,
     watch,
     setError,
+    setValue,
     clearErrors,
     formState: { errors, isValid },
   } = useForm<FormData>({
@@ -28,10 +30,30 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
   const { submitForm } = useApiForm('/tutores');
+  const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
+  const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
+  const [ciConfirmed, setCiConfirmed] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const onSubmit = async (data: FormData) => {
     setFormData(data);
     setShowModal(true);
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
+  };
+
+  const handleNextStep = () => {
+    navigate('/register-olimpists');
   };
 
   const onCloseModal = () => {
@@ -52,61 +74,117 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     try {
       const response = await submitForm(payload);
       if (response) {
-        alert('Registro exitoso del tutor');
-        window.location.reload();
+        setConfirmationStatus('success');
+        setConfirmationMessage('Registro exitoso del tutor. Si desea registrar a un olimpista, puede continuar con el siguiente paso.');
       }
     } catch (error: any) {
+      setConfirmationStatus('error');
       if (error.data?.errors) {
         const messages = Object.values(error.data.errors).flat().join('\n');
-        alert(messages);
+        setConfirmationMessage(messages);
       } else {
-        alert(error.data?.message || 'Ocurrió un error. Intenta de nuevo.');
+        setConfirmationMessage(error.data?.message || 'Ocurrió un error. Intenta de nuevo.');
       }
     }
-
+    setShowConfirmationModal(true);
     setShowModal(false);
-  };
-
-  useEffect(() => {
-    const verificarCI = async () => {
-      if (!ciValue || String(ciValue).length < 4) {
-        if (errors.ci?.type === 'manual') {
-          clearErrors('ci');
-        }
-        return;
-      }
-  
-      try {
-        const response = await getData(`/tutores/cedula/${ciValue}`);
-        if (response) {
-          setError('ci', {
-            type: 'manual',
-            message: 'Este número de cédula ya está registrado',
-          });
-        }
-      } catch (error) {
-        if (errors.ci?.type === 'manual') {
-          clearErrors('ci');
-        }
-      }
     };
-  
-    verificarCI();
-  }, [ciValue, setError, clearErrors]);  
+      
+    useEffect(() => {
+      const verificarCI = async () => {
+        if (!ciValue || String(ciValue).length < 4) {
+          setIsRegisteredTutor(false);
+          setCiTutorFound(null);
+          if (errors.ci?.type === 'ci-duplicado') {
+            clearErrors('ci');
+          }
+          return;
+        }
+        try {
+          const response = await getData(`/tutores/cedula/${ciValue}`);
+          if (response && response.tutor) {
+            setValue('name', response.tutor.nombres || '');
+            setValue('lastname', response.tutor.apellidos || '');
+            setValue('email', response.tutor.correo_electronico || '');
+            setValue('phone', response.tutor.celular || '');
+
+          if (!errors.ci || errors.ci?.type === 'ci-duplicado') {
+            setError('ci', {
+              type: 'ci-duplicado',
+              message: 'Este número de cédula ya está registrado',
+            });
+          }
+            setIsRegisteredTutor(true);
+            setCiTutorFound(ciValue); 
+          } else {
+            if (errors.ci?.type === 'ci-duplicado') {
+              clearErrors('ci');
+            }
+            setIsRegisteredTutor(false);
+            setCiTutorFound(null);
+
+            setValue('name', '');
+            setValue('lastname', '');
+            setValue('email', '');
+            setValue('phone', '');
+          }
+        } catch (error: any) {
+        if (errors.ci?.type === 'ci-duplicado') {
+          clearErrors('ci');
+        }
+          setIsRegisteredTutor(false);
+          setCiTutorFound(null);
+        }
+      };
+
+      verificarCI();
+    }, [ciValue, setError, clearErrors, setValue]);
+
+    useEffect(() => {
+      if (ciTutorFound && ciValue !== ciTutorFound) {
+        if (errors.ci?.type === 'ci-duplicado') {
+          clearErrors('ci');
+        }
+        setIsRegisteredTutor(false);
+        setCiTutorFound(null);
+        setValue('name', '');
+        setValue('lastname', '');
+        setValue('email', '');
+        setValue('phone', '');
+      }
+    }, [ciValue, ciTutorFound, clearErrors, setValue]);
+
+    useEffect(() => {
+      if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
+        setCiConfirmed(true);
+      } else {
+        setCiConfirmed(false);
+      }
+    }, [ciValue]);
+
+    useEffect(() => {
+      if (isRegisteredTutor) {
+        setShowMessage(true); 
+      } else {
+        const timeout = setTimeout(() => setShowMessage(false), 50); 
+        return () => clearTimeout(timeout);
+      }
+    }, [isRegisteredTutor]);
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex flex-col items-center">
+      <div className="w-full h-full flex flex-col items-center justify-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-5 mt-10 md:w-9/12 lg:w-9/12"
+          className="mx-5 mt-5 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
         >
           {viewTB && (
-            <h1 className="text-center text-primary mb-8 md:mb-20 headline-lg">
+            <h1 className="text-center text-primary mb-8 md:mb-10 headline-lg">
               Registro de Datos de Tutor
             </h1>
           )}
-          <div className="grid lg:grid-cols-3 lg:gap-12 lg:mb-5">
+          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del tutor que desea registrar.</h2>
+          <div className="grid grid-cols-1 lg:gap-12 lg:mb-5">
             <InputText
               label="Número de cédula de identidad"
               name="ci"
@@ -130,6 +208,37 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
               }}
               errors={errors}
             />
+          </div>
+          <div
+            className={`
+              transition-all duration-1000 ease-in-out transform overflow-hidden
+              ${ciConfirmed
+                ? 'opacity-100 translate-y-0 max-h-full pointer-events-auto'
+                : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
+            `}
+          >
+          <div
+            className={`
+              overflow-hidden transition-all duration-500 ease-in-out
+              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+            `}
+          >
+            <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
+              <p>
+                Este número de cédula ya está registrado. Si desea registrar a un olimpista, 
+                puedes continuar con el siguiente paso.
+              </p>
+              <div className="mt-3 flex justify-end">
+                <Button
+                  label="Ir a formulario de registro de olimpista"
+                  onClick={() => navigate(`/register-olimpists`)}
+                  variantColor="variant4"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 lg:gap-12 lg:mb-5">
             <InputText
               label="Nombre(s)"
               name="name"
@@ -145,6 +254,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
             <InputText
               label="Apellido(s)"
@@ -161,6 +271,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
           </div>
           <div className="grid md:grid-cols-2 md:gap-12 mb-5">
@@ -178,6 +289,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
             <InputText
               label="Correo electrónico"
@@ -195,10 +307,11 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredTutor}
             />
           </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            {viewTB ? (
+            {!isRegisteredTutor ? (
               <>
                 <Button
                   label="Cancelar"
@@ -214,20 +327,31 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 />
               </>
             ) : (
-              <Button
-                type="submit"
-                label="Registrar tutor"
-                disabled={!isValid}
-                variantColor={!isValid ? 'variantDesactivate' : 'variant1'}
-              />
+              <div className="flex justify-end mt-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={() => navigate('/')}
+                />
+              </div>
             )}
           </div>
+        </div>
         </form>
         {showModal && (
           <Modal
             onClose={onCloseModal}
             text="¿Estás seguro de registrar los datos del tutor?"
             onConfirm={onConfirm}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
+            nextStepText={confirmationStatus === 'success' ? 'Ir a formulario de registro de olimpista' : undefined}
+            onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
           />
         )}
       </div>

@@ -1,8 +1,6 @@
 import { Link, useLocation } from 'react-router';
-import IconUser from '@/components/icons/icon-user';
 import DropdownMenu from './dropdown-menu';
-import IconDown from '../icons/icon-down';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type DesktopMenuProps = {
   isAdminMenuOpen: boolean;
@@ -11,11 +9,22 @@ type DesktopMenuProps = {
 };
 
 export default function DesktopMenu({
-  isAdminMenuOpen,
   setIsAdminMenuOpen,
   adminMenuRef,
 }: DesktopMenuProps) {
   const location = useLocation();
+  const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentRole = localStorage.getItem('userRole');
+      if (currentRole !== userRole) {
+        setUserRole(currentRole);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [userRole]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -35,127 +44,138 @@ export default function DesktopMenu({
 
   return (
     <ul className="hidden lg:flex items-center justify-end w-screen space-x-16 mr-5">
-      <li
-        className={`${location.pathname === '/registrations' ? 'text-red-500' : 'text-primary'}`}
-        ref={adminMenuRef}
-      >
-        <Link to="/registrations" className="hover:text-secondary subtitle-sm">
-          Inscripciones
-        </Link>
-      </li>
-      <DropdownMenu
-        label="Postulante"
-        options={[
-          { label: 'Registro Olimpista', path: '/register-olimpists' },
-          { label: 'Registro Tutor', path: '/register-tutor' },
-          { label: 'Registro de Áreas', path: '/register-selected-areas' },
-          { label: 'Registro Excel', path: '/register-data-excel' },
-          { label: 'Orden de Pago', path: '/generate-order-payment' },
-          { label: 'Comprobante de Pago', path: '/upload-payment' },
-        ]}
-      />
-      <li
-        ref={adminMenuRef}
-        className="relative"
-        onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
-      >
-        <span
-          className={`subtitle-sm p-1 cursor-pointer ${
-            location.pathname.startsWith('/register-info') ||
-            location.pathname.startsWith('/register-areas') ||
-            location.pathname.startsWith('/register-levels') ||
-            location.pathname.startsWith('/register-levels-grades') ||
-            location.pathname.startsWith('/register-levels-area')
-              ? 'text-red-500 border-b-[1px] border-b-red-500'
-              : 'text-primary hover:text-secondary'
-          }`}
-        >
-          Administrador
-          <IconDown
-            className={`w-4 h-4 inline-block ml-1 transition-transform duration-200 ${
-              isAdminMenuOpen ? 'rotate-180' : 'rotate-0'
-            }`}
-          />
-        </span>
-        {isAdminMenuOpen && (
-          <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md mt-2 w-48">
-            <li
-              className={`hover:bg-gray-100 ${
-                location.pathname === '/register-info'
-                  ? 'text-red-500'
-                  : 'text-primary'
-              }`}
+      {userRole === 'user' && (
+        <>
+          {' '}
+          <li
+            className={`${location.pathname === '/presentation' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+          >
+            <Link
+              to="/presentation"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
-              <Link
-                to="/register-info"
-                className="block px-4 py-2 text-sm hover:text-secondary"
-              >
-                Registro General
-              </Link>
-            </li>
-            <li
-              className={`hover:bg-gray-100 ${
-                location.pathname === '/register-areas'
-                  ? 'text-red-500'
-                  : 'text-primary'
-              }`}
-            >
-              <Link
-                to="/register-areas"
-                className="block px-4 py-2 text-sm hover:text-secondary"
-              >
-                Registro de Áreas
-              </Link>
-            </li>
-            <li
-              className={`hover:bg-gray-100 ${
-                location.pathname === '/register-levels'
-                  ? 'text-red-500'
-                  : 'text-primary'
-              }`}
-            >
-              <Link
-                to="/register-levels"
-                className="block px-4 py-2 text-sm hover:text-secondary"
-              >
-                Registro de Niveles
-              </Link>
-            </li>
+              Inicio
+            </Link>
+          </li>
+          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
+            Noticias
+          </p>
+          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
+            Comité
+          </p>{' '}
+          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
+            Calendario
+          </p>
+        </>
+      )}
 
-            <li
-              className={`hover:bg-gray-100 ${
-                location.pathname === '/register-levels-grades'
-                  ? 'text-red-500'
-                  : 'text-primary'
-              }`}
+      {userRole === 'olympist' && (
+        <>
+          <li
+            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
-              <Link
-                to="/register-levels-grades"
-                className="block px-4 py-2 text-sm hover:text-secondary"
-              >
-                Asociación Niveles con Grados
-              </Link>
-            </li>
-            <li
-              className={`hover:bg-gray-100 ${
-                location.pathname === '/register-levels-area'
-                  ? 'text-red-500'
-                  : 'text-primary'
-              }`}
+              Guía de Registro
+            </Link>
+          </li>
+          <li
+            className={`${location.pathname === '/register-data-excel' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/register-data-excel"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
-              <Link
-                to="/register-levels-area"
-                className="block px-4 py-2 text-sm hover:text-secondary"
-              >
-                Registro Niveles en Área
-              </Link>
-            </li>
-          </ul>
-        )}
-      </li>
-      <li>
-        <IconUser className="w-8 h-8 opacity-40 text-white" />
-      </li>
+              Registro Excel
+            </Link>
+          </li>
+
+          <DropdownMenu
+            label="Registro Manual"
+            options={[
+              { label: 'Registro Tutor', path: '/register-tutor' },
+              { label: 'Registro Olimpista', path: '/register-olimpists' },
+              { label: 'Registro de Áreas', path: '/register-selected-areas' },
+            ]}
+          />
+          <DropdownMenu
+            label="Orden y Comprobante"
+            options={[
+              { label: 'Generar Orden', path: '/generate-order-payment' },
+              { label: 'Subir Comprobante', path: '/upload-payment' },
+            ]}
+          />
+
+          <li
+            className={`${location.pathname === '/registrations' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/registrations"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Inscripciones
+            </Link>
+          </li>
+        </>
+      )}
+
+      {userRole === 'admin' && (
+        <>
+          <li
+            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Inicio
+            </Link>
+          </li>
+          <li
+            className={`${location.pathname === '/register-info' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/register-info"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Registro General
+            </Link>
+          </li>
+          <DropdownMenu
+            label="Áreas y Niveles"
+            options={[
+              { label: 'Registro de Áreas', path: '/register-areas' },
+              { label: 'Registro de Niveles', path: '/register-levels' },
+              {
+                label: 'Asociación Niveles con Grados',
+                path: '/register-levels-grades',
+              },
+              {
+                label: 'Registro Niveles en Área',
+                path: '/register-levels-area',
+              },
+            ]}
+          />
+          <li
+            className={`${location.pathname === '/report-registered-olimpist' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/report-registered-olimpist"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Reportes
+            </Link>
+          </li>
+        </>
+      )}
     </ul>
   );
 }

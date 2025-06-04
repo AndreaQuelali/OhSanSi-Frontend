@@ -1,6 +1,6 @@
 interface ModalProps {
-  text: string;
+  text?: string;
+  onConfirm?: () => void;
   onClose: () => void;
-  onConfirm: () => void;
   children?: React.ReactNode; // Aceptar children como propiedad
 }

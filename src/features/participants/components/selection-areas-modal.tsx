@@ -2,7 +2,8 @@ import { Button } from '@/components';
 import IconClose from '@/components/icons/icon-close';
 import { InputText } from '@/components';
 import { FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 interface NivelType {
   id_nivel: number;
@@ -44,6 +45,21 @@ export default function AreaSelectionModal({
         defaultValue: '',
       })
     : '';
+  const [isDeselecting, setIsDeselecting] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (nivelesSeleccionadosTemp.length > 0) {
+      setIsDeselecting(false);
+    }
+  }, [nivelesSeleccionadosTemp]);
+
+  const handleToggleNivel = (nivel: NivelType) => {
+    if (nivelesSeleccionadosTemp.some((n) => n.id_nivel === nivel.id_nivel)) {
+      setIsDeselecting(true);
+    }
+    onToggleNivel(nivel);
+  };
 
   useEffect(() => {
     if (clearTutorError && (!tutorCi || tutorCi === '')) {
@@ -51,9 +67,17 @@ export default function AreaSelectionModal({
     }
   }, [tutorCi, clearTutorError]);
 
+  const onNextStep = () => {
+    navigate('/register-tutor');
+  };
+
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-30 flex justify-center items-center z-50">
-      <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+    <div className="fixed inset-0 z-50 flex justify-center items-center">
+      <div
+        className="absolute inset-0 bg-neutral2 opacity-40"
+        onClick={onCancel}
+      />
+      <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full z-50">
         <div
           className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-700"
           onClick={onCancel}
@@ -63,7 +87,7 @@ export default function AreaSelectionModal({
 
         <h3 className="text-lg font-semibold mb-4">Área: {selectedArea}</h3>
 
-        <div className="mb-6">
+        <div className="mb-0">
           <InputText
             label="Cédula de identidad del tutor académico (Opcional)"
             name="tutor.ci"
@@ -81,6 +105,18 @@ export default function AreaSelectionModal({
           />
           {tutorError && tutorCi && (
             <p className="text-error subtitle-sm mt-1">{tutorError}</p>
+          )}
+        </div>
+
+        <div>
+          {tutorError && tutorCi && (
+            <div className="flex justify-end -my-3">
+            <Button
+              label="Ir a registro de tutor"
+              onClick={onNextStep}
+              variantColor="variant4"
+            />
+            </div>
           )}
         </div>
 
@@ -109,7 +145,7 @@ export default function AreaSelectionModal({
                     'Este nivel ya está registrado y no se puede deseleccionar.',
                   );
                 } else {
-                  onToggleNivel(nivel);
+                  handleToggleNivel(nivel);
                 }
               }}
             >
@@ -142,8 +178,17 @@ export default function AreaSelectionModal({
           ))}
         </div>
         <div className="flex justify-end gap-4 mt-4">
-          <Button label="Cancelar" variantColor="variant2" onClick={onCancel} />
-          <Button label="Aceptar" variantColor="variant1" onClick={onAccept} />
+          <Button
+            className="w-32"
+            label="Aceptar"
+            variantColor={
+              nivelesSeleccionadosTemp.length > 0 || isDeselecting
+                ? 'variant1'
+                : 'variantDesactivate'
+            }
+            onClick={onAccept}
+            disabled={nivelesSeleccionadosTemp.length === 0 && !isDeselecting}
+          />
         </div>
       </div>
     </div>

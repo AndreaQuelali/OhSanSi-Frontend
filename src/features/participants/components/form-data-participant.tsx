@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { API_URL } from '@/config/api-config';
 import {
   Departamento,
+  FormValues,
   Grado,
   Provincia,
   UnidadEducativa,
@@ -13,6 +14,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
 import { debounce } from 'lodash';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 export default function FormDataPart() {
   const {
@@ -23,7 +25,7 @@ export default function FormDataPart() {
     clearErrors,
     formState: { errors, isValid },
     watch,
-  } = useForm({ mode: 'onChange' });
+  }  = useForm<FormValues>({ mode: 'onChange' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const { data: grados, loading } = useFetchData<Grado[]>('/grados');
@@ -44,40 +46,119 @@ export default function FormDataPart() {
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
 
+  const ciValue = watch('olimpista.ci') || '';
+  const [isRegisteredOlimpista, setIsRegisteredOlimpista] = useState(false);
+  const [ciOlimpistaFound, setCiOlimpistaFound] = useState<string | null>(null);
+  const [ciConfirmed, setCiConfirmed] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
+  const [isTutorRegistered, setIsTutorRegistered] = useState(false);
+
+
   const debouncedCheckCiRef = useRef(
     debounce(async (ciValue: string) => {
-      if (!ciValue || ciValue.length < 4) {
-        return;
-      }
-
-      if (ciValue.length > 8) {
+      if (!ciValue || ciValue.length < 4 || ciValue.length > 8) {
+        setIsRegisteredOlimpista(false);
+        setCiOlimpistaFound(null);
+        if (errors?.olimpista?.ci?.type === 'manual') {
+          clearErrors('olimpista.ci');
+        }
         return;
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/olimpistas/cedula/${ciValue}`,
-        );
+        const response = await axios.get(`${API_URL}/olimpistas/cedula/${ciValue}`);
         if (response.data) {
+          const data = response.data;
+
+          // Autocompletar datos
+          setValue('olimpista.name', data.nombres || '');
+          setValue('olimpista.lastname', data.apellidos || '');
+          setValue('olimpista.birthday', data.fecha_nacimiento || '');
+          setValue('olimpista.email', data.correo_electronico || '');
+          setValue('olimpista.phone', data.celular || '');
+          setValue('olimpista.citutor', data.ci_tutor_legal || '');
+          setValue('olimpista.depa', data.id_departamento || '');
+          setValue('olimpista.prov', data.id_provincia || '');
+          setValue('olimpista.colegio', data.id_colegio || '');
+          setValue('olimpista.grade', data.id_grado || '');
           setError('olimpista.ci', {
             type: 'manual',
             message: 'Este número de cédula ya está registrado.',
           });
+          setIsRegisteredOlimpista(true);
+          setCiOlimpistaFound(ciValue);
         } else {
-          const currentError = errors?.olimpista?.ci?.type;
-          if (currentError === 'manual') {
+          if (errors?.olimpista?.ci?.type === 'manual') {
             clearErrors('olimpista.ci');
           }
+          setIsRegisteredOlimpista(false);
+          setCiOlimpistaFound(null);
+          setValue('olimpista.name', '');
+          setValue('olimpista.lastname', '');
+          setValue('olimpista.birthday', '');
+          setValue('olimpista.email', '');
+          setValue('olimpista.phone', '');
+          setValue('olimpista.citutor', '');
+          setValue('olimpista.depa', '');
+          setValue('olimpista.prov', '');
+          setValue('olimpista.colegio', '');
+          setValue('olimpista.grade', '');
         }
       } catch (error) {
         console.error('Error al verificar el CI:', error);
-        const currentError = errors?.olimpista?.ci?.type;
-        if (currentError === 'manual') {
+        if (errors?.olimpista?.ci?.type === 'manual') {
           clearErrors('olimpista.ci');
         }
+        setIsRegisteredOlimpista(false);
+        setCiOlimpistaFound(null);
       }
-    }, 500),
+    }, 500)
   );
+
+  useEffect(() => {
+    debouncedCheckCiRef.current(ciValue);
+  }, [ciValue]);
+
+  useEffect(() => {
+    if (ciOlimpistaFound && ciValue !== ciOlimpistaFound) {
+      if (errors?.olimpista?.ci?.type === 'manual') {
+        clearErrors('olimpista.ci');
+      }
+      setIsRegisteredOlimpista(false);
+      setCiOlimpistaFound(null);
+
+      setValue('olimpista.name', '');
+      setValue('olimpista.lastname', '');
+      setValue('olimpista.birthday', '');
+      setValue('olimpista.email', '');
+      setValue('olimpista.phone', '');
+      setValue('olimpista.citutor', '');
+      setValue('olimpista.depa', '');
+      setValue('olimpista.prov', '');
+      setValue('olimpista.colegio', '');
+      setValue('olimpista.grade', '');
+    }
+  }, [ciValue, ciOlimpistaFound, clearErrors, setValue]);
+
+  useEffect(() => {
+    if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
+      setCiConfirmed(true);
+    } else {
+      setCiConfirmed(false);
+    }
+  }, [ciValue]);
+
+  useEffect(() => {
+    if (isRegisteredOlimpista) {
+      setShowMessage(true);
+    } else {
+      const timeout = setTimeout(() => setShowMessage(false), 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [isRegisteredOlimpista]);
 
   const debouncedCheckCiTutorRef = useRef(
     debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
@@ -100,17 +181,20 @@ export default function FormDataPart() {
         );
         if (response.data) {
           clearErrors('olimpista.citutor');
+          setIsTutorRegistered(false);
         } else {
           setError('olimpista.citutor', {
             type: 'manual',
             message: 'Este CI de tutor no está registrado.',
           });
+          setIsTutorRegistered(true);
         }
       } catch {
         setError('olimpista.citutor', {
           type: 'manual',
           message: 'Este CI de tutor no está registrado.',
         });
+        setIsTutorRegistered(true);
       }
     }, 500),
   );
@@ -257,13 +341,36 @@ export default function FormDataPart() {
 
     try {
       const response = await submitForm(payload);
-      console.log('Se envio correctamente', response);
-      alert('Olimpista registrado correctamente');
-      window.location.reload();
-    } catch (error) {
+      console.log('Se envió correctamente', response);
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.');
+    } catch (error: any) {
       console.error('Error al registrar al olimpista:', error);
-      alert('Error al registrar al olimpista');
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        error.data?.message || 'Error al registrar al olimpista'
+      );
+    } finally {
+      setShowConfirmationModal(true);
+      setShowModal(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
+  };
+
+  const handleNextStep = () => {
+    navigate('/register-selected-areas');
+  };
+
+  const onNextStep = () => {
+    navigate('/register-tutor');
   };
 
   return (
@@ -271,13 +378,14 @@ export default function FormDataPart() {
       <div className="flex flex-col items-center ">
         <form
           onSubmit={handleSubmit(() => setShowModal(true))}
-          className="mx-5 mt-10 mb-32 md:w-9/12 lg:w-9/12"
+          className="mx-5 mt-5 mb-32 md:w-9/12 lg:w-9/12"
         >
           <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
             Registro de Datos de Olimpista
           </h1>
           <h2 className="text-primary headline-sm mb-2 ">Datos personales</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
+          <h2 className="text-primary subtitle-sm mb-2 ">Primero ingrese el número de cédula de identidad del olimpista que desea registrar.</h2>
+          <div className="grid grid-cols-1 lg:gap-9 mb-6">
             <InputText
               label="Cédula de identidad"
               name="olimpista.ci"
@@ -298,10 +406,41 @@ export default function FormDataPart() {
                   value: /^[0-9]+$/,
                   message: 'Solo se permiten números',
                 },
-                onBlur: checkCi,
+                onchange: checkCi,
               }}
               errors={errors}
             />
+          </div>
+          <div
+            className={`
+              transition-all duration-1000 ease-in-out transform overflow-hidden
+              ${ciConfirmed
+                ? 'opacity-100 translate-y-0 max-h-full pointer-events-auto'
+                : 'opacity-0 -translate-y-10 max-h-0 pointer-events-none'}
+            `}
+          >
+          <div
+            className={`
+              overflow-hidden transition-all duration-500 ease-in-out
+              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+            `}
+          >
+            <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
+              <p>
+                  Este número de cédula ya está registrado. Si desea inscribir al olimpista
+                  en áreas de competencia, puede continuar con el siguiente paso.
+              </p>
+              <div className="mt-3 flex justify-end">
+                <Button
+                  label="Ir a registro de olimpista en áreas de competencia"
+                  onClick={() => navigate(`/register-selected-areas`)}
+                  variantColor="variant4"
+                />
+              </div>
+            </div>
+          </div>
+          <h2 className="text-primary subtitle-sm mb-2 ">Antes de completar el formulario, asegúrate de haber registrado a un tutor. Si eres tu propio tutor, puedes ingresar tu propio número de cédula de identidad.</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
             <InputText
               label="Nombre(s)"
               name="olimpista.name"
@@ -317,6 +456,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             <InputText
               label="Apellido(s)"
@@ -333,6 +473,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
@@ -362,6 +503,7 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
             <InputText
               label="Correo electrónico"
@@ -379,34 +521,51 @@ export default function FormDataPart() {
                 },
               }}
               errors={errors}
+              disabled={isRegisteredOlimpista}
             />
-            <InputText
-              label="Cédula de identidad del tutor legal"
-              name="olimpista.citutor"
-              placeholder="Ingresar ci del tutor legal"
-              className="w-full "
-              register={register}
-              validationRules={{
-                required: 'El número de cédula es obligatorio',
-                minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
-                },
-                maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
-                },
-                pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
-                },
-                validate: (value) => {
-                  return value === ci ? true : undefined;
-                },
-                onBlur: checkCiTutor,
-              }}
-              errors={errors}
-            />
+            <div className="flex flex-col">
+              <InputText
+                label="Cédula de identidad del tutor legal"
+                name="olimpista.citutor"
+                placeholder="Ingresar ci del tutor legal"
+                className="w-full "
+                register={register}
+                validationRules={{
+                  required: 'El número de cédula es obligatorio',
+                  minLength: {
+                    value: 4,
+                    message: 'Debe tener al menos 4 dígitos',
+                  },
+                  maxLength: {
+                    value: 8,
+                    message: 'No puede tener más de 8 dígitos',
+                  },
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Solo se permiten números',
+                  },
+                  validate: (value: string) => {
+                    return value === ci ? true : undefined;
+                  },
+                  onBlur: checkCiTutor,
+                }}
+                errors={errors}
+                disabled={isRegisteredOlimpista}
+              />
+              <div>
+                {isTutorRegistered && (ci && citutor && ci != citutor) && (
+                  <div className="flex justify-end -my-2">
+                  <Button
+                    label="Ir a registro de tutor"
+                    onClick={onNextStep}
+                    variantColor="variant4"
+                  />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
             {ci && citutor && ci === citutor && (
               <InputText
                 label="Número de celular"
@@ -422,6 +581,7 @@ export default function FormDataPart() {
                   },
                 }}
                 errors={errors}
+                disabled={isRegisteredOlimpista}
               />
             )}
           </div>
@@ -447,7 +607,7 @@ export default function FormDataPart() {
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleDepartamentoChange(e.target.value),
               })}
-              disabled={loadingDepartamentos}
+              disabled={loadingDepartamentos || isRegisteredOlimpista}
               errors={errors}
               validationRules={{
                 required: 'El departamento es obligatorio',
@@ -474,7 +634,7 @@ export default function FormDataPart() {
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleProvinciaChange(e.target.value),
                 })}
-                disabled={loadingProvincias}
+                disabled={loadingProvincias || isRegisteredOlimpista}
                 errors={errors}
                 validationRules={{
                   required: 'La provincia es obligatoria',
@@ -511,7 +671,7 @@ export default function FormDataPart() {
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleColegioChange(e.target.value),
                 })}
-                disabled={loadingColegios}
+                disabled={loadingColegios || isRegisteredOlimpista}
                 errors={errors}
                 validationRules={{
                   required: 'La unidad educativa es obligatoria',
@@ -546,27 +706,36 @@ export default function FormDataPart() {
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                   handleGradoChange(e.target.value),
               })}
-              disabled={loading}
+              disabled={loading || isRegisteredOlimpista}
               errors={errors}
             />
           </div>
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
-            <Button
-              label="Cancelar"
-              variantColor="variant2"
-              className="mt-5 md:mt-0"
-              onClick={() => navigate('/')}
-            />
-            <Button
-              type="submit"
-              label="Registrar"
-              disabled={!isValid || Object.keys(errors).length > 0}
-              variantColor={
-                !isValid || Object.keys(errors).length > 0
-                  ? 'variantDesactivate'
-                  : 'variant1'
-              }
-            />
+            {!isRegisteredOlimpista ? (
+              <>
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  className="mt-5 md:mt-0"
+                  onClick={() => navigate('/')}
+                />
+                <Button
+                  type="submit"
+                  label="Registrar"
+                  disabled={!isValid || Object.keys(errors).length > 0}
+                  variantColor={!isValid || Object.keys(errors).length > 0 ? 'variantDesactivate' : 'variant1'}
+                />
+              </>
+            ) : (
+              <div className="flex justify-end mt-5">
+                <Button
+                  label="Cancelar"
+                  variantColor="variant2"
+                  onClick={() => navigate('/')}
+                />
+              </div>
+            )}
+          </div>
           </div>
         </form>
         {showModal && (
@@ -574,6 +743,15 @@ export default function FormDataPart() {
             onClose={() => setShowModal(false)}
             text="¿Estás seguro de que deseas registrar esta información?"
             onConfirm={handleSubmit(handleRegister)}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
+            nextStepText={confirmationStatus === 'success' ? 'Ir a registro de olimpista en áreas de competencia' : undefined}
+            onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
           />
         )}
       </div>

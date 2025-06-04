@@ -40,7 +40,7 @@ export default function DropdownMenu({ label, options }: DropdownMenuProps) {
         />
       </span>
       {isOpen && (
-        <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md mt-2 w-48">
+        <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md mt-2 w-40">
           {options.map((option, index) => (
             <li
               key={index}

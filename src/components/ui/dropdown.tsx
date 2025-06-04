@@ -21,16 +21,19 @@ export const Dropdown = <T extends FieldValues>({
   return (
     <div className="flex flex-col">
       {label && (
-        <label htmlFor={name} className="py-1 text-primary subtitle-md">
+        <label htmlFor={name} className={`py-1 subtitle-md ${disabled ? 'text-neutral2' : 'text-primary'}`}>
           {label} {isRequired && <span className="text-error">*</span>}
         </label>
       )}
       <select
         id={name}
         value={value}
-        className={`h-[50px] bg-transparent rounded border-b-[1px] border-neutral font-body placeholder-neutral  p-2 ${className} ${
-          errors[name] ? 'border-error' : ''
-        } ${value === '' ? 'text-neutral' : 'text-onBack'}`}
+        className={`h-[50px] rounded border-b-[1px] font-body p-2
+          ${disabled ? 'bg-surface text-neutral2 border-neutral cursor-not-allowed' : 'bg-transparent border-neutral text-onBack'}
+          ${errors[name] ? 'border-error' : ''}
+          ${value === '' ? 'text-neutral' : ''}
+          ${className}
+        `}
         {...register(name, validationRules)}
         disabled={disabled}
       >

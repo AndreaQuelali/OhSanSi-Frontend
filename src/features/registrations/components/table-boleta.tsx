@@ -15,7 +15,7 @@ type TableProps = {
 
 export const TableBoleta: React.FC<TableProps> = ({ data, isForPDF = false }) => {
   const columns: TableColumn<TableRow>[] = [
-    { name: 'Nº', selector: row => row.count, cell: row => <span className="text-onBack body-sm">{row.count}</span> },
+    { name: 'CANTIDAD', selector: row => row.count, cell: row => <span className="text-onBack body-sm">{row.count}</span> },
     { name: 'CONCEPTO', selector: row => row.concept, cell: row => <span className="text-onBack body-sm">{row.concept}</span> },
     { name: 'P.UNITARIO', selector: row => row.money, cell: row => <span className="text-onBack body-sm">{row.money}</span> },
   ];
