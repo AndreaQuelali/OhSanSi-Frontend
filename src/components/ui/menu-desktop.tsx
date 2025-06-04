@@ -104,7 +104,7 @@ export default function DesktopMenu({
             ]}
           />
           <DropdownMenu
-            label="Orden y Pago"
+            label="Orden y Comprobante"
             options={[
               { label: 'Generar Orden', path: '/generate-order-payment' },
               { label: 'Subir Comprobante', path: '/upload-payment' },
@@ -126,26 +126,56 @@ export default function DesktopMenu({
       )}
 
       {userRole === 'admin' && (
-        <DropdownMenu
-          label="Administrador"
-          options={[
-            { label: 'Registro General', path: '/register-info' },
-            { label: 'Registro de Áreas', path: '/register-areas' },
-            { label: 'Registro de Niveles', path: '/register-levels' },
-            {
-              label: 'Asociación Niveles con Grados',
-              path: '/register-levels-grades',
-            },
-            {
-              label: 'Registro Niveles en Área',
-              path: '/register-levels-area',
-            },
-            {
-              label: 'Reporte Olimpistas Inscritos',
-              path: '/report-registered-olimpist',
-            },
-          ]}
-        />
+        <>
+          <li
+            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Inicio
+            </Link>
+          </li>
+          <li
+            className={`${location.pathname === '/register-info' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/register-info"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Registro General
+            </Link>
+          </li>
+          <DropdownMenu
+            label="Áreas y Niveles"
+            options={[
+              { label: 'Registro de Áreas', path: '/register-areas' },
+              { label: 'Registro de Niveles', path: '/register-levels' },
+              {
+                label: 'Asociación Niveles con Grados',
+                path: '/register-levels-grades',
+              },
+              {
+                label: 'Registro Niveles en Área',
+                path: '/register-levels-area',
+              },
+            ]}
+          />
+          <li
+            className={`${location.pathname === '/report-registered-olimpist' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            ref={adminMenuRef}
+          >
+            <Link
+              to="/report-registered-olimpist"
+              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+            >
+              Reportes
+            </Link>
+          </li>
+        </>
       )}
     </ul>
   );
