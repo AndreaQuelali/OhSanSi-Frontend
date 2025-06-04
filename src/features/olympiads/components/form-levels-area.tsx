@@ -37,7 +37,7 @@ export default function FormLevelsArea() {
   >([]);
   const { data: olympiads } = useFetchData<
     { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
-  >(`${API_URL}/olimpiadas`);
+  >(`${API_URL}/olimpiadas-actuales`);
 
   const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
     `${API_URL}/areas`,

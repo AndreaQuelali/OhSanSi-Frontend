@@ -55,7 +55,7 @@ export default function FormLevelsGrades() {
 
   const { data: olympiads } = useFetchData<{
     id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
-  >(`${API_URL}/olimpiadas`);
+  >(`${API_URL}/olimpiadas-actuales`);
 
   const { data: grades } = useFetchData<
     {

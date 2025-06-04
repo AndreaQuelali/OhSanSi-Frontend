@@ -39,9 +39,9 @@ export default function AppRoutes() {
           <Route
             path="/register-olimpists"
             element={
-              //  <RegistrationGuard>
+               <RegistrationGuard>
               <RegisterParticipantPage />
-              // </RegistrationGuard>
+              </RegistrationGuard>
             }
           />
           <Route
@@ -55,9 +55,9 @@ export default function AppRoutes() {
           <Route
             path="/register-selected-areas"
             element={
-              //    <RegistrationGuard>
+                <RegistrationGuard>
               <RegisterSelectedAreasPage />
-              //    </RegistrationGuard>
+                </RegistrationGuard>
             }
           />
           <Route
@@ -79,17 +79,17 @@ export default function AppRoutes() {
           <Route
             path="/generate-order-payment"
             element={
-              // <RegistrationGuard>
-              <GenerateOrderPaymentPage />
-              //   </RegistrationGuard>
+              <RegistrationGuard>
+                <GenerateOrderPaymentPage />
+              </RegistrationGuard>
             }
           />
           <Route
             path="/upload-payment"
             element={
-              //  <RegistrationGuard>
+                <RegistrationGuard>
               <UploadPaymentPage />
-              //  </RegistrationGuard>
+                </RegistrationGuard>
             }
           />
           <Route
