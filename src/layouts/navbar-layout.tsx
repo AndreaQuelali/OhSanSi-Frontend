@@ -10,6 +10,18 @@ export default function NavbarLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLLIElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentRole = localStorage.getItem('userRole');
+      if (currentRole !== userRole) {
+        setUserRole(currentRole);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [userRole]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,11 +50,14 @@ export default function NavbarLayout() {
     <div className="flex flex-col min-h-screen bg-white">
       <nav className="sticky top-0 bg-white h-[80px] flex items-center px-6 z-50">
         <div className="flex justify-between items-center w-full h-full">
-          <Link to="/" className="flex items-center">
+          <Link
+            to={userRole === 'user' ? '/presentation' : '/'}
+            className="flex items-center"
+          >
             <img
-              src="/assets/images/ohsansi2.png"
+              src="/assets/images/logoOhSanSi.png"
               alt="Logo"
-              className="w-12 h-12 md:w-16 md:h-16"
+              className="h-16 lg:h-20"
             />
           </Link>
           <DesktopMenu
@@ -67,86 +82,120 @@ export default function NavbarLayout() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <ul>
-                  <li>
-                    <Link
-                      to="/incripciones"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Inscripciones
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-olimpists"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro de Olimpista
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-tutor"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro de Tutor
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-selected-areas"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro Olimpista a Área
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-data-excel"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro Excel
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-info"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro General
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-areas"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro de Áreas
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-levels"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro de Niveles
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-levels-area"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Asociación Niveles con Grados
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register-levels-area"
-                      className="block px-4 py-2 text-sm text-primary hover:text-secondary"
-                    >
-                      Registro de Niveles en Área
-                    </Link>
-                  </li>
+                  {userRole === 'admin' && (
+                    <>
+                      <li>
+                        <Link
+                          to="/register-info"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro General
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-areas"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro de Áreas
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-levels"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro de Niveles
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-levels-grades"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Asociar Niveles con Grados
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-levels-area"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro de Niveles en Área
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/report-registered-olimpist"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Reportes
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {userRole === 'olympist' && (
+                    <>
+                      <li>
+                        <Link
+                          to="/register-olimpists"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro Olimpista
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-tutor"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro Tutor
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-selected-areas"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro de Áreas
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register-data-excel"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Registro por Excel
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link
+                          to="/generate-order-payment"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Orden de Pago
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/upload-payment"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Comprobante de Pago
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/registrations"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Inscripciones
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </div>
             )}
