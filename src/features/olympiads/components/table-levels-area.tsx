@@ -16,14 +16,6 @@ type TableProps = {
 export const TableLevesArea: React.FC<TableProps> = ({ data }) => {
   const columns: TableColumn<TableRow>[] = [
     {
-      name: 'Olimpiada',
-      selector: (row) => row.olympiad,
-      sortable: true,
-      cell: (row) => (
-        <span className="text-onBack body-lg">{row.olympiad}</span>
-      ),
-    },
-    {
       name: 'Área',
       selector: (row) => row.area,
       sortable: true,

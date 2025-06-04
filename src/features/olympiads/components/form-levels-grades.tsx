@@ -41,9 +41,17 @@ export default function FormLevelsGrades() {
     { id: number; area: string; level: string; grade: string }[]
   >([]);
 
-  const { data: levels } = useFetchData<{
-    niveles: { id_nivel: number; nombre: string }[];
-  }>(`${API_URL}/get-niveles`);
+  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>([]);
+
+  const fetchLevels = useCallback(async (olympiadId: number) => {
+    if (!olympiadId) return;
+    try {
+      const response = await axios.get(`${API_URL}/get-niveles/${olympiadId}`);
+      setLevels(response.data.niveles); // Guardamos los niveles en el estado
+    } catch (error) {
+      console.error("Error al obtener los niveles:", error);
+    }
+  }, []);
 
   const { data: olympiads } = useFetchData<{
     id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
@@ -96,13 +104,19 @@ export default function FormLevelsGrades() {
     if (selectedOlympiad) {
       console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
       fetchTableData(Number(selectedOlympiad));
+      fetchLevels(Number(selectedOlympiad));
     }
-  }, [selectedOlympiad, fetchTableData]);
+  }, [selectedOlympiad, fetchLevels, fetchTableData]);
 
   const handleRegister = async (data: FormData) => {
-    const levelId = levels?.niveles.find(
+    const levelId = levels.find(
       (level) => level.id_nivel.toString() === data.level,
     )?.id_nivel;
+
+    if (!levelId) {
+      console.error("Nivel no encontrado");
+      return;
+    }
     const gminId = Number(data.gmin);
     const gmaxId = data.gmax ? Number(data.gmax) : Number(data.gmin);
     const olympiadId = Number(data.olympiad);
@@ -112,7 +126,7 @@ export default function FormLevelsGrades() {
       return;
     }
 
-    const response = await axios.get(`${API_URL}/grados-niveles`);
+    const response = await axios.get(`${API_URL}/grados-niveles/${olympiadId}`);
     const alreadyRegistered = response.data.some(
       (item: any) => item.id_nivel === levelId,
     );
@@ -120,46 +134,6 @@ export default function FormLevelsGrades() {
       alert('Este nivel ya se encuentra asociado a grados');
       return;
     }
-
-    try {
-      const olimpResponse = await axios.get(`${API_URL}/olimpiadas`);
-      const currentDate = new Date();
-
-      const algunaEnInscripcion = olimpResponse.data.some((olimpiada: any) => {
-        const fechaInicio = new Date(olimpiada.fecha_inicio);
-        const fechaFin = new Date(olimpiada.fecha_fin);
-
-        return currentDate >= fechaInicio && currentDate <= fechaFin;
-      });
-
-      if (algunaEnInscripcion) {
-        alert(
-          'No se puede registrar, la olimpiada está en etapa de inscripción',
-        );
-        return;
-      }
-
-      const dentroDePreparacion = olimpResponse.data.some((olimpiada: any) => {
-        const creadoEn = new Date(olimpiada.creado_en);
-        const fechaInicio = new Date(olimpiada.fecha_inicio);
-
-        return currentDate >= creadoEn && currentDate < fechaInicio;
-      });
-
-      if (!dentroDePreparacion) {
-        alert(
-          'No se puede registrar fuera del periodo de preparación de las olimpiadas',
-        );
-        return;
-      }
-    } catch (error) {
-      console.error('Error al verificar el estado de las olimpiadas:', error);
-      alert(
-        'No se pudo verificar la etapa de las olimpiadas. Intenta nuevamente.',
-      );
-      return;
-    }
-
     const payload = {
       id_nivel: levelId,
       id_grado_min: gminId,
@@ -217,7 +191,7 @@ export default function FormLevelsGrades() {
                 name="level"
                 placeholder="Seleccionar nivel o categoría"
                 options={
-                  levels?.niveles.map((level) => ({
+                  levels?.map((level) => ({
                     id: level.id_nivel.toString(),
                     name: level.nombre,
                   })) || []

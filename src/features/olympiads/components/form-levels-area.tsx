@@ -42,9 +42,18 @@ export default function FormLevelsArea() {
   const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
     `${API_URL}/areas`,
   );
-  const { data: levels } = useFetchData<{
-    niveles: { id_nivel: number; nombre: string }[];
-  }>(`${API_URL}/get-niveles`);
+  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>([]);
+  
+  const fetchLevels = useCallback(async (olympiadId: number) => {
+    if (!olympiadId) return;
+    try {
+      const response = await axios.get(`${API_URL}/get-niveles-areas/${olympiadId}`);
+      setLevels(response.data.niveles); // Guardamos los niveles en el estado
+    } catch (error) {
+      console.error("Error al obtener los niveles:", error);
+    }
+  }, []);
+
 
   const fetchTableLA = useCallback(async (olympiadId: number) => {
     if (!olympiadId) {
@@ -95,8 +104,9 @@ export default function FormLevelsArea() {
     if (selectedOlympiad) {
       console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
       fetchTableLA(Number(selectedOlympiad));
+      fetchLevels(Number(selectedOlympiad));
     }
-  }, [selectedOlympiad, fetchTableLA]);
+  }, [selectedOlympiad, fetchLevels, fetchTableLA]);
 
   const onSubmitForm = (e: React.FormEvent) => {
     e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
@@ -251,7 +261,7 @@ export default function FormLevelsArea() {
                 name="level"
                 placeholder="Seleccionar nivel o categoría"
                 options={
-                  levels?.niveles.map((level) => ({
+                  levels?.map((level) => ({
                     id: level.id_nivel.toString(),
                     name: level.nombre,
                   })) || []
@@ -290,7 +300,7 @@ export default function FormLevelsArea() {
                 <TableLevesArea data={tableData} />
               ) : selectedOlympiad ? (
                 <p className="text-center py-4 text-neutral">
-                  No hay datos disponibles para esta olimpiada
+                  No hay Niveles/Categorías registrados con Areas para esta olimpiada
                 </p>
               ) : (
                 <p className="text-center py-4 text-neutral">
