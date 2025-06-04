@@ -154,7 +154,7 @@ export default function FormDataExcel() {
       setIsLoading(false);
     }
   };  
-
+  
   const handleRegister = async () => {
     if (rawDataToSend.length === 0) {
       alert("No hay datos para registrar.");
@@ -214,12 +214,14 @@ export default function FormDataExcel() {
               const ci = item.ci ? ` (CI: ${item.ci})` : '';
               mensaje += `• ${fila}${ci}:\n`;
 
-              if (Array.isArray(item.error)) {
-                item.error.forEach((e: string) => {
+              if (Array.isArray(item.message)) {
+                item.message.forEach((e: string) => {
                   mensaje += `    - ${e}\n`;
                 });
+              } else if (typeof item.message === 'string') {
+                mensaje += `    - ${item.message}\n`;
               } else {
-                mensaje += `    - ${item.error}\n`;
+                mensaje += `    - Error desconocido\n`;
               }
             });
           }
