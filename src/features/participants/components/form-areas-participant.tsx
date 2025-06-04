@@ -17,6 +17,14 @@ import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 
+interface DefeaultValues {
+  olimpista: {
+    ci: string;
+  };
+  tutor: {
+    ci: string;
+  };
+}
 export default function FormAreaPart() {
   const {
     register,
@@ -25,11 +33,15 @@ export default function FormAreaPart() {
     watch,
     control,
     setValue,
-  } = useForm({
+  } = useForm<DefeaultValues>({
     mode: 'all',
     defaultValues: {
-      'olimpista.ci': '',
-      'tutor.ci': '',
+      olimpista: {
+        ci: '',
+      },
+      tutor: {
+        ci: '',
+      },
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
