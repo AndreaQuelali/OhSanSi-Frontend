@@ -506,7 +506,7 @@ export const ReportRegisterOliPage = () => {
             />
           </div>
 
-          {selectedOlympiadId && participants.length != 0 && (
+          {selectedOlympiadId && originalParticipants.length != 0 && (
             <div className="flex flex-wrap gap-4">
               <p className="body-lg text-primary">Filtrar por: </p>
               <Button
@@ -575,7 +575,7 @@ export const ReportRegisterOliPage = () => {
           </div>
         </div>
         <div className="mt-2 mx-auto" ref={tableRef}>
-          {participants.length > 0 ? (
+          {originalParticipants.length > 0 ? (
             <TableRegisterOli data={participants} />
           ) : selectedOlympiadId ? (
             <p className="text-center py-4 text-neutral">
