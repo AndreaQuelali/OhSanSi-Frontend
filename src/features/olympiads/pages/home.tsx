@@ -7,8 +7,8 @@ export const Home = () => {
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
       {userRole === 'olympian' && (
-        <section className="text-center mb-10 w-9/12">
-          <h1 className="headline-lg text-primary mb-4">Guía de Registro</h1>
+        <section className="text-center mb-16 w-10/12">
+          <h1 className="headline-lg text-primary mb-6">Guía de Registro</h1>
           <div className="space-y-6 text-left">
             {[
               {
@@ -38,10 +38,10 @@ export const Home = () => {
             ].map((step, index) => (
               <div
                 key={index}
-                className="flex items-start gap-4 w-full space-x-12"
+                className="flex lg:items-start lg:flex-row flex-col-reverse gap-4 lg:space-x-12"
               >
                 <Button
-                  className="w-1/3"
+                  className="lg:w-1/3 w-full mb-6"
                   onClick={() => navigate(step.ruta)}
                   label={step.label}
                 />
@@ -54,7 +54,7 @@ export const Home = () => {
         </section>
       )}
       {userRole === 'admin' && (
-        <section className="w-full max-w-6xl mb-14">
+        <section className=" max-w-6xl mb-14 w-10/12">
           <h1 className="headline-lg text-primary mb-4">Hola, Admi</h1>
           <p className="body-lg text-neutral mb-6">
             Bienvenido al sistema de administración de olimpiadas
@@ -85,7 +85,7 @@ export const Home = () => {
           </div>
  */}
           <h3 className="headline-sm text-primary mb-6">Accesos rápidos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 label: 'Registrar nueva Olimpiada',
@@ -112,7 +112,11 @@ export const Home = () => {
                 path: '/administrator/report-registered-olimpist',
               },
             ].map((item) => (
-              <Button onClick={() => navigate(item.path)} label={item.label} />
+              <Button
+                onClick={() => navigate(item.path)}
+                label={item.label}
+                className="w-full"
+              />
             ))}
           </div>
         </section>
