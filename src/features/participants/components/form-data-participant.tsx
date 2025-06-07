@@ -429,7 +429,7 @@ export default function FormDataPart() {
             <div
               className={`
               overflow-hidden transition-all duration-500 ease-in-out
-              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+              ${showMessage ? 'opacity-100 max-h-40 mb-4 md:mb-0' : 'opacity-0 max-h-0'}
             `}
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
@@ -452,7 +452,7 @@ export default function FormDataPart() {
               un tutor. Si eres tu propio tutor, puedes ingresar tu propio
               número de cédula de identidad.
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 lg:mb-6">
               <InputText
                 label="Nombre(s)"
                 name="olimpista.name"
@@ -488,7 +488,7 @@ export default function FormDataPart() {
                 disabled={isRegisteredOlimpista}
               />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 lg:mb-6">
               <InputText
                 label="Fecha de nacimiento"
                 name="olimpista.birthday"
@@ -577,7 +577,7 @@ export default function FormDataPart() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 md:mb-6">
               {ci && citutor && ci === citutor && (
                 <InputText
                   label="Número de celular"
@@ -599,7 +599,7 @@ export default function FormDataPart() {
               )}
             </div>
             <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
-            <div className="grid md:grid-cols-2 md:gap-9 mb-6">
+            <div className="grid md:grid-cols-2 md:gap-9 md:mb-6">
               <Dropdown
                 label="Departamento"
                 placeholder="Seleccionar departamento"
