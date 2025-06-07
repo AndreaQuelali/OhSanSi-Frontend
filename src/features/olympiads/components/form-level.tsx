@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { TableLevel } from './table-level';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 type FormData = {
   inputLevel: string;
@@ -40,6 +41,9 @@ export const FormLevel = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchTableLevels = async () => {
     try {
@@ -101,12 +105,22 @@ export const FormLevel = () => {
       };
 
       await axios.post(`${API_URL}/niveles-categoria`, payload);
-      alert('Nivel registrado correctamente');
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso del nivel.');
+      setShowConfirmationModal(true);
       reset();
       fetchTableLevels();
     } catch {
-      alert('Error al registrar el nivel');
+      setConfirmationStatus('error');
+      setConfirmationMessage('Error al registrar el nivel. Por favor, intente nuevamente.');
+      setShowConfirmationModal(true);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   return (
@@ -175,6 +189,13 @@ export const FormLevel = () => {
           text="¿Está seguro de registrar este nivel o categoría?"
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleRegister}
+        />
+      )}
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
         />
       )}
     </div>

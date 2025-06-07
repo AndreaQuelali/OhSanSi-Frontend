@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { TableLevesArea } from './table-levels-area';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 interface FormData {
   olympiad: string;
@@ -32,6 +33,9 @@ export default function FormLevelsArea() {
   const selectedOlympiad = watch('olympiad');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const [tableData, setTableData] = useState<
     { id: number; olympiad: string; area: string; level: string }[]
   >([]);
@@ -61,7 +65,6 @@ export default function FormLevelsArea() {
     }
 
     try {
-      console.log('Fetching data for olympiad:', olympiadId);
       const response = await axios.get(
         `${API_URL}/olimpiadas/${olympiadId}/areas-niveles`,
       );
@@ -82,10 +85,6 @@ export default function FormLevelsArea() {
           );
 
           setTableData(formattedData);
-          console.log(
-            'Datos cargados correctamente. Total:',
-            formattedData.length,
-          );
         } else {
           console.error("La propiedad 'areas' no es un array:", areas);
           setTableData([]);
@@ -102,7 +101,6 @@ export default function FormLevelsArea() {
 
   useEffect(() => {
     if (selectedOlympiad) {
-      console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
       fetchTableLA(Number(selectedOlympiad));
       fetchLevels(Number(selectedOlympiad));
     }
@@ -114,7 +112,6 @@ export default function FormLevelsArea() {
   };
 
   const handleRegister = async (data: FormData) => {
-    console.log('Datos enviados:', data);
 
     const areaId = Number(data.area);
     const levelId = Number(data.level);
@@ -186,22 +183,35 @@ export default function FormLevelsArea() {
       max_niveles: 1,
     };
 
-    console.log(payload);
     setIsSubmitting(true);
 
     try {
       await axios.post(`${API_URL}/areas/asociar-niveles`, payload);
-      alert('Nivel y área registrados en la olimpiada correctamente');
-      window.location.reload();
+      setConfirmationStatus('success');
+      setConfirmationMessage('Nivel y área registrados en la olimpiada exitosamente.');
+      setShowConfirmationModal(true);
 
       await fetchTableLA(olympiadId);
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        error.data?.message || 'Error al registrar el nivel y área en la olimpiada.'
+      );
+      setShowConfirmationModal(true);
       console.error('Error al registrar:', error);
-      alert('Error al registrar el nivel y área en olimpiada');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   return (
@@ -315,6 +325,13 @@ export default function FormLevelsArea() {
             text="¿Está seguro de registrar los niveles en area?"
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleSubmit(handleRegister)}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
           />
         )}
       </div>
