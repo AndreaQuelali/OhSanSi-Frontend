@@ -263,11 +263,10 @@ export default function FormAreaPart() {
     };
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
         payload
       );
-      console.log(response);
       setConfirmationStatus('success');
       setConfirmationMessage('Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.');
     } catch (err: any) {

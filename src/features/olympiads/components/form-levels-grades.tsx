@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { Table } from './table';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 interface FormData {
   level: string;
@@ -42,6 +43,9 @@ export default function FormLevelsGrades() {
   >([]);
 
   const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchLevels = useCallback(async (olympiadId: number) => {
     if (!olympiadId) return;
@@ -102,7 +106,6 @@ export default function FormLevelsGrades() {
 
   useEffect(() => {
     if (selectedOlympiad) {
-      console.log('Olimpiada seleccionada cambió a:', selectedOlympiad);
       fetchTableData(Number(selectedOlympiad));
       fetchLevels(Number(selectedOlympiad));
     }
@@ -144,15 +147,31 @@ export default function FormLevelsGrades() {
 
     try {
       await axios.post(`${API_URL}/asociar-grados-nivel`, payload);
-      alert('Nivel asociado a grados correctamente');
-      window.location.reload();
-    } catch (error) {
+      setIsModalOpen(false);
+      setConfirmationStatus('success');
+      setConfirmationMessage('Nivel asociado a grado(s) exitosamente.');
+      setShowConfirmationModal(true);
+    } catch (error: any) {
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        error.data?.message || 'Error al registrar el nivel.'
+      );
+      setShowConfirmationModal(true);
       console.error('Error al registrar:', error);
-      alert('Error al registrar el nivel');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
@@ -312,6 +331,13 @@ export default function FormLevelsGrades() {
             text="¿Está seguro de registrar los niveles?"
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleSubmit(handleRegister)}
+          />
+        )}
+        {showConfirmationModal && (
+          <ConfirmationModal
+            onClose={handleCloseConfirmationModal}
+            status={confirmationStatus || 'error'}
+            message={confirmationMessage}
           />
         )}
       </div>
