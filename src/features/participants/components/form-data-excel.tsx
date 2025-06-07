@@ -1,15 +1,15 @@
-import { Button, InputText, Modal } from "@/components";
-import CardUploadFile from "./card-upload-file";
-import { useNavigate } from "react-router";
-import { useState, useRef } from "react";
-import IconDownload from "@/components/icons/icon-download";
-import axios from "axios";
-import { API_URL } from "@/config/api-config";
-import { TablaOlimpistas } from "./table-data-excel";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useForm } from "react-hook-form";
-import ErrorModal from "./modal-error";
-import { ConfirmationModal } from "@/components/ui/modal-confirmation";
+import { Button, InputText, Modal } from '@/components';
+import CardUploadFile from './card-upload-file';
+import { useNavigate } from 'react-router';
+import { useState, useRef } from 'react';
+import IconDownload from '@/components/icons/icon-download';
+import axios from 'axios';
+import { API_URL } from '@/config/api-config';
+import { TablaOlimpistas } from './table-data-excel';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useForm } from 'react-hook-form';
+import ErrorModal from './modal-error';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 interface OlimpistaRow {
   Nombre: string;
@@ -52,7 +52,7 @@ export default function FormDataExcel() {
   const navigate = useNavigate();
   const [fileName, setFileName] = useState<string | null>(null);
   const [olimpistas, setOlimpistas] = useState<OlimpistaRow[]>([]);
-  const [rawDataToSend, setRawDataToSend] = useState<any[][]>([]); 
+  const [rawDataToSend, setRawDataToSend] = useState<any[][]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -65,7 +65,7 @@ export default function FormDataExcel() {
     setOlimpistas([]);
     setRawDataToSend([]);
     if (inputRef.current) {
-      inputRef.current.value = "";
+      inputRef.current.value = '';
     }
   };
 
@@ -78,74 +78,82 @@ export default function FormDataExcel() {
     inputRef.current?.click();
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-  
+
     setFileName(file.name);
     setIsLoading(true);
-  
+
     const formData = new FormData();
-    formData.append("file", file);
-    
+    formData.append('file', file);
+
     try {
-      const response = await axios.post(`${API_URL}/olimpistas/excel`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      
+      const response = await axios.post(
+        `${API_URL}/olimpistas/excel`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
+      );
+
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
-  
+
       const parsedData: OlimpistaRow[] = rawData
-      .filter((row) => row.some((cell) => cell !== null && cell !== ""))
-      .map((row) => ({
-        Nombre: row[0] ?? "",
-        Apellido: row[1] ?? "",
-        CIOlimpista: row[2]?.toString() ?? "",
-        FechadeNacimiento: row[3]?.toString() ?? "",
-        Correoelectronico: row[4] ?? "",
-        Departamento: row[5] ?? "",
-        Provincia: row[6] ?? "",
-        UnidadEducativa: row[7] ?? "",
-        Grado: row[8] ?? "",
-        NombresTutorLegal: row[9] ?? "",
-        ApellidosTutorLegal: row[10] ?? "",
-        CITutorLegal: row[11]?.toString() ?? "",
-        CelularTutorLegal: row[12]?.toString() ?? "",
-        CorreoelectronicoTutorLegal: row[13] ?? "",
-        Area: row[14] ?? "",
-        NivelCategoria: row[15] ?? "",
-        NombresProfesor: row[16] ?? "",
-        ApellidosProfesor: row[17] ?? "",
-        CIProfesor: row[18]?.toString() ?? "",
-        CelularProfesor: row[19]?.toString() ?? "",
-        CorreoelectronicoProfesor: row[20] ?? "",
-      }));
-  
+        .filter((row) => row.some((cell) => cell !== null && cell !== ''))
+        .map((row) => ({
+          Nombre: row[0] ?? '',
+          Apellido: row[1] ?? '',
+          CIOlimpista: row[2]?.toString() ?? '',
+          FechadeNacimiento: row[3]?.toString() ?? '',
+          Correoelectronico: row[4] ?? '',
+          Departamento: row[5] ?? '',
+          Provincia: row[6] ?? '',
+          UnidadEducativa: row[7] ?? '',
+          Grado: row[8] ?? '',
+          NombresTutorLegal: row[9] ?? '',
+          ApellidosTutorLegal: row[10] ?? '',
+          CITutorLegal: row[11]?.toString() ?? '',
+          CelularTutorLegal: row[12]?.toString() ?? '',
+          CorreoelectronicoTutorLegal: row[13] ?? '',
+          Area: row[14] ?? '',
+          NivelCategoria: row[15] ?? '',
+          NombresProfesor: row[16] ?? '',
+          ApellidosProfesor: row[17] ?? '',
+          CIProfesor: row[18]?.toString() ?? '',
+          CelularProfesor: row[19]?.toString() ?? '',
+          CorreoelectronicoProfesor: row[20] ?? '',
+        }));
+
       setOlimpistas(parsedData);
     } catch (error: any) {
-      console.error("Error al procesar el archivo Excel", error);
+      console.error('Error al procesar el archivo Excel', error);
 
       const errores = error.response?.data?.errors;
 
       if (errores) {
-        let mensaje = "Errores al procesar el archivo Excel:\n";
+        let mensaje = 'Errores al procesar el archivo Excel:\n';
 
         const erroresArchivo = errores.archivo ?? [];
         const erroresFormato = errores.formato ?? [];
 
         if (erroresArchivo.length > 0) {
-          mensaje += `\n• ${erroresArchivo.join("\n• ")}`;
+          mensaje += `\n• ${erroresArchivo.join('\n• ')}`;
         }
 
         if (erroresFormato.length > 0) {
-          mensaje += `\n• ${erroresFormato.join("\n• ")}`;
+          mensaje += `\n• ${erroresFormato.join('\n• ')}`;
         }
 
         setErrorMessage(mensaje);
         setShowErrorModal(true);
       } else {
-        setErrorMessage("No se pudo procesar el archivo. Asegúrate de que el formato es correcto.");
+        setErrorMessage(
+          'No se pudo procesar el archivo. Asegúrate de que el formato es correcto.',
+        );
         setShowErrorModal(true);
       }
 
@@ -153,17 +161,17 @@ export default function FormDataExcel() {
     } finally {
       setIsLoading(false);
     }
-  };  
-  
+  };
+
   const handleRegister = async () => {
     if (rawDataToSend.length === 0) {
-      alert("No hay datos para registrar.");
+      alert('No hay datos para registrar.');
       return;
     }
 
-    const ciResponsable = watch("ci_responsable");
+    const ciResponsable = watch('ci_responsable');
     if (!ciResponsable) {
-      alert("Debe ingresar el CI del responsable.");
+      alert('Debe ingresar el CI del responsable.');
       return;
     }
 
@@ -173,17 +181,17 @@ export default function FormDataExcel() {
         data: rawDataToSend,
       });
 
-      setSuccessMessage("Datos registrados correctamente.");
+      setSuccessMessage('Datos registrados correctamente.');
       setShowSuccessModal(true);
-      console.log("Respuesta del backend:", response.data);
+      console.log('Respuesta del backend:', response.data);
     } catch (error: any) {
-      console.error("Error al registrar los datos:", error);
+      console.error('Error al registrar los datos:', error);
 
       const data = error.response?.data;
 
       if (data?.resultado) {
         const resultado = data.resultado;
-        let mensaje = "";
+        let mensaje = '';
 
         if (data.message) {
           mensaje += `${data.message}\n`;
@@ -233,7 +241,9 @@ export default function FormDataExcel() {
         setErrorMessage(`Error: ${data.error}`);
         setShowErrorModal(true);
       } else {
-        setErrorMessage("Hubo un error al registrar los datos. Verifique el formato del Excel.");
+        setErrorMessage(
+          'Hubo un error al registrar los datos. Verifique el formato del Excel.',
+        );
         setShowErrorModal(true);
       }
     }
@@ -241,7 +251,10 @@ export default function FormDataExcel() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <form className="mx-5 mt-10 mb-32 w-11/12 md:w-9/12 lg:w-9/12" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="mx-5 mt-10 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <h1 className="text-center text-primary mb-8 headline-lg">
           Registrar datos de olimpistas a través de archivo Excel
         </h1>
@@ -258,7 +271,8 @@ export default function FormDataExcel() {
                 required: 'Debe ingresar la cédula del responsable.',
                 pattern: {
                   value: /^(?! )[0-9]+(?<! )$/,
-                  message: 'Solo se permiten números y no puede haber espacios.',
+                  message:
+                    'Solo se permiten números y no puede haber espacios.',
                 },
               }}
               errors={errors}
@@ -274,7 +288,9 @@ export default function FormDataExcel() {
             <div className="flex flex-row items-center justify-start mt-2">
               <button
                 type="button"
-                onClick={() => window.open("/templates/template-excel.xlsx", "_blank")}
+                onClick={() =>
+                  window.open('/templates/template-excel.xlsx', '_blank')
+                }
                 className="flex items-center text-primary underline body-md hover:text-secondary2 transition cursor-pointer"
               >
                 <IconDownload classname="h-5 w-5 mr-0.5" />
@@ -287,7 +303,7 @@ export default function FormDataExcel() {
             {fileName ? (
               <Button
                 label="Borrar archivo"
-                variantColor={isLoading ? "variantDesactivate" : "variant2"}
+                variantColor={isLoading ? 'variantDesactivate' : 'variant2'}
                 className="mt-5 md:mt-0"
                 onClick={handleClearFile}
                 disabled={isLoading}
@@ -316,11 +332,17 @@ export default function FormDataExcel() {
         )}
 
         <div className="flex flex-col-reverse md:flex-row md:justify-end gap-5 md:gap-0 md:space-x-5 mt-5">
-          <Button label="Cancelar" variantColor="variant2" onClick={() => navigate("/")} />
+          <Button
+            label="Cancelar"
+            variantColor="variant2"
+            onClick={() => navigate('/olympian')}
+          />
           <Button
             type="button"
             label="Registrar"
-            variantColor={rawDataToSend.length === 0 ? 'variantDesactivate' : 'variant1'}
+            variantColor={
+              rawDataToSend.length === 0 ? 'variantDesactivate' : 'variant1'
+            }
             onClick={() => setShowModal(true)}
             disabled={rawDataToSend.length === 0}
           />

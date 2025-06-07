@@ -15,7 +15,7 @@ export default function FormButtons({
         label="Cancelar"
         variantColor="variant2"
         className="mt-5 md:mt-0"
-        onClick={onCancel || (() => (window.location.href = '/'))}
+        onClick={onCancel || (() => (window.location.href = '/olympian'))}
       />
       <Button
         type="submit"
