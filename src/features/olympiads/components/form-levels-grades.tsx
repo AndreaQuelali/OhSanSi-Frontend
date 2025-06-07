@@ -296,7 +296,7 @@ export default function FormLevelsGrades() {
                 label="Cancelar"
                 variantColor="variant2"
                 className="mt-5 md:mt-0"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/administrator')}
               />
               <Button
                 label="Registrar"

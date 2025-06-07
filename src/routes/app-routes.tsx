@@ -25,79 +25,85 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route element={<NavbarLayout />}>
-          <Route index element={<Home />} />
-          <Route path="/presentation" element={<Presentation />} />
-          <Route path="/register-info" element={<RegisterInfoPage />} />
-          <Route path="/register-areas" element={<RegisterAreas />} />
-          <Route path="/register-levels" element={<RegisterLevelsPage />} />
-          <Route
-            path="/register-levels-grades"
-            element={<RegisterLevelsGradesPage />}
-          />
-          <Route
-            path="/register-levels-area"
-            element={<RegisterLevelsAreaPage />}
-          />
-          <Route
-            path="/register-olimpists"
-            element={
-               <RegistrationGuard>
-              <RegisterParticipantPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/register-tutor"
-            element={
-              <RegistrationGuard>
-                <RegisterTutorPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/register-selected-areas"
-            element={
-              <RegistrationGuard>
-                <RegisterSelectedAreasPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/register-data-excel"
-            element={
-              <RegistrationGuard>
-                <RegisterDataExcel />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/registrations"
-            element={
-              <RegistrationGuard>
-                <RegistrationsPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/generate-order-payment"
-            element={
-              <RegistrationGuard>
-                <GenerateOrderPaymentPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/upload-payment"
-            element={
-              <RegistrationGuard>
-                <UploadPaymentPage />
-              </RegistrationGuard>
-            }
-          />
-          <Route
-            path="/report-registered-olimpist"
-            element={<ReportRegisterOliPage />}
-          />
+          <Route index element={<Presentation />} />
+          <Route path="/administrator">
+            <Route index element={<Home />} />
+            <Route path="register-info" element={<RegisterInfoPage />} />
+            <Route path="register-areas" element={<RegisterAreas />} />
+            <Route path="register-levels" element={<RegisterLevelsPage />} />
+            <Route
+              path="register-levels-grades"
+              element={<RegisterLevelsGradesPage />}
+            />
+            <Route
+              path="register-levels-area"
+              element={<RegisterLevelsAreaPage />}
+            />
+            <Route
+              path="report-registered-olimpist"
+              element={<ReportRegisterOliPage />}
+            />
+          </Route>
+
+          <Route path="/olympian">
+            <Route index element={<Home />} />
+            <Route
+              path="register-olympians"
+              element={
+                <RegistrationGuard>
+                  <RegisterParticipantPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-tutor"
+              element={
+                <RegistrationGuard>
+                  <RegisterTutorPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-selected-areas"
+              element={
+                <RegistrationGuard>
+                  <RegisterSelectedAreasPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-data-excel"
+              element={
+                <RegistrationGuard>
+                  <RegisterDataExcel />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="registrations"
+              element={
+                <RegistrationGuard>
+                  <RegistrationsPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="generate-order-payment"
+              element={
+                <RegistrationGuard>
+                  <GenerateOrderPaymentPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="upload-payment"
+              element={
+                <RegistrationGuard>
+                  <UploadPaymentPage />
+                </RegistrationGuard>
+              }
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

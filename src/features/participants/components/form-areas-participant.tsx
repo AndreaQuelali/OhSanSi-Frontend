@@ -36,7 +36,9 @@ export default function FormAreaPart() {
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const navigate = useNavigate();
 
@@ -104,7 +106,7 @@ export default function FormAreaPart() {
   const handleCloseConfirmationModal = () => {
     setShowConfirmationModal(false);
     if (confirmationStatus === 'success') {
-      window.location.href = '/register-selected-areas';
+      window.location.href = '/olympian/register-selected-areas';
     }
     setConfirmationStatus(null);
     setConfirmationMessage('');
@@ -253,7 +255,7 @@ export default function FormAreaPart() {
               ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
               : {}),
           }));
-      }
+      },
     );
 
     const payload = {
@@ -265,15 +267,18 @@ export default function FormAreaPart() {
     try {
       await axios.post(
         `${API_URL}/inscripciones-con-tutor`,
-        payload
+        payload,
       );
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.');
+      setConfirmationMessage(
+        'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
+      );
     } catch (err: any) {
       console.error('Error:', err);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        err.response?.data?.message || 'Error al realizar el registro. Por favor intente nuevamente.'
+        err.response?.data?.message ||
+          'Error al realizar el registro. Por favor intente nuevamente.',
       );
     } finally {
       setShowResponsibleModal(false);
@@ -336,8 +341,14 @@ export default function FormAreaPart() {
           onClose={handleCloseConfirmationModal}
           status={confirmationStatus || 'error'}
           message={confirmationMessage}
-          nextStepText={confirmationStatus === 'success' ? 'Ir a generar boleta de orden de pago.' : undefined}
-          onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
+          nextStepText={
+            confirmationStatus === 'success'
+              ? 'Ir a generar boleta de orden de pago.'
+              : undefined
+          }
+          onNextStep={
+            confirmationStatus === 'success' ? handleNextStep : undefined
+          }
         />
       )}
     </div>
