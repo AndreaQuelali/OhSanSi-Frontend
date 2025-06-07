@@ -58,7 +58,9 @@ export default function FormDataExcel() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleClearFile = () => {
     setFileName(null);
@@ -130,7 +132,6 @@ export default function FormDataExcel() {
 
       setOlimpistas(parsedData);
     } catch (error: any) {
-      console.error('Error al procesar el archivo Excel', error);
 
       const errores = error.response?.data?.errors;
 
@@ -171,21 +172,24 @@ export default function FormDataExcel() {
 
     const ciResponsable = watch('ci_responsable');
     if (!ciResponsable) {
-      alert('Debe ingresar el CI del responsable.');
+      setConfirmationMessage('Debe ingresar el CI del responsable.');
+      setConfirmationStatus('error');
+      setShowSuccessModal(true);
       return;
     }
 
+    setIsRegistering(true);
+
     try {
-      const response = await axios.post(`${API_URL}/registro/excel`, {
+      await axios.post(`${API_URL}/registro/excel`, {
         ci_responsable_inscripcion: ciResponsable,
         data: rawDataToSend,
       });
 
-      setSuccessMessage('Datos registrados correctamente.');
+      setConfirmationMessage("Datos registrados correctamente.");
+      setConfirmationStatus('success');
       setShowSuccessModal(true);
-      console.log('Respuesta del backend:', response.data);
     } catch (error: any) {
-      console.error('Error al registrar los datos:', error);
 
       const data = error.response?.data;
 
@@ -246,7 +250,18 @@ export default function FormDataExcel() {
         );
         setShowErrorModal(true);
       }
+    } finally {
+      setIsRegistering(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowSuccessModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   return (
@@ -366,13 +381,15 @@ export default function FormDataExcel() {
       )}
       {showSuccessModal && (
         <ConfirmationModal
-          onClose={() => {
-            setShowSuccessModal(false);
-            window.location.reload();
-          }}
-          status="success"
-          message={successMessage}
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
         />
+      )}
+      {(isRegistering) && (
+        <div className="fixed top-0 left-0 w-full h-full bg-neutral2 opacity-40 flex items-center justify-center z-50">
+          <CircularProgress size={80} />
+        </div>
       )}
     </div>
   );

@@ -340,11 +340,8 @@ export default function FormDataPart() {
       id_grado: data.olimpista.grade,
     };
 
-    console.log('Datos que se enviarán:', payload);
-
     try {
-      const response = await submitForm(payload);
-      console.log('Se envió correctamente', response);
+      await submitForm(payload);
       setConfirmationStatus('success');
       setConfirmationMessage(
         'Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.',

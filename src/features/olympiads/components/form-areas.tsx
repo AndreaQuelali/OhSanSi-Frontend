@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { TableAreas } from './table-areas';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 type FormData = {
   inputArea: string;
@@ -40,6 +41,9 @@ const FormAreas = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [areasRegistradas, setAreasRegistradas] = useState<TableRow[]>([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchAreas = async () => {
     try {
@@ -102,16 +106,25 @@ const FormAreas = () => {
 
       await axios.post(`${API_URL}/areas`, payload);
 
-      alert('Área registrada correctamente');
+      setConfirmationStatus('success');
+      setConfirmationMessage('Registro exitoso del área.');
+      setShowConfirmationModal(true);
       reset();
-      fetchAreas(); // recargar la tabla
+      fetchAreas();
     } catch (error: any) {
       console.error('Error al registrar el área:', error);
-      alert(
-        error.response?.data?.message ||
-          'Ocurrió un error al registrar el área.',
+      setConfirmationStatus('error');
+      setConfirmationMessage(
+        error.response?.data?.message || 'Error al registrar el área. Por favor, intente nuevamente.'
       );
+      setShowConfirmationModal(true);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   return (
@@ -178,6 +191,13 @@ const FormAreas = () => {
           text="¿Está seguro de registrar esta área?"
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleRegister}
+        />
+      )}
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
         />
       )}
     </div>

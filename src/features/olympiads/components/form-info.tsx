@@ -6,6 +6,7 @@ import { FormData } from '../interfaces/form-info';
 import { useNavigate } from 'react-router';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 export default function FormInfo() {
   const navigate = useNavigate();
@@ -35,6 +36,9 @@ export default function FormInfo() {
   });
   const { submitForm } = useApiForm('olympiad-registration');
   const [justReset, setJustReset] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const selectedYear = watch('year');
 
@@ -66,12 +70,13 @@ export default function FormInfo() {
       nombre_olimpiada: formData.inputNameOlimpiada,
       creado_en: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
     };
-    console.log(payload);
 
     try {
       const response = await submitForm(payload);
       if (response) {
-        alert('Registro exitoso');
+        setConfirmationStatus('success');
+        setConfirmationMessage('Registro exitoso de la olimpiada');
+        setShowConfirmationModal(true);
         await fetchOlimpiadas();
         localStorage.setItem('gestion', formData.year);
         window.location.reload();
@@ -81,19 +86,31 @@ export default function FormInfo() {
       if (error.data?.errors) {
         const messages = Object.values(error.data.errors).flat().join('\n');
         setError('year', { message: messages });
-        alert(messages);
+        setConfirmationStatus('error');
+        setConfirmationMessage(messages);
+        setShowConfirmationModal(true);
       } else {
-        alert(
-          error.data?.message || 'Error en el registro. Intente nuevamente.',
+        setConfirmationStatus('error');
+        setConfirmationMessage(
+          error.data?.message || 'Error al registrar la olimpiada. Por favor, intente nuevamente.'
         );
+        setShowConfirmationModal(true);
       }
     }
-
     setShowModal(false);
   };
 
   const onCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    if (confirmationStatus === 'success') {
+      window.location.reload();
+    }
+    setConfirmationStatus(null);
+    setConfirmationMessage('');
   };
 
   const validateDates = async (
@@ -366,6 +383,13 @@ export default function FormInfo() {
           onClose={onCloseModal}
           text="¿Estás seguro de que deseas registrar esta información?"
           onConfirm={onConfirm}
+        />
+      )}
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onClose={handleCloseConfirmationModal}
+          status={confirmationStatus || 'error'}
+          message={confirmationMessage}
         />
       )}
     </div>
