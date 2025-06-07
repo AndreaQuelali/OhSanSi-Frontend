@@ -6,32 +6,32 @@ export const Home = () => {
   const userRole = localStorage.getItem('userRole');
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
-      {userRole === 'olympist' && (
+      {userRole === 'olympian' && (
         <section className="text-center mb-10 w-9/12">
           <h1 className="headline-lg text-primary mb-4">Guía de Registro</h1>
           <div className="space-y-6 text-left">
             {[
               {
                 label: 'Registrar Tutor',
-                ruta: '/register-tutor',
+                ruta: '/olympian/register-tutor',
                 description:
                   '¿Eres padre/madre o profesor de un participante? Regístrate aquí para que puedas ser asignado a uno o más estudiantes en sus inscripciones. Solo necesitas hacerlo una vez',
               },
               {
                 label: 'Registrar olimpista',
-                ruta: '/register-olimpists',
+                ruta: '/olympian/register-olympians',
                 description:
                   'Registra los datos básicos de un participante (nombre, colegio, tutor legal). Luego, podrás inscribirlo en las áreas que desee competir',
               },
               {
                 label: 'Inscripción individual',
-                ruta: '/register-selected-areas',
+                ruta: '/olympian/register-selected-areas',
                 description:
                   'Inscribe a un estudiante ya registrado con su tutor académico(profesor) en uno o más áreas de competencia.',
               },
               {
                 label: 'Inscripción grupal',
-                ruta: '/register-data-excel',
+                ruta: '/olympian/register-data-excel',
                 description:
                   'Inscribe a varios estudiantes a la vez. Elige si todos participarán en la misma área (ej: Matemáticas) o si cada uno tiene competencias diferentes.',
               },
@@ -87,20 +87,29 @@ export const Home = () => {
           <h3 className="headline-sm text-primary mb-6">Accesos rápidos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
             {[
-              { label: 'Registrar nueva Olimpiada', path: '/register-info' },
-              { label: 'Registrar Áreas', path: '/register-areas' },
-              { label: 'Registrar Niveles', path: '/register-levels' },
+              {
+                label: 'Registrar nueva Olimpiada',
+                path: '/administrator/register-info',
+              },
+              {
+                label: 'Registrar Áreas',
+                path: '/administrator/register-areas',
+              },
+              {
+                label: 'Registrar Niveles',
+                path: '/administrator/register-levels',
+              },
               {
                 label: 'Asociación Niveles con Grados',
-                path: '/register-levels-grades',
+                path: '/administrator/register-levels-grades',
               },
               {
                 label: 'Registro Niveles en Área',
-                path: '/register-levels-area',
+                path: '/administrator/register-levels-area',
               },
               {
                 label: 'Reporte de Olimpistas',
-                path: '/report-registered-olimpist',
+                path: '/administrator/report-registered-olimpist',
               },
             ].map((item) => (
               <Button onClick={() => navigate(item.path)} label={item.label} />

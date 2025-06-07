@@ -49,10 +49,10 @@ export default function DesktopMenu({
         <>
           {' '}
           <li
-            className={`${location.pathname === '/presentation' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
           >
             <Link
-              to="/presentation"
+              to="/"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Inicio
@@ -70,25 +70,25 @@ export default function DesktopMenu({
         </>
       )}
 
-      {userRole === 'olympist' && (
+      {userRole === 'olympian' && (
         <>
           <li
-            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/"
+              to="/olympian"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Guía de Registro
             </Link>
           </li>
           <li
-            className={`${location.pathname === '/register-data-excel' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian/register-data-excel' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/register-data-excel"
+              to="/olympian/register-data-excel"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Registro Excel
@@ -98,25 +98,34 @@ export default function DesktopMenu({
           <DropdownMenu
             label="Registro Manual"
             options={[
-              { label: 'Registro Tutor', path: '/register-tutor' },
-              { label: 'Registro Olimpista', path: '/register-olimpists' },
-              { label: 'Registro de Áreas', path: '/register-selected-areas' },
+              { label: 'Registro Tutor', path: '/olympian/register-tutor' },
+              {
+                label: 'Registro Olimpista',
+                path: '/olympian/register-olympians',
+              },
+              {
+                label: 'Registro de Áreas',
+                path: '/olympian/register-selected-areas',
+              },
             ]}
           />
           <DropdownMenu
             label="Orden y Comprobante"
             options={[
-              { label: 'Generar Orden', path: '/generate-order-payment' },
-              { label: 'Subir Comprobante', path: '/upload-payment' },
+              {
+                label: 'Generar Orden',
+                path: '/olympian/generate-order-payment',
+              },
+              { label: 'Subir Comprobante', path: '/olympian/upload-payment' },
             ]}
           />
 
           <li
-            className={`${location.pathname === '/registrations' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian/registrations' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/registrations"
+              to="/olympian/registrations"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Inscripciones
@@ -128,22 +137,22 @@ export default function DesktopMenu({
       {userRole === 'admin' && (
         <>
           <li
-            className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/"
+              to="/administrator"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Inicio
             </Link>
           </li>
           <li
-            className={`${location.pathname === '/register-info' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator/register-info' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/register-info"
+              to="/administrator/register-info"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Registro General
@@ -152,24 +161,30 @@ export default function DesktopMenu({
           <DropdownMenu
             label="Áreas y Niveles"
             options={[
-              { label: 'Registro de Áreas', path: '/register-areas' },
-              { label: 'Registro de Niveles', path: '/register-levels' },
+              {
+                label: 'Registro de Áreas',
+                path: '/administrator/register-areas',
+              },
+              {
+                label: 'Registro de Niveles',
+                path: '/administrator/register-levels',
+              },
               {
                 label: 'Asociación Niveles con Grados',
-                path: '/register-levels-grades',
+                path: '/administrator/register-levels-grades',
               },
               {
                 label: 'Registro Niveles en Área',
-                path: '/register-levels-area',
+                path: '/administrator/register-levels-area',
               },
             ]}
           />
           <li
-            className={`${location.pathname === '/report-registered-olimpist' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator/report-registered-olimpist' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
-              to="/report-registered-olimpist"
+              to="/administrator/report-registered-olimpist"
               className="block px-1 pb-[2px] text-sm hover:text-secondary"
             >
               Reportes

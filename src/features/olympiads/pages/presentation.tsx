@@ -23,14 +23,14 @@ export const Presentation = () => {
               label="Administrador"
               onClick={() => {
                 localStorage.setItem('userRole', 'admin');
-                navigate('/');
+                navigate('/administrator');
               }}
             />
             <Button
               label="Olimpista"
               onClick={() => {
-                localStorage.setItem('userRole', 'olympist');
-                navigate('/');
+                localStorage.setItem('userRole', 'olympian');
+                navigate('/olympian');
               }}
             />
           </div>

@@ -51,7 +51,13 @@ export default function NavbarLayout() {
       <nav className="sticky top-0 bg-white h-[80px] flex items-center px-6 z-50">
         <div className="flex justify-between items-center w-full h-full">
           <Link
-            to={userRole === 'user' ? '/presentation' : '/'}
+            to={
+              userRole === 'admin'
+                ? '/administrator'
+                : userRole === 'olympian'
+                  ? '/olympian'
+                  : '/'
+            }
             className="flex items-center"
           >
             <img
@@ -81,20 +87,21 @@ export default function NavbarLayout() {
                 className="absolute top-full left-0 w-full bg-white shadow-lg rounded-md z-50"
                 onClick={(e) => e.stopPropagation()}
               >
-                <ul>
+                <ul className="space-y-2 mb-3">
                   {userRole === 'admin' && (
                     <>
                       <li>
                         <Link
-                          to="/register-info"
+                          to="/administrator/register-info"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro General
                         </Link>
                       </li>
+
                       <li>
                         <Link
-                          to="/register-areas"
+                          to="/administrator/register-areas"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro de Áreas
@@ -102,7 +109,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-levels"
+                          to="/administrator/register-levels"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro de Niveles
@@ -110,7 +117,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-levels-grades"
+                          to="/administrator/register-levels-grades"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Asociar Niveles con Grados
@@ -118,7 +125,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-levels-area"
+                          to="/administrator/register-levels-area"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro de Niveles en Área
@@ -126,7 +133,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/report-registered-olimpist"
+                          to="/administrator/report-registered-olimpist"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Reportes
@@ -135,11 +142,11 @@ export default function NavbarLayout() {
                     </>
                   )}
 
-                  {userRole === 'olympist' && (
+                  {userRole === 'olympian' && (
                     <>
                       <li>
                         <Link
-                          to="/register-olimpists"
+                          to="/olympian/register-olympians"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro Olimpista
@@ -147,7 +154,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-tutor"
+                          to="/olympian/register-tutor"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro Tutor
@@ -155,7 +162,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-selected-areas"
+                          to="/olympian/register-selected-areas"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro de Áreas
@@ -163,7 +170,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/register-data-excel"
+                          to="/olympian/register-data-excel"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Registro por Excel
@@ -172,7 +179,7 @@ export default function NavbarLayout() {
 
                       <li>
                         <Link
-                          to="/generate-order-payment"
+                          to="/olympian/generate-order-payment"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Orden de Pago
@@ -180,7 +187,7 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/upload-payment"
+                          to="/olympian/upload-payment"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Comprobante de Pago
@@ -188,12 +195,34 @@ export default function NavbarLayout() {
                       </li>
                       <li>
                         <Link
-                          to="/registrations"
+                          to="/olympian/registrations"
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Inscripciones
                         </Link>
                       </li>
+                    </>
+                  )}
+
+                  {userRole === 'user' && (
+                    <>
+                      <li>
+                        <Link
+                          to="/"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Inicio
+                        </Link>
+                      </li>
+                      <p className="text-neutral2 cursor-default text-sm block px-4 pb-[2px]">
+                        Noticias
+                      </p>
+                      <p className="text-neutral2 cursor-default text-sm block px-4 pb-[2px]">
+                        Comité
+                      </p>{' '}
+                      <p className="text-neutral2 cursor-default text-sm block px-4 pb-[2px]">
+                        Calendario
+                      </p>
                     </>
                   )}
                 </ul>
