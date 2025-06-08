@@ -34,7 +34,7 @@ export default function FormInfo() {
       year: '',
     },
   });
-  const { submitForm } = useApiForm('olympiad-registration');
+  const { submitForm } = useApiForm('olympiads');
   const [justReset, setJustReset] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<
