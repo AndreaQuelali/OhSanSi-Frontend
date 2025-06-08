@@ -17,6 +17,14 @@ import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 
+interface DefaultValues {
+  olimpista: {
+    ci: string;
+  };
+  tutor: {
+    ci: string;
+  };
+}
 export default function FormAreaPart() {
   const {
     register,
@@ -25,11 +33,15 @@ export default function FormAreaPart() {
     watch,
     control,
     setValue,
-  } = useForm({
+  } = useForm<DefaultValues>({
     mode: 'all',
     defaultValues: {
-      'olimpista.ci': '',
-      'tutor.ci': '',
+      olimpista: {
+        ci: '',
+      },
+      tutor: {
+        ci: '',
+      },
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
@@ -125,6 +137,7 @@ export default function FormAreaPart() {
         }));
       } else {
         setTutoresPorArea((prev) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [selectedArea]: _, ...rest } = prev;
           return rest;
         });
@@ -171,6 +184,7 @@ export default function FormAreaPart() {
               [selectedArea]: nivelesRegistrados,
             };
           } else {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [selectedArea]: _, ...rest } = prev;
             return rest;
           }
@@ -265,10 +279,7 @@ export default function FormAreaPart() {
     };
 
     try {
-      await axios.post(
-        `${API_URL}/inscripciones-con-tutor`,
-        payload,
-      );
+      await axios.post(`${API_URL}/inscripciones-con-tutor`, payload);
       setConfirmationStatus('success');
       setConfirmationMessage(
         'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
