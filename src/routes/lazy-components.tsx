@@ -85,3 +85,8 @@ export const UploadPaymentPage = lazy(
 export const RegistrationGuard = lazy(
   () => import('@/components/guards/registration-guard'),
 );
+export const Presentation = lazy(() =>
+  import('@/features/olympiads/pages/presentation').then((module) => ({
+    default: module.Presentation,
+  })),
+);
