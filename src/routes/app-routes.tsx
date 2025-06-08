@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import NavbarLayout from '@/layouts/navbar-layout';
+import { PageLoader } from '@/components/ui/loadings';
 import {
   Home,
   Presentation,
@@ -18,7 +19,6 @@ import {
   GenerateOrderPaymentPage,
   UploadPaymentPage,
   RegistrationGuard,
-  PageLoader,
 } from './lazy-components';
 
 export default function AppRoutes() {
