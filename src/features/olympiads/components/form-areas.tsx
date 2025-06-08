@@ -42,7 +42,9 @@ const FormAreas = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [areasRegistradas, setAreasRegistradas] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchAreas = async () => {
@@ -51,9 +53,9 @@ const FormAreas = () => {
       const areasFromDB = response.data;
 
       const formatted = areasFromDB.map(
-        (area: { id_area: number; nombre: string }) => ({
+        (area: { id_area: number; name: string }) => ({
           id: area.id_area,
-          area: area.nombre,
+          area: area.name,
         }),
       );
 
@@ -76,8 +78,8 @@ const FormAreas = () => {
       const areas = response.data;
 
       const isDuplicate = areas.some(
-        (area: { nombre: string }) =>
-          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea),
+        (area: { name: string }) =>
+          normalizeAreaName(area.name) === normalizeAreaName(inputArea),
       );
 
       if (isDuplicate) {
@@ -101,7 +103,7 @@ const FormAreas = () => {
 
     try {
       const payload = {
-        nombre: inputArea,
+        name: inputArea,
       };
 
       await axios.post(`${API_URL}/areas`, payload);
@@ -115,7 +117,8 @@ const FormAreas = () => {
       console.error('Error al registrar el área:', error);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        error.response?.data?.message || 'Error al registrar el área. Por favor, intente nuevamente.'
+        error.response?.data?.message ||
+          'Error al registrar el área. Por favor, intente nuevamente.',
       );
       setShowConfirmationModal(true);
     }
