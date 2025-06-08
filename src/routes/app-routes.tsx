@@ -19,202 +19,262 @@ import {
   UploadPaymentPage,
   RegistrationGuard,
   PageLoader,
-  FormLoader,
 } from './lazy-components';
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route element={<NavbarLayout />}>
-            <Route index element={<Presentation />} />
-
-            {/* Administrator Routes */}
-            <Route path="/administrator">
-              <Route index element={<Home />} />
-              <Route path="register-info" element={<RegisterInfoPage />} />
-              <Route path="register-areas" element={<RegisterAreas />} />
-              <Route path="register-levels" element={<RegisterLevelsPage />} />
-              <Route
-                path="register-levels-grades"
-                element={<RegisterLevelsGradesPage />}
-              />
-              <Route
-                path="register-levels-area"
-                element={<RegisterLevelsAreaPage />}
-              />
-              <Route
-                path="report-registered-olimpist"
-                element={<ReportRegisterOliPage />}
-              />
-            </Route>
-
-            {/* Olympian Routes */}
-            <Route path="/olympian">
-              <Route index element={<Home />} />
-              <Route
-                path="register-olympians"
-                element={
-                  <Suspense fallback={<FormLoader />}>
-                    <RegistrationGuard>
-                      <RegisterParticipantPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="register-tutor"
-                element={
-                  <Suspense fallback={<FormLoader />}>
-                    <RegistrationGuard>
-                      <RegisterTutorPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="register-selected-areas"
-                element={
-                  <Suspense fallback={<FormLoader />}>
-                    <RegistrationGuard>
-                      <RegisterSelectedAreasPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="register-data-excel"
-                element={
-                  <Suspense fallback={<FormLoader />}>
-                    <RegistrationGuard>
-                      <RegisterDataExcel />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="registrations"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <RegistrationGuard>
-                      <RegistrationsPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="generate-order-payment"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <RegistrationGuard>
-                      <GenerateOrderPaymentPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="upload-payment"
-                element={
-                  <Suspense fallback={<PageLoader />}>
-                    <RegistrationGuard>
-                      <UploadPaymentPage />
-                    </RegistrationGuard>
-                  </Suspense>
-                }
-              />
-            </Route>
-
-            {/* Legacy routes for backward compatibility */}
-            <Route path="/presentation" element={<Presentation />} />
-            <Route path="/register-info" element={<RegisterInfoPage />} />
-            <Route path="/register-areas" element={<RegisterAreas />} />
-            <Route path="/register-levels" element={<RegisterLevelsPage />} />
+      <Routes>
+        <Route element={<NavbarLayout />}>
+          <Route
+            index
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Presentation />
+              </Suspense>
+            }
+          />
+          {/* Administrator Routes */}
+          <Route path="/administrator">
             <Route
-              path="/register-levels-grades"
-              element={<RegisterLevelsGradesPage />}
-            />
-            <Route
-              path="/register-levels-area"
-              element={<RegisterLevelsAreaPage />}
-            />
-            <Route
-              path="/register-olimpists"
-              element={
-                <Suspense fallback={<FormLoader />}>
-                  <RegistrationGuard>
-                    <RegisterParticipantPage />
-                  </RegistrationGuard>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/register-tutor"
-              element={
-                <Suspense fallback={<FormLoader />}>
-                  <RegistrationGuard>
-                    <RegisterTutorPage />
-                  </RegistrationGuard>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/register-selected-areas"
-              element={
-                <Suspense fallback={<FormLoader />}>
-                  <RegistrationGuard>
-                    <RegisterSelectedAreasPage />
-                  </RegistrationGuard>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/register-data-excel"
-              element={
-                <Suspense fallback={<FormLoader />}>
-                  <RegistrationGuard>
-                    <RegisterDataExcel />
-                  </RegistrationGuard>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/registrations"
+              index
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RegistrationGuard>
-                    <RegistrationsPage />
-                  </RegistrationGuard>
+                  <Home />
                 </Suspense>
               }
             />
             <Route
-              path="/generate-order-payment"
+              path="register-info"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RegistrationGuard>
-                    <GenerateOrderPaymentPage />
-                  </RegistrationGuard>
+                  <RegisterInfoPage />
                 </Suspense>
               }
             />
             <Route
-              path="/upload-payment"
+              path="register-areas"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RegistrationGuard>
-                    <UploadPaymentPage />
-                  </RegistrationGuard>
+                  <RegisterAreas />
                 </Suspense>
               }
             />
             <Route
-              path="/report-registered-olimpist"
-              element={<ReportRegisterOliPage />}
+              path="register-levels"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsPage />
+                </Suspense>
+              }
             />
-          </Route>
-        </Routes>
-      </Suspense>
+            <Route
+              path="register-levels-grades"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsGradesPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="register-levels-area"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsAreaPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="report-registered-olimpist"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ReportRegisterOliPage />
+                </Suspense>
+              }
+            />
+          </Route>{' '}
+          {/* Olympian Routes */}
+          <Route path="/olympian">
+            <Route
+              index
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <Home />
+                </Suspense>
+              }
+            />
+            <Route
+              path="register-olympians"
+              element={
+                <RegistrationGuard>
+                  <RegisterParticipantPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-tutor"
+              element={
+                <RegistrationGuard>
+                  <RegisterTutorPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-selected-areas"
+              element={
+                <RegistrationGuard>
+                  <RegisterSelectedAreasPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="register-data-excel"
+              element={
+                <RegistrationGuard>
+                  <RegisterDataExcel />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="registrations"
+              element={
+                <RegistrationGuard>
+                  <RegistrationsPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="generate-order-payment"
+              element={
+                <RegistrationGuard>
+                  <GenerateOrderPaymentPage />
+                </RegistrationGuard>
+              }
+            />
+            <Route
+              path="upload-payment"
+              element={
+                <RegistrationGuard>
+                  <UploadPaymentPage />
+                </RegistrationGuard>
+              }
+            />
+          </Route>{' '}
+          {/* Legacy routes for backward compatibility */}
+          <Route
+            path="/presentation"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Presentation />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-info"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <RegisterInfoPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-areas"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <RegisterAreas />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-levels"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <RegisterLevelsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-levels-grades"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <RegisterLevelsGradesPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-levels-area"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <RegisterLevelsAreaPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/register-olimpists"
+            element={
+              <RegistrationGuard>
+                <RegisterParticipantPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/register-tutor"
+            element={
+              <RegistrationGuard>
+                <RegisterTutorPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/register-selected-areas"
+            element={
+              <RegistrationGuard>
+                <RegisterSelectedAreasPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/register-data-excel"
+            element={
+              <RegistrationGuard>
+                <RegisterDataExcel />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/registrations"
+            element={
+              <RegistrationGuard>
+                <RegistrationsPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/generate-order-payment"
+            element={
+              <RegistrationGuard>
+                <GenerateOrderPaymentPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/upload-payment"
+            element={
+              <RegistrationGuard>
+                <UploadPaymentPage />
+              </RegistrationGuard>
+            }
+          />
+          <Route
+            path="/report-registered-olimpist"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <ReportRegisterOliPage />
+              </Suspense>
+            }
+          />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
