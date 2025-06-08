@@ -14,10 +14,10 @@ export default function FormInfo() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [olimpiadasExistentes, setOlimpiadasExistentes] = useState<
     Array<{
-      id_olimpiada: number;
-      gestion: number; // Cambiado de 'year' (string) a 'gestion' (number)
-      fecha_inicio: string;
-      fecha_fin: string;
+      id_olympiad: number;
+      year: number;
+      start_date: string;
+      end_date: string;
     }>
   >([]);
   const {
@@ -51,7 +51,7 @@ export default function FormInfo() {
 
   const fetchOlimpiadas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/olimpiadas`);
+      const response = await axios.get(`${API_URL}/olympiads`);
       setOlimpiadasExistentes(response.data);
     } catch (error) {
       console.error('Error al obtener olimpiadas:', error);
@@ -64,13 +64,13 @@ export default function FormInfo() {
     const boliviaTime = new Date(now.getTime() - 4 * 60 * 60 * 1000);
 
     const payload = {
-      gestion: Number(formData.year),
-      costo: parseFloat(formData.cost.toString()),
-      fecha_inicio: formData.dateIni,
-      fecha_fin: formData.dateEnd,
-      max_categorias_olimpista: Number(formData.limitAreas),
-      nombre_olimpiada: formData.inputNameOlimpiada,
-      creado_en: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
+      year: Number(formData.year),
+      cost: parseFloat(formData.cost.toString()),
+      start_date: formData.dateIni,
+      end_date: formData.dateEnd,
+      max_olympic_categories: Number(formData.limitAreas),
+      olympiad_name: formData.inputNameOlimpiada,
+      created_at: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
     };
 
     try {
@@ -80,7 +80,7 @@ export default function FormInfo() {
         setConfirmationMessage('Registro exitoso de la olimpiada');
         setShowConfirmationModal(true);
         await fetchOlimpiadas();
-        localStorage.setItem('gestion', formData.year);
+        localStorage.setItem('year', formData.year);
         window.location.reload();
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,10 +130,10 @@ export default function FormInfo() {
     // Validación de solapamiento
     const overlaps = olimpiadasExistentes.some((olimpiada) => {
       // Solo comparar con olimpiadas del mismo año
-      if (olimpiada.gestion !== yearNumber) return false;
+      if (olimpiada.year !== yearNumber) return false;
 
-      const oIni = new Date(olimpiada.fecha_inicio);
-      const oEnd = new Date(olimpiada.fecha_fin);
+      const oIni = new Date(olimpiada.start_date);
+      const oEnd = new Date(olimpiada.end_date);
       const startDate = new Date(dateIni);
       const endDate = new Date(dateEnd);
 
@@ -267,14 +267,14 @@ export default function FormInfo() {
                   message:
                     'El límite debe ser un número entero positivo sin comas ni puntos',
                 },
-                required: 'Se debe ingresar un valor mayor o igual a 0',
+                required: 'Se debe ingresar un valor mayor a 0',
                 min: {
-                  value: 0,
-                  message: 'Se debe ingresar un valor mayor o igual a 0',
+                  value: 1,
+                  message: 'Se debe ingresar un valor mayor a 0',
                 },
                 max: {
-                  value: 100,
-                  message: 'Se debe ingresar un valor menor a 100',
+                  value: 15,
+                  message: 'Se debe ingresar un valor menor o igual a 15',
                 },
               }}
               errors={errors}
