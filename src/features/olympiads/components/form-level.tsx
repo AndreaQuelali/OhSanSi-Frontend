@@ -42,18 +42,20 @@ export const FormLevel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchTableLevels = async () => {
     try {
-      const response = await axios.get(`${API_URL}/get-niveles`);
+      const response = await axios.get(`${API_URL}/levels`);
       const levelsFromDB = response.data.niveles;
 
       const formatted = levelsFromDB.map(
-        (niveles: { id_nivel: number; nombre: string }) => ({
-          id: niveles.id_nivel,
-          level: niveles.nombre,
+        (niveles: { id_level: number; name: string }) => ({
+          id: niveles.id_level,
+          level: niveles.name,
         }),
       );
 
@@ -72,12 +74,12 @@ export const FormLevel = () => {
     const inputLevel = getValues('inputLevel');
 
     try {
-      const response = await axios.get(`${API_URL}/get-niveles`);
+      const response = await axios.get(`${API_URL}/levels`);
       const levels = response.data.niveles;
 
       const isDuplicate = levels.some(
-        (nivel: { nombre: string }) =>
-          normalizeAreaName(nivel.nombre) === normalizeAreaName(inputLevel),
+        (nivel: { name: string }) =>
+          normalizeAreaName(nivel.name) === normalizeAreaName(inputLevel),
       );
 
       if (isDuplicate) {
@@ -101,10 +103,10 @@ export const FormLevel = () => {
 
     try {
       const payload = {
-        nombre: nameLevel,
+        name: nameLevel,
       };
 
-      await axios.post(`${API_URL}/niveles-categoria`, payload);
+      await axios.post(`${API_URL}/levels`, payload);
       setConfirmationStatus('success');
       setConfirmationMessage('Registro exitoso del nivel.');
       setShowConfirmationModal(true);
@@ -112,7 +114,9 @@ export const FormLevel = () => {
       fetchTableLevels();
     } catch {
       setConfirmationStatus('error');
-      setConfirmationMessage('Error al registrar el nivel. Por favor, intente nuevamente.');
+      setConfirmationMessage(
+        'Error al registrar el nivel. Por favor, intente nuevamente.',
+      );
       setShowConfirmationModal(true);
     }
   };
