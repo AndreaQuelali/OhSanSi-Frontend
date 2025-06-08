@@ -23,7 +23,7 @@ export default function AreasGridSection({
 }: AreasGridSectionProps) {
   return (
     <section className="min-h-[300px]">
-      <h2 className="text-primary subtitle-lg text-center font-bold mb-6 md:text-left sm:text-left headline-lg">
+      <h2 className="text-primary subtitle-md text-center mb-6 md:text-left sm:text-left headline-lg">
         Áreas Disponibles
       </h2>
       {loading ? (
@@ -36,7 +36,7 @@ export default function AreasGridSection({
           olimpista.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {Object.entries(areasDisponibles).map(([area, niveles]) => (
             <CardArea
               key={area}

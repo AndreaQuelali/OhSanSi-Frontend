@@ -368,11 +368,11 @@ export default function FormDataPart() {
   };
 
   const handleNextStep = () => {
-    navigate('/register-selected-areas');
+    navigate('/olympian/register-selected-areas');
   };
 
   const onNextStep = () => {
-    navigate('/register-tutor');
+    navigate('/olympian/register-tutor');
   };
 
   return (
@@ -390,7 +390,7 @@ export default function FormDataPart() {
             Primero ingrese el número de cédula de identidad del olimpista que
             desea registrar.
           </h2>
-          <div className="grid grid-cols-1 lg:gap-9 mb-6">
+          <div className="grid grid-cols-1 lg:gap-9 lg:mb-6">
             <InputText
               label="Cédula de identidad"
               name="olimpista.ci"
@@ -528,7 +528,7 @@ export default function FormDataPart() {
                   required: 'El correo electrónico es obligatorio',
                   pattern: {
                     value:
-                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*[a-zA-Z0-9.]@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
+                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
                     message: 'Correo electrónico no válido.',
                   },
                 }}

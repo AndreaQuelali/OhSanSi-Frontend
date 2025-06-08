@@ -59,7 +59,7 @@ export default function FormDataExcel() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | 'alert' | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const handleClearFile = () => {
@@ -173,7 +173,7 @@ export default function FormDataExcel() {
     const ciResponsable = watch('ci_responsable');
     if (!ciResponsable) {
       setConfirmationMessage('Debe ingresar el CI del responsable.');
-      setConfirmationStatus('error');
+      setConfirmationStatus('alert');
       setShowSuccessModal(true);
       return;
     }
@@ -186,7 +186,7 @@ export default function FormDataExcel() {
         data: rawDataToSend,
       });
 
-      setConfirmationMessage("Datos registrados correctamente.");
+      setConfirmationMessage("Datos registrados exitosamente. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.");
       setConfirmationStatus('success');
       setShowSuccessModal(true);
     } catch (error: any) {
@@ -262,6 +262,10 @@ export default function FormDataExcel() {
     }
     setConfirmationStatus(null);
     setConfirmationMessage('');
+  };
+
+  const handleNextStep = () => {
+    navigate('/olympian/generate-order-payment');
   };
 
   return (
@@ -384,6 +388,14 @@ export default function FormDataExcel() {
           onClose={handleCloseConfirmationModal}
           status={confirmationStatus || 'error'}
           message={confirmationMessage}
+          nextStepText={
+            confirmationStatus === 'success'
+              ? 'Ir a generar boleta de orden de pago.'
+              : undefined
+          }
+          onNextStep={
+            confirmationStatus === 'success' ? handleNextStep : undefined
+          }
         />
       )}
       {(isRegistering) && (
