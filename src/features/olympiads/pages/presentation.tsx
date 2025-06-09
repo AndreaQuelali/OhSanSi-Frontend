@@ -6,21 +6,22 @@ export const Presentation = () => {
   localStorage.setItem('userRole', 'user');
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
-      <section className="text-center w-10/12 flex items-center space-x-10">
+      <section className="w-10/12 flex flex-col-reverse lg:flex-row items-center lg:space-x-10 mb-10 text-center ">
         <div>
           <h1 className="headline-lg text-primary mb-4">
             OLIMPIADA CIENTÍFICA NACIONAL
             <br /> SAN SIMÓN
           </h1>
-          <p className="mb-6 text-lg">
-            El Comité de la Olimpiadas Científica Nacional San Simón O! SANSI, a
+          <p className="mb-6 text-md">
+            El Comité de la Olimpiadas Científica Nacional San Simón O! SanSi, a
             través de la Facultad de Ciencias y Tecnología de la Universidad
             Mayor de San Simón, convoca a los estudiantes del Sistema de
-            Educación Regular a participar en las Olimpiadas O! SANSI.
+            Educación Regular a participar en las Olimpiadas O! SanSi.
           </p>
-          <div className="flex space-x-10 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center lg:justify-center">
             <Button
               label="Administrador"
+              className="lg:w-40"
               onClick={() => {
                 localStorage.setItem('userRole', 'admin');
                 navigate('/administrator');
@@ -28,6 +29,7 @@ export const Presentation = () => {
             />
             <Button
               label="Olimpista"
+              className="lg:w-40"
               onClick={() => {
                 localStorage.setItem('userRole', 'olympian');
                 navigate('/olympian');
@@ -61,39 +63,42 @@ export const Presentation = () => {
       */}
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Convocatoria</h1>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center text-md">
           <p className="w-full text-start mb-4">
             Puedes descargar la convocatoria de la olimpiada.
           </p>
-          <Button
-            label="Descargar Convocatoria"
-            variantColor="variantDesactivate"
-          />
+          <div className="w-full lg:w-fit md:w-fit">
+            <Button
+              className="w-full"
+              label="Descargar Convocatoria"
+              variantColor="variantDesactivate"
+            />
+          </div>
         </div>
       </section>
 
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Prerrequisitos</h1>
-        <div className="flex flex-col items-start">
-          <p>
-            1. Ser estudiante de nivel primaria o secundaria en el sistema de
+        <ol className="flex flex-col items-start list-decimal pl-4 space-y-2 text-md text-left">
+          <li>
+            Ser estudiante de nivel primaria o secundaria en el sistema de
             Educación Regular del Estado Plurinacional de Bolivia.
-          </p>
-          <p>2. Registrar un tutor o profesor.</p>
-          <p>
-            3. Registrarse en el formulario de inscripción para el(las) área(s)
-            que se postula.
-          </p>
-          <p>
-            4. Cumplir los requisitos específicos de la categoría de competencia
-            en la que se inscribe.
-          </p>
-          <p>
-            5. Tener su documento de identificación personal vigente (cédula de
+          </li>
+          <li>Registrar un tutor o profesor.</li>
+          <li>
+            Registrarse en el formulario de inscripción para el(las) área(s) que
+            se postula.
+          </li>
+          <li>
+            Cumplir los requisitos específicos de la categoría de competencia en
+            la que se inscribe.
+          </li>
+          <li>
+            Tener su documento de identificación personal vigente (cédula de
             identidad) en el desarrollo de la competencia.
-          </p>
-          <p>6. Contar con correo electrónico personal o del tutor.</p>{' '}
-        </div>
+          </li>
+          <li>Contar con correo electrónico personal o del tutor.</li>
+        </ol>
       </section>
     </main>
   );
