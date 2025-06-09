@@ -32,9 +32,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
     try {
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
         try {
-          const paymentResponse = await axios.get(
-            `${API_URL}/consulta-pago/${ci}`,
-          );
+          const paymentResponse = await axios.get(`${API_URL}/payment/${ci}`);
           const paymentData = paymentResponse.data;
 
           if (!paymentData.existe) {
@@ -49,15 +47,15 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         }
       }
 
-      let endpoint = `${API_URL}/inscripciones/${ci}/PENDIENTE`;
+      let endpoint = `${API_URL}/enrollmets/${ci}/PENDIENTE`;
 
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
-        endpoint = `${API_URL}/inscripciones-pendiente/${ci}`;
+        endpoint = `${API_URL}/enrollments/pending/${ci}`;
       } else if (
         title === 'Registros de Inscripciones' &&
         !showGenerateButton
       ) {
-        endpoint = `${API_URL}/inscripciones/${ci}/TODOS`;
+        endpoint = `${API_URL}/enrollmets/${ci}/TODOS`;
       }
 
       const response = await axios.get(endpoint);
@@ -128,9 +126,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         (err.response?.status === 404 || !err.response)
       ) {
         try {
-          const paymentResponse = await axios.get(
-            `${API_URL}/consulta-pago/${ci}`,
-          );
+          const paymentResponse = await axios.get(`${API_URL}/payment/${ci}`);
           const paymentData = paymentResponse.data;
 
           if (!paymentData.existe) {

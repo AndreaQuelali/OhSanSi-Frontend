@@ -28,9 +28,9 @@ const RegistrationGuard = ({ children }: RegistrationGuardProps) => {
 
   if (!isInscripcionActive()) {
     return (
-      <div className="flex flex-col justify-center items-center lg:mt-48 mt-20">
+      <div className="flex flex-col justify-center items-center mt-48">
         <h1 className=" text-error mb-4 headline-lg">Inscripciones cerradas</h1>
-        <p className="text-lg font-roboto">
+        <p className="text-lg font-roboto text-center">
           El periodo de inscripción para la olimpiada no está activo
           actualmente.
         </p>

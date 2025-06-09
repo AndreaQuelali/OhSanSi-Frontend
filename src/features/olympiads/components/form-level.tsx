@@ -42,12 +42,14 @@ export const FormLevel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchTableLevels = async () => {
     try {
-      const response = await axios.get(`${API_URL}/get-niveles`);
+      const response = await axios.get(`${API_URL}/levels`);
       const levelsFromDB = response.data.niveles;
 
       const formatted = levelsFromDB.map(
@@ -72,7 +74,7 @@ export const FormLevel = () => {
     const inputLevel = getValues('inputLevel');
 
     try {
-      const response = await axios.get(`${API_URL}/get-niveles`);
+      const response = await axios.get(`${API_URL}/levels`);
       const levels = response.data.niveles;
 
       const isDuplicate = levels.some(
@@ -104,7 +106,7 @@ export const FormLevel = () => {
         nombre: nameLevel,
       };
 
-      await axios.post(`${API_URL}/niveles-categoria`, payload);
+      await axios.post(`${API_URL}/levels`, payload);
       setConfirmationStatus('success');
       setConfirmationMessage('Registro exitoso del nivel.');
       setShowConfirmationModal(true);
@@ -112,7 +114,9 @@ export const FormLevel = () => {
       fetchTableLevels();
     } catch {
       setConfirmationStatus('error');
-      setConfirmationMessage('Error al registrar el nivel. Por favor, intente nuevamente.');
+      setConfirmationMessage(
+        'Error al registrar el nivel. Por favor, intente nuevamente.',
+      );
       setShowConfirmationModal(true);
     }
   };

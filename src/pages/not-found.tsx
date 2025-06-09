@@ -1,9 +1,6 @@
 import FooterDesign from '@/components/ui/footer-design';
 import React from 'react';
-import { useNavigate } from 'react-router';
 const NotFound: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="w-full min-h-screen flex flex-col font-roboto items-center justify-center bg-white text-primary text-center">
       <div className="flex items-center justify-center min-h-screen gap-10">

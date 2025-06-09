@@ -32,9 +32,7 @@ const RegistrationCard: React.FC<Props> = ({
   const handleOpenVisualModal = async () => {
     try {
       if (showUploadButton) {
-        const checkPagoResp = await axios.get(
-          `${API_URL}/consulta-pago/${list.ci}`,
-        );
+        const checkPagoResp = await axios.get(`${API_URL}/payment/${list.ci}`);
 
         const comprobante = checkPagoResp.data;
 
@@ -45,7 +43,7 @@ const RegistrationCard: React.FC<Props> = ({
       }
       // 1. Obtener la inscripción del usuario
       const inscripcionResp = await axios.get(
-        `${API_URL}/inscripciones/${list.ci}/PENDIENTE`,
+        `${API_URL}/enrollmets/${list.ci}/PENDIENTE`,
       );
       const listas = inscripcionResp.data.listas;
 
@@ -66,7 +64,7 @@ const RegistrationCard: React.FC<Props> = ({
 
       if (tipo === 'grupal') {
         const response = await axios.get(
-          `${API_URL}/boleta-de-pago-grupal/${list.id_lista}`,
+          `${API_URL}/receipts/group/${list.id_lista}`,
         );
         const { responsable, pago } = response.data;
 
@@ -85,7 +83,7 @@ const RegistrationCard: React.FC<Props> = ({
         };
       } else {
         const response = await axios.get(
-          `${API_URL}/boleta-de-pago-individual/${list.id_lista}`,
+          `${API_URL}/receipts/individual/${list.id_lista}`,
         );
         const { responsable, pago, niveles } = response.data;
 
@@ -219,7 +217,10 @@ const RegistrationCard: React.FC<Props> = ({
           />
         )}
         {showModalUpload && (
-          <ModalUploadPay onClose={() => setShowModalUpload(false)} id_lista={list.id_lista} />
+          <ModalUploadPay
+            onClose={() => setShowModalUpload(false)}
+            id_lista={list.id_lista}
+          />
         )}
       </div>
     </div>

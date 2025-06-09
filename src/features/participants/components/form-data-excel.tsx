@@ -59,7 +59,9 @@ export default function FormDataExcel() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | 'alert' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | 'alert' | null
+  >(null);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const handleClearFile = () => {
@@ -93,13 +95,9 @@ export default function FormDataExcel() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post(
-        `${API_URL}/olimpistas/excel`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        },
-      );
+      const response = await axios.post(`${API_URL}/excel/data`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
       const rawData: any[][] = response.data.data;
       setRawDataToSend(rawData);
@@ -132,7 +130,6 @@ export default function FormDataExcel() {
 
       setOlimpistas(parsedData);
     } catch (error: any) {
-
       const errores = error.response?.data?.errors;
 
       if (errores) {
@@ -181,16 +178,17 @@ export default function FormDataExcel() {
     setIsRegistering(true);
 
     try {
-      await axios.post(`${API_URL}/registro/excel`, {
+      await axios.post(`${API_URL}/excel/registration`, {
         ci_responsable_inscripcion: ciResponsable,
         data: rawDataToSend,
       });
 
-      setConfirmationMessage("Datos registrados exitosamente. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.");
+      setConfirmationMessage(
+        'Datos registrados exitosamente. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
+      );
       setConfirmationStatus('success');
       setShowSuccessModal(true);
     } catch (error: any) {
-
       const data = error.response?.data;
 
       if (data?.resultado) {
@@ -398,7 +396,7 @@ export default function FormDataExcel() {
           }
         />
       )}
-      {(isRegistering) && (
+      {isRegistering && (
         <div className="fixed top-0 left-0 w-full h-full bg-neutral2 opacity-40 flex items-center justify-center z-50">
           <CircularProgress size={80} />
         </div>
