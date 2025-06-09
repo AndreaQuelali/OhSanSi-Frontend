@@ -1,5 +1,6 @@
 import { Button } from '@/components';
 import { useNavigate } from 'react-router';
+import CardTotal from '../components/card-total';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -59,31 +60,38 @@ export const Home = () => {
           <p className="body-lg text-neutral mb-6">
             Bienvenido al sistema de administración de olimpiadas
           </p>
-          {/**  <h2 className="subtitle-lg text-primary mb-6">
-            Estado de la olimpiada actual:
-          </h2>
-          <div className="mb-10">
-            <span className="bg-primary text-white py-1 px-4 rounded-full font-semibold">
-              Abierta
+          <div className="flex flex-col mb-6 md:flex-row items-center justify-between border-2 border-success rounded-xl p-4 bg-white shadow-sm">
+            <div className="text-center md:text-left">
+              <h3 className="text-lg font-semibold text-onBack">
+                Estado de la Olimpiada
+              </h3>
+              <p className="text-sm text-neutral">
+                Las inscripciones están activas
+              </p>
+            </div>
+            <span className="mt-4 md:mt-0 px-5 py-1 rounded-full bg-success text-white font-semibold text-sm">
+              ABIERTA
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-            {[
-              { label: 'Total Participantes', value: 255 },
-              { label: 'Total Áreas', value: 255 },
-              { label: 'Total Pagos', value: 255 },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="border-2 border-primary rounded-xl text-center py-4"
-              >
-                <p className="body-md text-primary mb-1">{item.label}</p>
-                <p className="headline-md">{item.value}</p>
-              </div>
-            ))}
+          <div className="flex flex-wrap justify-center gap-6 lg:gap-32 mb-6">
+            <CardTotal
+              title="Total Participantes"
+              value={255}
+              subtitle="Inscritos actualmente"
+            />
+            <CardTotal
+              title="Total de Áreas"
+              value={9}
+              subtitle="Áreas disponibles"
+            />
+            <CardTotal
+              title="Total de Niveles"
+              value={10}
+              subtitle="Niveles disponibles"
+            />
           </div>
- */}
+
           <h3 className="headline-sm text-primary mb-6">Accesos rápidos</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
