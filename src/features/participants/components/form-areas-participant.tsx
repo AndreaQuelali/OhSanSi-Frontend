@@ -79,7 +79,7 @@ export default function FormAreaPart() {
     fecha: string;
     id_olimpiada: number;
     max_categorias_olimpista: number;
-  }>(`${API_URL}/olimpiada/max-categorias?fecha=${formattedDate}`, {
+  }>(`${API_URL}/olympiads/max-categories?fecha=${formattedDate}`, {
     method: 'GET',
   });
   const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>(
@@ -277,7 +277,7 @@ export default function FormAreaPart() {
 
     try {
       await axios.post(
-        `${API_URL}/inscripciones-con-tutor`,
+        `${API_URL}/enrollments/with-tutor`,
         payload,
       );
       setConfirmationStatus('success');

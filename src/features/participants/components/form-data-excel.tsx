@@ -189,6 +189,7 @@ export default function FormDataExcel() {
       setConfirmationStatus('success');
       setShowSuccessModal(true);
     } catch (error: any) {
+      console.error('Error al registrar los datos:', error);
       const data = error.response?.data;
 
       if (data?.resultado) {

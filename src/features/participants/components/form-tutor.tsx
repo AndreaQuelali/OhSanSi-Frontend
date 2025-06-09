@@ -29,7 +29,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const { submitForm } = useApiForm('/tutores');
+  const { submitForm } = useApiForm('/tutors');
   const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
   const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
@@ -107,7 +107,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
         return;
       }
       try {
-        const response = await getData(`/tutores/cedula/${ciValue}`);
+        const response = await getData(`/tutors/${ciValue}`);
         if (response && response.tutor) {
           setValue('name', response.tutor.nombres || '');
           setValue('lastname', response.tutor.apellidos || '');

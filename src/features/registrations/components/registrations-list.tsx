@@ -47,7 +47,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         }
       }
 
-      let endpoint = `${API_URL}/enrollmets/${ci}/PENDIENTE`;
+      let endpoint = `${API_URL}/enrollments/${ci}/PENDIENTE`;
 
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
         endpoint = `${API_URL}/enrollments/pending/${ci}`;
@@ -55,7 +55,7 @@ const RegistrationsList: React.FC<RegistrationsListProps> = ({
         title === 'Registros de Inscripciones' &&
         !showGenerateButton
       ) {
-        endpoint = `${API_URL}/enrollmets/${ci}/TODOS`;
+        endpoint = `${API_URL}/enrollments/${ci}/TODOS`;
       }
 
       const response = await axios.get(endpoint);

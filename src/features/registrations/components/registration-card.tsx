@@ -43,7 +43,7 @@ const RegistrationCard: React.FC<Props> = ({
       }
       // 1. Obtener la inscripción del usuario
       const inscripcionResp = await axios.get(
-        `${API_URL}/enrollmets/${list.ci}/PENDIENTE`,
+        `${API_URL}/enrollments/${list.ci}/PENDIENTE`,
       );
       const listas = inscripcionResp.data.listas;
 

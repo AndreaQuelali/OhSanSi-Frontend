@@ -84,7 +84,7 @@ export default function ResponsiblePersonModal({
     setError(null);
 
     try {
-      const response = await axios.get(`${API_URL}/persona/${ciValue}`);
+      const response = await axios.get(`${API_URL}/person/${ciValue}`);
 
       if (response.data && response.status === 200) {
         setError(null);

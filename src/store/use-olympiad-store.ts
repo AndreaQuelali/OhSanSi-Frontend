@@ -27,7 +27,7 @@ export const useOlimpiadaStore = create<OlimpiadaStore>((set, get) => ({
   fetchOlimpiadas: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await axios.get<Olimpiada[]>(`${API_URL}/olimpiadas`);
+      const response = await axios.get<Olimpiada[]>(`${API_URL}/olympiads`);
       set({ olimpiadas: response.data, loading: false });
     } catch (error) {
       set({ error: 'Error al cargar datos de olimpiada', loading: false });

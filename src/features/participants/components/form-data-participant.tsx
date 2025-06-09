@@ -28,11 +28,11 @@ export default function FormDataPart() {
   } = useForm<FormValues>({ mode: 'onChange' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const { data: grados, loading } = useFetchData<Grado[]>('/grados');
-  const { submitForm } = useApiForm('/olimpistas');
+  const { data: grados, loading } = useFetchData<Grado[]>('/grades');
+  const { submitForm } = useApiForm('/olympists');
 
   const { data: departamentos, loading: loadingDepartamentos } =
-    useFetchData<Departamento[]>('/departamentos');
+    useFetchData<Departamento[]>('/departaments');
 
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [loadingProvincias, setLoadingProvincias] = useState(false);
@@ -71,7 +71,7 @@ export default function FormDataPart() {
 
       try {
         const response = await axios.get(
-          `${API_URL}/olimpistas/cedula/${ciValue}`,
+          `${API_URL}/olympists/${ciValue}`,
         );
         if (response.data) {
           const data = response.data;
@@ -180,7 +180,7 @@ export default function FormDataPart() {
 
       try {
         const response = await axios.get(
-          `${API_URL}/tutores/cedula/${ciTutorValue}`,
+          `${API_URL}/tutors/${ciTutorValue}`,
         );
         if (response.data) {
           clearErrors('olimpista.citutor');
@@ -248,7 +248,7 @@ export default function FormDataPart() {
         setLoadingProvincias(true);
         try {
           const response = await axios.get(
-            `${API_URL}/provincias/${selectedDepartment}`,
+            `${API_URL}/provinces/${selectedDepartment}`,
           );
           setProvincias(response.data);
         } catch (error) {
@@ -271,7 +271,7 @@ export default function FormDataPart() {
         setLoadingColegios(true);
         try {
           const response = await axios.get(
-            `${API_URL}/colegios/${selectedProv}`,
+            `${API_URL}/schools/provinces/${selectedProv}`,
           );
           setColegios(response.data);
         } catch (error) {
