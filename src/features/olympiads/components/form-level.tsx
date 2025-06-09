@@ -50,12 +50,12 @@ export const FormLevel = () => {
   const fetchTableLevels = async () => {
     try {
       const response = await axios.get(`${API_URL}/levels`);
-      const levelsFromDB = response.data.niveles;
+      const levelsFromDB = response.data.levels;
 
       const formatted = levelsFromDB.map(
-        (niveles: { id_level: number; name: string }) => ({
-          id: niveles.id_level,
-          level: niveles.name,
+        (levels: { id_level: number; name: string }) => ({
+          id: levels.id_level,
+          level: levels.name,
         }),
       );
 
@@ -75,11 +75,11 @@ export const FormLevel = () => {
 
     try {
       const response = await axios.get(`${API_URL}/levels`);
-      const levels = response.data.niveles;
+      const levels = response.data.levels;
 
       const isDuplicate = levels.some(
-        (nivel: { name: string }) =>
-          normalizeAreaName(nivel.name) === normalizeAreaName(inputLevel),
+        (level: { name: string }) =>
+          normalizeAreaName(level.name) === normalizeAreaName(inputLevel),
       );
 
       if (isDuplicate) {
