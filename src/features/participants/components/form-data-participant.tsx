@@ -28,11 +28,11 @@ export default function FormDataPart() {
   } = useForm<FormValues>({ mode: 'onChange' });
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const { data: grados, loading } = useFetchData<Grado[]>('/grados');
-  const { submitForm } = useApiForm('/olimpistas');
+  const { data: grados, loading } = useFetchData<Grado[]>('/grades');
+  const { submitForm } = useApiForm('/olympists');
 
   const { data: departamentos, loading: loadingDepartamentos } =
-    useFetchData<Departamento[]>('/departamentos');
+    useFetchData<Departamento[]>('/departaments');
 
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [loadingProvincias, setLoadingProvincias] = useState(false);
@@ -71,7 +71,7 @@ export default function FormDataPart() {
 
       try {
         const response = await axios.get(
-          `${API_URL}/olimpistas/cedula/${ciValue}`,
+          `${API_URL}/olympists/${ciValue}`,
         );
         if (response.data) {
           const data = response.data;
@@ -180,7 +180,7 @@ export default function FormDataPart() {
 
       try {
         const response = await axios.get(
-          `${API_URL}/tutores/cedula/${ciTutorValue}`,
+          `${API_URL}/tutors/${ciTutorValue}`,
         );
         if (response.data) {
           clearErrors('olimpista.citutor');
@@ -248,7 +248,7 @@ export default function FormDataPart() {
         setLoadingProvincias(true);
         try {
           const response = await axios.get(
-            `${API_URL}/provincias/${selectedDepartment}`,
+            `${API_URL}/provinces/${selectedDepartment}`,
           );
           setProvincias(response.data);
         } catch (error) {
@@ -271,7 +271,7 @@ export default function FormDataPart() {
         setLoadingColegios(true);
         try {
           const response = await axios.get(
-            `${API_URL}/colegios/${selectedProv}`,
+            `${API_URL}/schools/provinces/${selectedProv}`,
           );
           setColegios(response.data);
         } catch (error) {
@@ -368,11 +368,11 @@ export default function FormDataPart() {
   };
 
   const handleNextStep = () => {
-    navigate('/register-selected-areas');
+    navigate('/olympian/register-selected-areas');
   };
 
   const onNextStep = () => {
-    navigate('/register-tutor');
+    navigate('/olympian/register-tutor');
   };
 
   return (
@@ -390,7 +390,7 @@ export default function FormDataPart() {
             Primero ingrese el número de cédula de identidad del olimpista que
             desea registrar.
           </h2>
-          <div className="grid grid-cols-1 lg:gap-9 mb-6">
+          <div className="grid grid-cols-1 lg:gap-9 lg:mb-6">
             <InputText
               label="Cédula de identidad"
               name="olimpista.ci"
@@ -429,7 +429,7 @@ export default function FormDataPart() {
             <div
               className={`
               overflow-hidden transition-all duration-500 ease-in-out
-              ${showMessage ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
+              ${showMessage ? 'opacity-100 max-h-40 mb-4 md:mb-0' : 'opacity-0 max-h-0'}
             `}
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
@@ -452,7 +452,7 @@ export default function FormDataPart() {
               un tutor. Si eres tu propio tutor, puedes ingresar tu propio
               número de cédula de identidad.
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-9 lg:mb-6">
               <InputText
                 label="Nombre(s)"
                 name="olimpista.name"
@@ -488,7 +488,7 @@ export default function FormDataPart() {
                 disabled={isRegisteredOlimpista}
               />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 lg:mb-6">
               <InputText
                 label="Fecha de nacimiento"
                 name="olimpista.birthday"
@@ -528,7 +528,7 @@ export default function FormDataPart() {
                   required: 'El correo electrónico es obligatorio',
                   pattern: {
                     value:
-                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*[a-zA-Z0-9.]@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
+                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
                     message: 'Correo electrónico no válido.',
                   },
                 }}
@@ -577,7 +577,7 @@ export default function FormDataPart() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-9 md:mb-6">
               {ci && citutor && ci === citutor && (
                 <InputText
                   label="Número de celular"
@@ -588,9 +588,8 @@ export default function FormDataPart() {
                   validationRules={{
                     required: 'El número de celular es obligatorio',
                     pattern: {
-                      value: /^[0-9]{8,}$/,
-                      message:
-                        'Debe contener solo números y al menos 8 dígitos',
+                      value: /^[0-9]{8,15}$/,
+                      message: 'Debe contener solo números y entre 8 y 15 dígitos',
                     },
                   }}
                   errors={errors}
@@ -599,7 +598,7 @@ export default function FormDataPart() {
               )}
             </div>
             <h2 className="text-primary headline-sm mb-2">Datos académicos</h2>
-            <div className="grid md:grid-cols-2 md:gap-9 mb-6">
+            <div className="grid md:grid-cols-2 md:gap-9 md:mb-6">
               <Dropdown
                 label="Departamento"
                 placeholder="Seleccionar departamento"

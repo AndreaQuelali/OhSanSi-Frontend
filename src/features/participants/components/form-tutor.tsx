@@ -29,7 +29,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const { submitForm } = useApiForm('/tutores');
+  const { submitForm } = useApiForm('/tutors');
   const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
   const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
@@ -55,7 +55,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   };
 
   const handleNextStep = () => {
-    navigate('/register-olimpists');
+    navigate('/olympian/register-olympians');
   };
 
   const onCloseModal = () => {
@@ -107,7 +107,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
         return;
       }
       try {
-        const response = await getData(`/tutores/cedula/${ciValue}`);
+        const response = await getData(`/tutors/${ciValue}`);
         if (response && response.tutor) {
           setValue('name', response.tutor.nombres || '');
           setValue('lastname', response.tutor.apellidos || '');
@@ -297,6 +297,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                   pattern: {
                     value: /^[0-9]{8,}$/,
                     message: 'Debe contener solo números y al menos 8 dígitos',
+                  },
+                  maxLength: {
+                    value: 15,
+                    message: 'Debe contener como máximo 15 dígitos',
                   },
                 }}
                 errors={errors}

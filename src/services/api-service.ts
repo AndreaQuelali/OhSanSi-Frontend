@@ -13,10 +13,28 @@ export const postData = async (endpoint: string, data: object) => {
   try {
     const response = await apiClient.post(endpoint, data);
     return response.data;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.response) {
       throw error.response;
+    }
+    throw error;
+  }
+};
+
+export const postDataAsJson = async (endpoint: string, data: object) => {
+  try {
+    const response = await apiClient.post(endpoint, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.response) {
+      throw error;
     }
     throw error;
   }

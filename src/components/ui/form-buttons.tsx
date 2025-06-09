@@ -10,7 +10,7 @@ export default function FormButtons({
   onCancel,
 }: FormButtonsProps) {
   return (
-    <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5 mb-28">
+    <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5 mt-6">
       <Button
         label="Cancelar"
         variantColor="variant2"

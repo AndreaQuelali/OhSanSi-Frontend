@@ -1,14 +1,40 @@
 import { Button } from '@/components';
 import { useNavigate } from 'react-router';
+import CardTotal from './components/card-total';
+import { useFetchData } from '@/hooks/use-fetch-data';
+import { OlympiadInfo, OlympiadStatistics } from '@/interfaces/olympiad';
+import { getCurrentYear } from '@/utils/olympiad';
 
 export const Home = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
+  const { data: olympiadData } = useFetchData<OlympiadInfo[]>(
+    `/olympiads/${getCurrentYear()}`,
+  );
+  const currentOlympiad =
+    olympiadData && olympiadData.length > 0 ? olympiadData[0] : null;
+
+  const isRegistrationOpen = !!currentOlympiad;
+  const registrationStatus = isRegistrationOpen ? 'ABIERTA' : 'CERRADA';
+  const statusColors = isRegistrationOpen
+    ? 'border-success bg-green-50'
+    : 'border-yellow-500 bg-yellow-50';
+  const badgeColors = isRegistrationOpen
+    ? 'bg-success text-white'
+    : 'bg-yellow-500 text-white';
+
+  const { data: statisticsData, loading: statisticsLoading } =
+    useFetchData<OlympiadStatistics>(
+      currentOlympiad
+        ? `/olympiads/${currentOlympiad.id_olimpiada}/statistics`
+        : '',
+    );
+
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
       {userRole === 'olympian' && (
-        <section className="text-center mb-10 w-9/12">
-          <h1 className="headline-lg text-primary mb-4">Guía de Registro</h1>
+        <section className="text-center mb-16 w-10/12">
+          <h1 className="headline-lg text-primary mb-6">Guía de Registro</h1>
           <div className="space-y-6 text-left">
             {[
               {
@@ -38,10 +64,10 @@ export const Home = () => {
             ].map((step, index) => (
               <div
                 key={index}
-                className="flex items-start gap-4 w-full space-x-12"
+                className="flex lg:items-start lg:flex-row flex-col-reverse gap-4 lg:space-x-12"
               >
                 <Button
-                  className="w-1/3"
+                  className="lg:w-1/3 w-full mb-6"
                   onClick={() => navigate(step.ruta)}
                   label={step.label}
                 />
@@ -54,38 +80,61 @@ export const Home = () => {
         </section>
       )}
       {userRole === 'admin' && (
-        <section className="w-full max-w-6xl mb-14">
+        <section className=" max-w-6xl mb-14 w-10/12">
           <h1 className="headline-lg text-primary mb-4">Hola, Admi</h1>
           <p className="body-lg text-neutral mb-6">
             Bienvenido al sistema de administración de olimpiadas
-          </p>
-          {/**  <h2 className="subtitle-lg text-primary mb-6">
-            Estado de la olimpiada actual:
-          </h2>
-          <div className="mb-10">
-            <span className="bg-primary text-white py-1 px-4 rounded-full font-semibold">
-              Abierta
+          </p>{' '}
+          <div
+            className={`flex flex-col mb-6 md:flex-row items-center justify-between border-2 ${statusColors} rounded-xl p-4 bg-white shadow-sm`}
+          >
+            <div className="text-center md:text-left">
+              <h3 className="text-lg font-semibold text-onBack">
+                Estado de la Olimpiada
+              </h3>
+              <p className="text-sm text-neutral">
+                {isRegistrationOpen
+                  ? 'Las inscripciones están activas'
+                  : 'No hay olimpiadas activas para este año'}
+              </p>
+            </div>
+            <span
+              className={`mt-4 md:mt-0 px-5 py-1 rounded-full ${badgeColors} font-semibold text-sm`}
+            >
+              {registrationStatus}
             </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-            {[
-              { label: 'Total Participantes', value: 255 },
-              { label: 'Total Áreas', value: 255 },
-              { label: 'Total Pagos', value: 255 },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="border-2 border-primary rounded-xl text-center py-4"
-              >
-                <p className="body-md text-primary mb-1">{item.label}</p>
-                <p className="headline-md">{item.value}</p>
+          </div>{' '}
+          <div className="flex flex-wrap justify-center gap-6 lg:gap-32 mb-6">
+            {!currentOlympiad ? (
+              <div className="text-center w-full">
+                <p className="text-neutral text-lg">
+                  No hay olimpiadas activas para mostrar estadísticas
+                </p>
               </div>
-            ))}
+            ) : statisticsLoading ? (
+              <p>Cargando estadísticas...</p>
+            ) : (
+              <>
+                <CardTotal
+                  title="Total Participantes"
+                  value={statisticsData?.total_inscritos || 0}
+                  subtitle="Inscritos actualmente"
+                />
+                <CardTotal
+                  title="Total de Áreas"
+                  value={statisticsData?.total_areas || 0}
+                  subtitle="Áreas disponibles"
+                />
+                <CardTotal
+                  title="Total de Niveles"
+                  value={statisticsData?.total_niveles || 0}
+                  subtitle="Niveles disponibles"
+                />
+              </>
+            )}
           </div>
- */}
           <h3 className="headline-sm text-primary mb-6">Accesos rápidos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 label: 'Registrar nueva Olimpiada',
@@ -112,7 +161,11 @@ export const Home = () => {
                 path: '/administrator/report-registered-olimpist',
               },
             ].map((item) => (
-              <Button onClick={() => navigate(item.path)} label={item.label} />
+              <Button
+                onClick={() => navigate(item.path)}
+                label={item.label}
+                className="w-full"
+              />
             ))}
           </div>
         </section>

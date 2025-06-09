@@ -33,7 +33,7 @@ export function useOlimpistaData(ciOlimpista: string) {
       setOlimpistaError(null);
       try {
         const response = await axios.get(
-          `${API_URL}/olimpistas/${ci}/areas-niveles`,
+          `${API_URL}/olympists/${ci}/areas-levels`,
         );
 
         if (!response.data || response.data.length === 0) {
@@ -78,7 +78,7 @@ export function useOlimpistaData(ciOlimpista: string) {
   ) => {
     try {
       const response = await axios.get(
-        `${API_URL}/olimpista/${ci}/inscripciones`,
+        `${API_URL}/olympists/${ci}/enrollments`,
       );
 
       let nivelesRegistrados: Record<

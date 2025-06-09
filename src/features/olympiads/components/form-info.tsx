@@ -15,7 +15,7 @@ export default function FormInfo() {
   const [olimpiadasExistentes, setOlimpiadasExistentes] = useState<
     Array<{
       id_olimpiada: number;
-      gestion: number; // Cambiado de 'year' (string) a 'gestion' (number)
+      gestion: number;
       fecha_inicio: string;
       fecha_fin: string;
     }>
@@ -34,10 +34,12 @@ export default function FormInfo() {
       year: '',
     },
   });
-  const { submitForm } = useApiForm('olympiad-registration');
+  const { submitForm } = useApiForm('olympiads');
   const [justReset, setJustReset] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const selectedYear = watch('year');
@@ -49,7 +51,7 @@ export default function FormInfo() {
 
   const fetchOlimpiadas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/olimpiadas`);
+      const response = await axios.get(`${API_URL}/olympiads`);
       setOlimpiadasExistentes(response.data);
     } catch (error) {
       console.error('Error al obtener olimpiadas:', error);
@@ -79,7 +81,6 @@ export default function FormInfo() {
         setShowConfirmationModal(true);
         await fetchOlimpiadas();
         localStorage.setItem('gestion', formData.year);
-        window.location.reload();
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -92,7 +93,8 @@ export default function FormInfo() {
       } else {
         setConfirmationStatus('error');
         setConfirmationMessage(
-          error.data?.message || 'Error al registrar la olimpiada. Por favor, intente nuevamente.'
+          error.data?.message ||
+            'Error al registrar la olimpiada. Por favor, intente nuevamente.',
         );
         setShowConfirmationModal(true);
       }
@@ -180,13 +182,13 @@ export default function FormInfo() {
     fetchOlimpiadas();
   }, []);
   return (
-    <div className="flex flex-col items-center mx-10 md:mx-5 lg:mx-0  ">
+    <div className="flex flex-col items-center mx-5 md:mx-5 lg:mx-0">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
         <div className="flex flex-col">
-          <h1 className="text-center text-primary mb-8 headline-lg">
+          <h1 className="text-center text-primary mb-6 headline-lg">
             Registro de Información General de la Olimpiada
           </h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:gap-9 mb-6">
             <Dropdown
               name="year"
               label="Año/Gestión"
@@ -228,7 +230,7 @@ export default function FormInfo() {
               }}
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:gap-9 mb-6">
             <InputText
               label="Costo de Inscripción"
               name="cost"
@@ -281,8 +283,7 @@ export default function FormInfo() {
               }}
             />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-9 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:gap-9 mb-6">
             <InputText
               label="Fecha de Inicio"
               name="dateIni"
@@ -359,9 +360,6 @@ export default function FormInfo() {
               errors={errors}
             />
           </div>
-
-          <div className="grid grid-cols-1 gap-9 mb-6"></div>
-
           <div className="flex flex-col-reverse md:flex-row md:justify-end md:space-x-5">
             <Button
               label="Cancelar"

@@ -25,6 +25,7 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="*" element={<NotFound />} />
         <Route element={<NavbarLayout />}>
           <Route
             index

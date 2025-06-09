@@ -84,9 +84,6 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
             <p className=" text-primary">
               <strong>Por lo siguiente:</strong>
             </p>
-            <p className=" pr-10 text-primary">
-              <strong>DEBE</strong>
-            </p>
           </div>
 
           <table className="w-full table-fixed mb-10 mt-10 text-center">
@@ -134,7 +131,6 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
           </div>
         </div>
         <div className="flex justify-end space-x-4 mt-6 px-6">
-          <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
           <Button onClick={handleDownload} label="Descargar" />
         </div>
       </div>

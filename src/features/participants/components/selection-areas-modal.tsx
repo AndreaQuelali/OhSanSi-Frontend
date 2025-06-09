@@ -68,7 +68,7 @@ export default function AreaSelectionModal({
   }, [tutorCi, clearTutorError]);
 
   const onNextStep = () => {
-    navigate('/register-tutor');
+    navigate('/olympian/register-tutor');
   };
 
   return (
