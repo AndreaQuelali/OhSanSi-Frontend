@@ -6,7 +6,6 @@ import { useFetchData } from '@/hooks/use-fetch-data';
 import { API_URL } from '@/config/api-config';
 import { useForm } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
-import { Format } from 'react-data-table-component/dist/DataTable/types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -21,6 +20,17 @@ interface FormData {
   depa: string;
   prov: string;
   colegio: string;
+}
+
+interface Participant {
+  Apellido: string;
+  Nombre: string;
+  Departamento: string;
+  Provincia: string;
+  UnidadEducativa: string;
+  Grado: string;
+  Area: string;
+  NivelCategoria: string;
 }
 
 export const ReportRegisterOliPage = () => {
@@ -40,13 +50,13 @@ export const ReportRegisterOliPage = () => {
       colegio: '',
     },
   });
-  const [participants, setParticipants] = useState<typeof data>([]);
-  const [originalParticipants, setOriginalParticipants] = useState<typeof data>(
-    [],
-  );
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [originalParticipants, setOriginalParticipants] = useState<
+    Participant[]
+  >([]);
 
   const [showModal, setShowModal] = useState(false);
-  const [formatSelected, setFormatSelected] = useState<Format>('pdf');
+  const [formatSelected, setFormatSelected] = useState('pdf');
   const tableRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date().toLocaleDateString('es-BO', {
     year: 'numeric',
@@ -616,7 +626,7 @@ export const ReportRegisterOliPage = () => {
       {showAreaModal && (
         <FilterModal
           label="Filtrar por área"
-          options={areas}
+          options={areas ?? []}
           valueKey="nombre"
           labelKey="nombre"
           selectedValues={tempSelectedAreas}
@@ -637,7 +647,6 @@ export const ReportRegisterOliPage = () => {
           onConfirm={confirmLevels}
         />
       )}
-
       {showGradesModal && (
         <FilterModal
           label="Filtrar por Grado"
@@ -650,7 +659,6 @@ export const ReportRegisterOliPage = () => {
           onConfirm={confirmGrades}
         />
       )}
-
       {showDepartamentosModal && (
         <FilterModal
           label="Filtrar por Departamento"
@@ -663,7 +671,6 @@ export const ReportRegisterOliPage = () => {
           onConfirm={confirmDepartamentos}
         />
       )}
-
       {showProvinciasModal && (
         <FilterModal
           label="Filtrar por Provincia"
@@ -676,7 +683,6 @@ export const ReportRegisterOliPage = () => {
           onConfirm={confirmProvincias}
         />
       )}
-
       {showColegiosModal && (
         <FilterModal
           label="Filtrar por Unidad Educativa"
@@ -688,7 +694,9 @@ export const ReportRegisterOliPage = () => {
           onClose={() => setShowColegiosModal(false)}
           onConfirm={confirmColegios}
         />
-      )}
+      )}{' '}
     </main>
   );
 };
+
+export default ReportRegisterOliPage;

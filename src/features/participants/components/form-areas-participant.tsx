@@ -17,7 +17,7 @@ import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 
-interface FormData {
+interface DefaultValues {
   olimpista: {
     ci: string;
   };
@@ -34,11 +34,15 @@ export default function FormAreaPart() {
     watch,
     control,
     setValue,
-  } = useForm<FormData>({
+  } = useForm<DefaultValues>({
     mode: 'all',
     defaultValues: {
-      olimpista: { ci: '' },
-      tutor: { ci: '' },
+      olimpista: {
+        ci: '',
+      },
+      tutor: {
+        ci: '',
+      },
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
@@ -134,6 +138,7 @@ export default function FormAreaPart() {
         }));
       } else {
         setTutoresPorArea((prev) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [selectedArea]: _, ...rest } = prev;
           return rest;
         });
@@ -180,6 +185,7 @@ export default function FormAreaPart() {
               [selectedArea]: nivelesRegistrados,
             };
           } else {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [selectedArea]: _, ...rest } = prev;
             return rest;
           }
