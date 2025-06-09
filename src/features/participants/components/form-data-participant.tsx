@@ -588,9 +588,8 @@ export default function FormDataPart() {
                   validationRules={{
                     required: 'El número de celular es obligatorio',
                     pattern: {
-                      value: /^[0-9]{8,}$/,
-                      message:
-                        'Debe contener solo números y al menos 8 dígitos',
+                      value: /^[0-9]{8,15}$/,
+                      message: 'Debe contener solo números y entre 8 y 15 dígitos',
                     },
                   }}
                   errors={errors}
