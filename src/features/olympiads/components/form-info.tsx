@@ -79,7 +79,6 @@ export default function FormInfo() {
         setShowConfirmationModal(true);
         await fetchOlimpiadas();
         localStorage.setItem('gestion', formData.year);
-        window.location.reload();
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

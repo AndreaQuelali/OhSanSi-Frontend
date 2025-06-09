@@ -322,7 +322,7 @@ export default function FormLevelsArea() {
         </form>
         {isModalOpen && (
           <Modal
-            text="¿Está seguro de registrar los niveles en area?"
+            text="¿Está seguro de registrar el nivel en el área?"
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleSubmit(handleRegister)}
           />
