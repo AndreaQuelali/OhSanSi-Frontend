@@ -38,7 +38,7 @@ const RegistrationGuard = ({ children }: RegistrationGuardProps) => {
           actualmente.
         </p>
         <p className="mt-4">
-          <a href="/olympian" className="text-primary hover:underline">
+          <a href="/olympiads" className="text-primary hover:underline">
             Volver al inicio
           </a>
         </p>
