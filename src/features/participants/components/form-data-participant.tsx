@@ -70,9 +70,7 @@ export default function FormDataPart() {
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/olympists/${ciValue}`,
-        );
+        const response = await axios.get(`${API_URL}/olympists/${ciValue}`);
         if (response.data) {
           const data = response.data;
 
@@ -179,9 +177,7 @@ export default function FormDataPart() {
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/tutors/${ciTutorValue}`,
-        );
+        const response = await axios.get(`${API_URL}/tutors/${ciTutorValue}`);
         if (response.data) {
           clearErrors('olimpista.citutor');
           setIsTutorRegistered(false);
@@ -589,7 +585,8 @@ export default function FormDataPart() {
                     required: 'El número de celular es obligatorio',
                     pattern: {
                       value: /^[0-9]{8,15}$/,
-                      message: 'Debe contener solo números y entre 8 y 15 dígitos',
+                      message:
+                        'Debe contener solo números y entre 8 y 15 dígitos',
                     },
                   }}
                   errors={errors}

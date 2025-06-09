@@ -35,8 +35,8 @@ export const Login = () => {
         localStorage.setItem('userEmail', response.user.email);
         setLoginSuccess(`¡Bienvenido ${response.user.name}!`);
 
-        setInterval(() => {
-          navigate('/administrator');
+        setTimeout(() => {
+          navigate('/administrator', { replace: true });
         }, 700);
       } else {
         setLoginError(response.message || 'Error de autenticación');

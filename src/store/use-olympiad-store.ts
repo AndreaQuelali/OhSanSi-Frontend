@@ -36,21 +36,21 @@ export const useOlimpiadaStore = create<OlimpiadaStore>((set, get) => ({
   },
 
   isInscripcionActive: () => {
-  const { olimpiadas } = get();
-  if (olimpiadas.length === 0) return false;
+    const { olimpiadas } = get();
+    if (olimpiadas.length === 0) return false;
 
-  const currentDate = new Date();
+    const currentDate = new Date();
 
-  for (let i = 0; i < olimpiadas.length; i++) {
-    const olimpiada = olimpiadas[i];
-    const startDate = new Date(olimpiada.fecha_inicio);
-    const endDate = new Date(olimpiada.fecha_fin);
+    for (let i = 0; i < olimpiadas.length; i++) {
+      const olimpiada = olimpiadas[i];
+      const startDate = new Date(olimpiada.fecha_inicio);
+      const endDate = new Date(olimpiada.fecha_fin);
 
-    if (currentDate >= startDate && currentDate <= endDate) {
-      return true;
+      if (currentDate >= startDate && currentDate <= endDate) {
+        return true;
+      }
     }
-  }
 
-  return false;
-}
+    return false;
+  },
 }));

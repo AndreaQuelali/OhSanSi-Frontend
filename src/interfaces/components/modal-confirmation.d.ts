@@ -4,4 +4,4 @@ interface ConfirmationModalProps {
   message: string;
   nextStepText?: string;
   onNextStep?: () => void;
-};
+}

@@ -1,7 +1,7 @@
 export type Area = {
   id_area: number;
   nombre: string;
-  grades: string
+  grades: string;
 };
 
 export type FormAreaPartProps = {

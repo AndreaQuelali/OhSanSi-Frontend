@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
-import html2pdf from "html2pdf.js";
-import { Button, ButtonIcon } from "@/components";
-import CloseIcon from "@/components/icons/close";
+import React, { useRef } from 'react';
+import html2pdf from 'html2pdf.js';
+import { Button, ButtonIcon } from '@/components';
+import CloseIcon from '@/components/icons/close';
 
 interface PaymentData {
   ci: string;
@@ -25,7 +25,7 @@ interface PaymentPreviewModalProps {
 const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
   isOpen,
   onClose,
-  data
+  data,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -37,9 +37,9 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
       const opt = {
         margin: 0.5,
         filename: `OrdenPago_${data.nroOrden}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 3 },
-        jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
       };
       await html2pdf().set(opt).from(contentRef.current).save();
     }
@@ -74,7 +74,8 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
 
           <div className="mb-2 subtitle-sm flex justify-between">
             <p className=" text-onBack">
-              <strong className="text-primary">Señor(es):</strong> {data.nombres} {data.apellidos}
+              <strong className="text-primary">Señor(es):</strong>{' '}
+              {data.nombres} {data.apellidos}
             </p>
             <p className=" text-onBack pr-10">
               <strong className="text-primary">CI:</strong> {data.ci}
@@ -89,14 +90,22 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
           <table className="w-full table-fixed mb-10 mt-10 text-center">
             <thead className="">
               <tr>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CANTIDAD</strong></th>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CONCEPTO</strong></th>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>P.UNITARIO</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>CANTIDAD</strong>
+                </th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>CONCEPTO</strong>
+                </th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>P.UNITARIO</strong>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.cantidadOlimpistas}</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  {data.cantidadOlimpistas}
+                </td>
                 <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
                   Inscripciones
                 </td>
@@ -105,8 +114,12 @@ const PaymentOrderModal: React.FC<PaymentPreviewModalProps> = ({
                 </td>
               </tr>
               <tr>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">1</td>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">Total</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  1
+                </td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">
+                  Total
+                </td>
                 <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">
                   {data.total.toFixed(2)} Bs
                 </td>

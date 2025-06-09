@@ -1,11 +1,11 @@
-import IconFile from "@/components/icons/icon-file";
-import IconNoFile from "@/components/icons/icon-no-file";
-import { useState, forwardRef } from "react";
+import IconFile from '@/components/icons/icon-file';
+import IconNoFile from '@/components/icons/icon-no-file';
+import { useState, forwardRef } from 'react';
 
 interface Props {
   fileName: string | null;
   setFileName: (name: string | null) => void;
-  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const CardUploadFile = forwardRef<HTMLInputElement, Props>(
@@ -13,19 +13,20 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
     const [dragActive, setDragActive] = useState(false);
 
     const isValidExcel = (file: File) =>
-      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-      file.type === "application/vnd.ms-excel";
+      file.type ===
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel';
 
     const isUnder3MB = (file: File) => file.size <= 3 * 1024 * 1024;
-    
+
     const processFile = (file: File) => {
       if (!isValidExcel(file)) {
-        alert("Archivo inválido. Solo se permiten archivos .xlsx o .xls");
+        alert('Archivo inválido. Solo se permiten archivos .xlsx o .xls');
         return;
       }
 
       if (!isUnder3MB(file)) {
-        alert("Archivo demasiado grande. El tamaño máximo es 3 MB.");
+        alert('Archivo demasiado grande. El tamaño máximo es 3 MB.');
         return;
       }
 
@@ -50,7 +51,7 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
       const file = e.target.files?.[0];
       if (!file) return;
       processFile(file);
-      e.target.value = "";
+      e.target.value = '';
     };
 
     const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -72,17 +73,17 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
           onDragLeave={() => setDragActive(false)}
           className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition duration-200 ${
             dragActive
-              ? "border-secondary2 bg-secondary2/25"
+              ? 'border-secondary2 bg-secondary2/25'
               : fileName
-              ? "border-secondary2 bg-secondary2/5"
-              : "border-neutral2 bg-transparent"
+                ? 'border-secondary2 bg-secondary2/5'
+                : 'border-neutral2 bg-transparent'
           }`}
         >
           <div className="flex flex-row items-center gap-5">
             <div>{fileName ? <IconFile /> : <IconNoFile />}</div>
             <div className="mr-2">
               <p className="subtitle-md text-onBack">
-                {fileName ? fileName : "Ningún archivo seleccionado"}
+                {fileName ? fileName : 'Ningún archivo seleccionado'}
               </p>
               <p className="body-md text-primary hover:text-secondary2 mt-1 underline transition">
                 Selecciona o arrastra el archivo aquí
@@ -95,12 +96,12 @@ const CardUploadFile = forwardRef<HTMLInputElement, Props>(
             accept=".xlsx,.xls"
             className="hidden"
             onChange={handleFileChange}
-            onClick={(e) => ((e.target as HTMLInputElement).value = "")}
+            onClick={(e) => ((e.target as HTMLInputElement).value = '')}
           />
         </label>
       </div>
     );
-  }
+  },
 );
 
 export default CardUploadFile;
