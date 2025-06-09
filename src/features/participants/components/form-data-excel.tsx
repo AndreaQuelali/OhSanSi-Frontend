@@ -94,7 +94,7 @@ export default function FormDataExcel() {
 
     try {
       const response = await axios.post(
-        `${API_URL}/olimpistas/excel`,
+        `${API_URL}/excel/data`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -181,7 +181,7 @@ export default function FormDataExcel() {
     setIsRegistering(true);
 
     try {
-      await axios.post(`${API_URL}/registro/excel`, {
+      await axios.post(`${API_URL}/excel/registration`, {
         ci_responsable_inscripcion: ciResponsable,
         data: rawDataToSend,
       });
@@ -206,15 +206,10 @@ export default function FormDataExcel() {
         }
 
         const erroresPorEntidad = [
-          { key: 'olimpistas_errores', label: 'Errores en olimpistas' },
-          { key: 'profesores_errores', label: 'Errores en profesores' },
-          { key: 'tutores_errores', label: 'Errores en tutores' },
-          { key: 'inscripciones_errores', label: 'Errores en inscripciones' },
-          { key: 'Colegio_errores', label: 'Errores en unidad educativa' },
-          { key: 'Departamento_errores', label: 'Errores en departamento' },
-          { key: 'Provincia_errores', label: 'Errores en provincia' },
-          { key: 'Nivel_errores', label: 'Errores en nivel' },
-          { key: 'Grado_errores', label: 'Errores en grado' },
+          { key: 'olympists_errors', label: 'Errores en olimpistas' },
+          { key: 'teachers_errors', label: 'Errores en profesores' },
+          { key: 'tutors_errors', label: 'Errores en tutores' },
+          { key: 'registrations_errors', label: 'Errores en inscripciones' },
         ];
 
         for (const { key, label } of erroresPorEntidad) {

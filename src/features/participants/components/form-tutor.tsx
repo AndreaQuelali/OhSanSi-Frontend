@@ -29,7 +29,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const { submitForm } = useApiForm('/tutores');
+  const { submitForm } = useApiForm('/person');
   const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
   const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
@@ -66,11 +66,11 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
     if (!formData) return;
 
     const payload = {
-      nombres: formData.name,
-      apellidos: formData.lastname,
-      ci: formData.ci,
-      celular: formData.phone,
-      correo_electronico: formData.email,
+      names: formData.name,
+      surnames: formData.lastname,
+      ci_person: formData.ci,
+      phone: formData.phone,
+      email: formData.email,
     };
 
     try {
@@ -107,12 +107,12 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
         return;
       }
       try {
-        const response = await getData(`/tutores/cedula/${ciValue}`);
-        if (response && response.tutor) {
-          setValue('name', response.tutor.nombres || '');
-          setValue('lastname', response.tutor.apellidos || '');
-          setValue('email', response.tutor.correo_electronico || '');
-          setValue('phone', response.tutor.celular || '');
+        const response = await getData(`/person/${ciValue}`);
+        if (response && response.person) {
+          setValue('name', response.person.names || '');
+          setValue('lastname', response.person.surnames || '');
+          setValue('email', response.person.email || '');
+          setValue('phone', response.person.phone || '');
 
           if (!errors.ci || errors.ci?.type === 'ci-duplicado') {
             setError('ci', {
