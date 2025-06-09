@@ -4,13 +4,15 @@ import CardTotal from './components/card-total';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { OlympiadInfo, OlympiadStatistics } from '@/interfaces/olympiad';
 import { getCurrentYear } from '@/utils/olympiad';
+import { PageLoader } from '@/components/ui/loadings';
 
 export const Home = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
-  const { data: olympiadData } = useFetchData<OlympiadInfo[]>(
-    `/olympiads/${getCurrentYear()}`,
-  );
+
+  const { data: olympiadData, loading: olympiadLoading } = useFetchData<
+    OlympiadInfo[]
+  >(`/olympiads/${getCurrentYear()}`);
   const currentOlympiad =
     olympiadData && olympiadData.length > 0 ? olympiadData[0] : null;
 
@@ -22,7 +24,6 @@ export const Home = () => {
   const badgeColors = isRegistrationOpen
     ? 'bg-success text-white'
     : 'bg-yellow-500 text-white';
-
   const { data: statisticsData, loading: statisticsLoading } =
     useFetchData<OlympiadStatistics>(
       currentOlympiad
@@ -32,7 +33,8 @@ export const Home = () => {
 
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
-      {userRole === 'olympian' && (
+      {olympiadLoading && <PageLoader />}
+      {!olympiadLoading && userRole === 'olympian' && (
         <section className="text-center mb-16 w-10/12">
           <h1 className="headline-lg text-primary mb-6">Guía de Registro</h1>
           <div className="space-y-6 text-left">
@@ -50,16 +52,22 @@ export const Home = () => {
                   'Registra los datos básicos de un participante (nombre, colegio, tutor legal). Luego, podrás inscribirlo en las áreas que desee competir',
               },
               {
-                label: 'Inscripción individual',
+                label: 'Registrar áreas de competencia',
                 ruta: '/olympian/register-selected-areas',
                 description:
-                  'Inscribe a un estudiante ya registrado con su tutor académico(profesor) en uno o más áreas de competencia.',
+                  'Registra las áreas en las que el estudiante desea participar. Puedes seleccionar varias áreas según su interés y nivel académico.',
               },
               {
-                label: 'Inscripción grupal',
+                label: 'Registrar a través de Excel',
                 ruta: '/olympian/register-data-excel',
                 description:
-                  'Inscribe a varios estudiantes a la vez. Elige si todos participarán en la misma área (ej: Matemáticas) o si cada uno tiene competencias diferentes.',
+                  'Registra a varios estudiantes a la vez a través de Excel. Descarga la plantilla, completa los datos de los estudiantes y súbela aquí.',
+              },
+              {
+                label: 'Ver mis inscripciones',
+                ruta: '/olympian/registrations',
+                description:
+                  'Consulta el estado de tus inscripciones y las áreas en las que estás registrado. Aquí podrás ver si tu inscripción fue exitosa.',
               },
             ].map((step, index) => (
               <div
@@ -79,7 +87,7 @@ export const Home = () => {
           </div>
         </section>
       )}
-      {userRole === 'admin' && (
+      {!olympiadLoading && userRole === 'admin' && (
         <section className=" max-w-6xl mb-14 w-10/12">
           <h1 className="headline-lg text-primary mb-4">Hola, Admi</h1>
           <p className="body-lg text-neutral mb-6">
@@ -160,9 +168,13 @@ export const Home = () => {
                 label: 'Reporte de Olimpistas',
                 path: '/administrator/report-registered-olimpist',
               },
-            ].map((item) => (
+            ].map((item, index) => (
               <Button
-                onClick={() => navigate(item.path)}
+                key={`admin-button-${index}`}
+                onClick={() => {
+                  console.log('Navigating to:', item.path);
+                  navigate(item.path);
+                }}
                 label={item.label}
                 className="w-full"
               />
