@@ -1,6 +1,8 @@
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import DropdownMenu from './dropdown-menu';
 import { useEffect, useState } from 'react';
+import { ButtonIcon } from './button-icon';
+import LogOutIcon from '../icons/icon-log-out';
 
 type DesktopMenuProps = {
   isAdminMenuOpen: boolean;
@@ -13,6 +15,8 @@ export default function DesktopMenu({
   adminMenuRef,
 }: DesktopMenuProps) {
   const location = useLocation();
+
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
 
   useEffect(() => {
@@ -130,6 +134,13 @@ export default function DesktopMenu({
               Inscripciones
             </Link>
           </li>
+          <ButtonIcon
+            icon={LogOutIcon}
+            onClick={() => {
+              navigate('/');
+            }}
+            variantColor="variant4"
+          />
         </>
       )}
 
@@ -189,6 +200,13 @@ export default function DesktopMenu({
               Reportes
             </Link>
           </li>
+          <ButtonIcon
+            icon={LogOutIcon}
+            onClick={() => {
+              navigate('/');
+            }}
+            variantColor="variant4"
+          />
         </>
       )}
     </ul>

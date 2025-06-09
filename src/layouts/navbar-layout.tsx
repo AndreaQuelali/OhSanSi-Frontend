@@ -139,6 +139,14 @@ export default function NavbarLayout() {
                           Reportes
                         </Link>
                       </li>
+                      <li>
+                        <Link
+                          to="/"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Cerrar sesión
+                        </Link>
+                      </li>
                     </>
                   )}
 
@@ -199,6 +207,14 @@ export default function NavbarLayout() {
                           className="px-4 py-2 text-sm text-primary hover:text-secondary"
                         >
                           Inscripciones
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/"
+                          className="px-4 py-2 text-sm text-primary hover:text-secondary"
+                        >
+                          Salir
                         </Link>
                       </li>
                     </>
