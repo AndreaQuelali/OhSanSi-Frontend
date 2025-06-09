@@ -18,13 +18,14 @@ export default function FormInfo() {
       gestion: number;
       fecha_inicio: string;
       fecha_fin: string;
+      nombre_olimpiada: string;
     }>
   >([]);
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isValid },
+    formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
     trigger,
@@ -181,6 +182,13 @@ export default function FormInfo() {
   useEffect(() => {
     fetchOlimpiadas();
   }, []);
+
+  useEffect(() => {
+    if (selectedYear && dirtyFields.inputNameOlimpiada) {
+      trigger('inputNameOlimpiada');
+    }
+  }, [selectedYear, trigger, dirtyFields.inputNameOlimpiada]);
+
   return (
     <div className="flex flex-col items-center mx-5 md:mx-5 lg:mx-0">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
@@ -226,6 +234,24 @@ export default function FormInfo() {
                 maxLength: {
                   value: 50,
                   message: 'El nombre no puede exceder los 50 caracteres',
+                },
+                validate: (value: any) => {
+                  const year = getValues('year');
+                  if (!year) {
+                    return 'Seleccione un año primero';
+                  }
+
+                  const exists = olimpiadasExistentes.some(
+                    (olimpiada) =>
+                      olimpiada.gestion === Number(year) &&
+                      olimpiada.nombre_olimpiada.toUpperCase() === value.toUpperCase()
+                  );
+
+                  if (exists) {
+                    return `Ya existe una olimpiada llamada "${value}" para el año ${year}`;
+                  }
+
+                  return true;
                 },
               }}
             />
