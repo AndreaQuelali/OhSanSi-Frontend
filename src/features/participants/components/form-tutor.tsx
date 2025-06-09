@@ -298,6 +298,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                     value: /^[0-9]{8,}$/,
                     message: 'Debe contener solo números y al menos 8 dígitos',
                   },
+                  maxLength: {
+                    value: 15,
+                    message: 'Debe contener como máximo 15 dígitos',
+                  },
                 }}
                 errors={errors}
                 disabled={isRegisteredTutor}
