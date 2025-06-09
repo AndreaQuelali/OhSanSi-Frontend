@@ -56,7 +56,9 @@ export const Presentation = () => {
         <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
         <div className="flex flex-col items-start">
           {loading ? (
-            <PageLoader />
+            <div className="w-full flex justify-center items-center h-36">
+              <PageLoader />
+            </div>
           ) : currentOlympiad ? (
             <>
               <p className="text-base mb-1">
