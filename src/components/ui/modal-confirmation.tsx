@@ -1,6 +1,6 @@
 import CloseIcon from '../icons/close';
 import CheckIcon from '../icons/icon-check';
-import IconClose from '../icons/icon-close'; 
+import IconClose from '../icons/icon-close';
 import { Button } from './button';
 import { ButtonIcon } from './button-icon';
 
@@ -11,6 +11,45 @@ export const ConfirmationModal = ({
   nextStepText,
   onNextStep,
 }: ConfirmationModalProps) => {
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'success':
+        return <CheckIcon classname="text-primary w-6 h-6 mb-2.5" />;
+      case 'error':
+        return <IconClose className="text-error w-6 h-6 mb-2.5" />;
+      case 'alert':
+        return <IconClose className="text-secondary2 w-6 h-6 mb-2.5" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusTitle = () => {
+    switch (status) {
+      case 'success':
+        return 'Éxito';
+      case 'error':
+        return 'Error';
+      case 'alert':
+        return 'Alerta';
+      default:
+        return '';
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'success':
+        return 'text-primary';
+      case 'error':
+        return 'text-error';
+      case 'alert':
+        return 'text-secondary2'; // o 'text-yellow-500' si no tienes 'text-warning'
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
@@ -27,18 +66,10 @@ export const ConfirmationModal = ({
         </div>
         <div className="flex flex-row items-center">
           <div>
-            {status === 'success' ? (
-              <CheckIcon classname="text-primary w-6 h-6 mb-2.5" />
-            ) : (
-              <IconClose className="text-error w-6 h-6 mb-2.5" />
-            )}
+            {getStatusIcon()}
           </div>
-          <h2
-            className={`subtitle-md mb-2 ml-1 ${
-              status === 'success' ? 'text-primary' : 'text-error'
-            }`}
-          >
-            {status === 'success' ? 'Éxito' : 'Error'}
+          <h2 className={`subtitle-md mb-2 ml-1 ${getStatusColor()}`}>
+            {getStatusTitle()}
           </h2>
         </div>
         <div className="body-lg text-onBack whitespace-pre-line">

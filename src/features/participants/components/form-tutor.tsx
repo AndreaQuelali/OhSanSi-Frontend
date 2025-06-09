@@ -55,7 +55,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   };
 
   const handleNextStep = () => {
-    navigate('/register-olimpists');
+    navigate('/olympian/register-olympians');
   };
 
   const onCloseModal = () => {

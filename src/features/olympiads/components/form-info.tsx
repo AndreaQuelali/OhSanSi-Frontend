@@ -80,8 +80,10 @@ export default function FormInfo() {
         setConfirmationMessage('Registro exitoso de la olimpiada');
         setShowConfirmationModal(true);
         await fetchOlimpiadas();
+
         localStorage.setItem('year', formData.year);
         window.location.reload();
+
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
