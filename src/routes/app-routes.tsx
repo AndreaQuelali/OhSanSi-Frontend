@@ -19,6 +19,7 @@ import { ReportRegisterOliPage } from '@/features/olympiads/pages/report-registe
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Presentation } from '@/features/olympiads/pages/presentation';
+import { Login } from '@/features/olympiads/pages/login';
 
 export default function AppRoutes() {
   return (
@@ -26,6 +27,7 @@ export default function AppRoutes() {
       <Routes>
         <Route element={<NavbarLayout />}>
           <Route index element={<Presentation />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/administrator">
             <Route index element={<Home />} />
             <Route path="register-info" element={<RegisterInfoPage />} />

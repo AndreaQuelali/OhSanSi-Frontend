@@ -23,8 +23,7 @@ export const Presentation = () => {
               label="Administrador"
               className="lg:w-40"
               onClick={() => {
-                localStorage.setItem('userRole', 'admin');
-                navigate('/administrator');
+                navigate('/login');
               }}
             />
             <Button
@@ -39,8 +38,8 @@ export const Presentation = () => {
         </div>
         <img src="/assets/images/ohsansi2.png" className="mb-10 w-80" />
       </section>
-      {/**    <section className="text-center mb-10 w-10/12">
-     <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
+      <section className="text-center mb-10 w-10/12">
+        <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
         <div className="flex flex-col items-start">
           <p className="text-base mb-1">
             La fecha de inscripción inicia el{' '}
@@ -60,7 +59,7 @@ export const Presentation = () => {
           </p>
         </div>
       </section>
-      */}
+
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Convocatoria</h1>
         <div className="flex flex-col items-center text-md">
