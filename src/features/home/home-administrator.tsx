@@ -9,7 +9,7 @@ export const Home = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
   const { data: olympiadData } = useFetchData<OlympiadInfo[]>(
-    `/olympiad/${getCurrentYear()}`,
+    `/olympiads/${getCurrentYear()}`,
   );
   const currentOlympiad =
     olympiadData && olympiadData.length > 0 ? olympiadData[0] : null;
@@ -26,7 +26,7 @@ export const Home = () => {
   const { data: statisticsData, loading: statisticsLoading } =
     useFetchData<OlympiadStatistics>(
       currentOlympiad
-        ? `/olimpiadas/${currentOlympiad.id_olimpiada}/statistics`
+        ? `/olympiads/${currentOlympiad.id_olimpiada}/statistics`
         : '',
     );
 

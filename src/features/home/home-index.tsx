@@ -11,7 +11,7 @@ import { useFetchData } from '@/hooks/use-fetch-data';
 export const Presentation = () => {
   const navigate = useNavigate();
   const { data, loading } = useFetchData<OlympiadInfo[]>(
-    `/olympiad/${getCurrentYear()}`,
+    `/olympiads/${getCurrentYear()}`,
   );
 
   localStorage.setItem('userRole', 'user');
