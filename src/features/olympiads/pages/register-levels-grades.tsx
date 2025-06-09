@@ -7,5 +7,3 @@ export const RegisterLevelsGradesPage = () => {
     </main>
   );
 };
-
-export default RegisterLevelsGradesPage;

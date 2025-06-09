@@ -17,14 +17,11 @@ const RegistrationGuard = ({ children }: RegistrationGuardProps) => {
       setChecked(true);
     }
   }, [fetchOlimpiadas, olimpiadas]);
-  // Si está cargando o no se ha verificado, mostramos el loader
+
   if (loading || !checked) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
-        <p className="text-lg text-primary">
-          Verificando periodo de inscripción...
-        </p>
+      <div className="flex justify-center items-center h-screen text-lg text-primary">
+        Verificando periodo de inscripción...
       </div>
     );
   }

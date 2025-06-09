@@ -7,5 +7,3 @@ export const RegisterLevelsAreaPage = () => {
     </main>
   );
 };
-
-export default RegisterLevelsAreaPage;

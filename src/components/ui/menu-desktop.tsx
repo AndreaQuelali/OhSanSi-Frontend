@@ -9,6 +9,7 @@ type DesktopMenuProps = {
 };
 
 export default function DesktopMenu({
+  isAdminMenuOpen,
   setIsAdminMenuOpen,
   adminMenuRef,
 }: DesktopMenuProps) {
