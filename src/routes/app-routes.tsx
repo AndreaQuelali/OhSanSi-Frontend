@@ -4,7 +4,7 @@ import {
   RegisterInfoPage,
   RegisterLevelsPage,
 } from '@/features';
-import { Home } from '@/features/olympiads/pages/home';
+import { Home } from '@/features/home/home-administrator';
 
 import { RegisterLevelsAreaPage } from '@/features/olympiads/pages/register-levels-area';
 import { RegisterLevelsGradesPage } from '@/features/olympiads/pages/register-levels-grades';
@@ -18,8 +18,8 @@ import UploadPaymentPage from '@/features/registrations/pages/upload-payment';
 import { ReportRegisterOliPage } from '@/features/olympiads/pages/report-registerered-olimpist';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { Presentation } from '@/features/olympiads/pages/presentation';
-import { Login } from '@/features/olympiads/pages/login';
+import { Presentation } from '@/features/home/home-index';
+import { Login } from '@/features/auth/login';
 
 export default function AppRoutes() {
   return (

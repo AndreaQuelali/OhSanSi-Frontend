@@ -1,9 +1,22 @@
 import { Button } from '@/components';
 import { useNavigate } from 'react-router';
+import { OlympiadInfo } from '@/interfaces/olympiad';
+import {
+  formatDate,
+  getRegistrationStatus,
+  getCurrentYear,
+} from '@/utils/olympiad';
+import { useFetchData } from '@/hooks/use-fetch-data';
 
 export const Presentation = () => {
   const navigate = useNavigate();
+  const { data, loading } = useFetchData<OlympiadInfo[]>(
+    `/olympiad/${getCurrentYear()}`,
+  );
+
   localStorage.setItem('userRole', 'user');
+
+  const currentOlympiad = data && data.length > 0 ? data[0] : null;
   return (
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
       <section className="w-10/12 flex flex-col-reverse lg:flex-row items-center lg:space-x-10 mb-10 text-center ">
@@ -37,29 +50,65 @@ export const Presentation = () => {
           </div>
         </div>
         <img src="/assets/images/ohsansi2.png" className="mb-10 w-80" />
-      </section>
+      </section>{' '}
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
         <div className="flex flex-col items-start">
-          <p className="text-base mb-1">
-            La fecha de inscripción inicia el{' '}
-            <span className="text-red-500 font-semibold">
-              13 de Junio del 2025
-            </span>
-          </p>
-          <p className="text-base mb-1">
-            La fecha de finalización de inscripción será hasta el{' '}
-            <span className="text-red-500 font-semibold">
-              15 de Agosto del 2025
-            </span>
-          </p>
-          <p className="text-base">
-            El costo de inscripción será de los{' '}
-            <span className="text-red-500 font-semibold">15 (Bs)</span> por área
-          </p>
+          {loading ? (
+            <p className="text-base mb-4">Cargando información...</p>
+          ) : currentOlympiad ? (
+            <>
+              <p className="text-base mb-1">
+                La fecha de inscripción inicia el{' '}
+                <span className="text-red-500 font-semibold">
+                  {formatDate(currentOlympiad.fecha_inicio)}
+                </span>
+              </p>
+              <p className="text-base mb-1">
+                La fecha de finalización de inscripción será hasta el{' '}
+                <span className="text-red-500 font-semibold">
+                  {formatDate(currentOlympiad.fecha_fin)}
+                </span>
+              </p>
+              <p className="text-base mb-3">
+                El costo de inscripción será de{' '}
+                <span className="text-red-500 font-semibold">
+                  {currentOlympiad.costo} (Bs)
+                </span>{' '}
+                por área
+              </p>{' '}
+              {(() => {
+                if (!currentOlympiad) return null;
+                const status = getRegistrationStatus(
+                  currentOlympiad.fecha_inicio,
+                  currentOlympiad.fecha_fin,
+                );
+
+                const statusColors = {
+                  'not-started':
+                    'text-yellow-600 bg-yellow-50 border-yellow-200',
+                  active: 'text-success border-success bg-green-50',
+                  ended: 'text-red-600 bg-red-50 border-red-200',
+                } as const;
+
+                return (
+                  <div
+                    className={`w-full p-3 rounded-lg border-2 ${statusColors[status.status]}`}
+                  >
+                    <p className="text-base font-semibold text-center">
+                      {status.message}
+                    </p>
+                  </div>
+                );
+              })()}
+            </>
+          ) : (
+            <p className="text-base mb-4">
+              No se pudo cargar la información de la olimpiada.
+            </p>
+          )}
         </div>
       </section>
-
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Convocatoria</h1>
         <div className="flex flex-col items-center text-md">
@@ -75,7 +124,6 @@ export const Presentation = () => {
           </div>
         </div>
       </section>
-
       <section className="text-center mb-10 w-10/12">
         <h1 className="headline-lg text-primary mb-4">Prerrequisitos</h1>
         <ol className="flex flex-col items-start list-decimal pl-4 space-y-2 text-md text-left">
