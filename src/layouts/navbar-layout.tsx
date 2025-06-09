@@ -63,7 +63,7 @@ export default function NavbarLayout() {
             <img
               src="/assets/images/logoOhSanSi.png"
               alt="Logo"
-              className="h-16 lg:h-20"
+              className="h-16 w-20 lg:h-20 lg:w-[120px]"
             />
           </Link>
           <DesktopMenu
