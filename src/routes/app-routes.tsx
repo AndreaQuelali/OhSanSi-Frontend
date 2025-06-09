@@ -20,6 +20,7 @@ import NavbarLayout from '@/layouts/navbar-layout';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Presentation } from '@/features/home/home-index';
 import { Login } from '@/features/auth/login';
+import NotFound from '@/pages/not-found';
 
 export default function AppRoutes() {
   return (
