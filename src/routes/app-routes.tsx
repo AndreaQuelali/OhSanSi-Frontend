@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import NavbarLayout from '@/layouts/navbar-layout';
 import { PageLoader } from '@/components/ui/loadings';
+import NotFound from './not-found';
 import {
   Home,
   Presentation,
@@ -19,6 +20,8 @@ import {
   GenerateOrderPaymentPage,
   UploadPaymentPage,
   RegistrationGuard,
+  AdminGuard,
+  Login,
 } from './lazy-components';
 
 export default function AppRoutes() {
@@ -27,6 +30,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route element={<NavbarLayout />}>
+          {' '}
           <Route
             index
             element={
@@ -35,62 +39,85 @@ export default function AppRoutes() {
               </Suspense>
             }
           />
+          {/* Login Route */}
+          <Route
+            path="/login"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Login />
+              </Suspense>
+            }
+          />{' '}
           {/* Administrator Routes */}
           <Route path="/administrator">
             <Route
               index
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <Home />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <Home />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="register-info"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <RegisterInfoPage />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <RegisterInfoPage />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="register-areas"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <RegisterAreas />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <RegisterAreas />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="register-levels"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <RegisterLevelsPage />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <RegisterLevelsPage />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="register-levels-grades"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <RegisterLevelsGradesPage />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <RegisterLevelsGradesPage />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="register-levels-area"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <RegisterLevelsAreaPage />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <RegisterLevelsAreaPage />
+                  </Suspense>
+                </AdminGuard>
               }
             />
             <Route
               path="report-registered-olimpist"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <ReportRegisterOliPage />
-                </Suspense>
+                <AdminGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    <ReportRegisterOliPage />
+                  </Suspense>
+                </AdminGuard>
               }
             />
           </Route>{' '}
@@ -169,45 +196,55 @@ export default function AppRoutes() {
                 <Presentation />
               </Suspense>
             }
-          />
+          />{' '}
           <Route
             path="/register-info"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <RegisterInfoPage />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterInfoPage />
+                </Suspense>
+              </AdminGuard>
             }
           />
           <Route
             path="/register-areas"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <RegisterAreas />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterAreas />
+                </Suspense>
+              </AdminGuard>
             }
           />
           <Route
             path="/register-levels"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <RegisterLevelsPage />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsPage />
+                </Suspense>
+              </AdminGuard>
             }
           />
           <Route
             path="/register-levels-grades"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <RegisterLevelsGradesPage />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsGradesPage />
+                </Suspense>
+              </AdminGuard>
             }
           />
           <Route
             path="/register-levels-area"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <RegisterLevelsAreaPage />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <RegisterLevelsAreaPage />
+                </Suspense>
+              </AdminGuard>
             }
           />
           <Route
@@ -265,13 +302,15 @@ export default function AppRoutes() {
                 <UploadPaymentPage />
               </RegistrationGuard>
             }
-          />
+          />{' '}
           <Route
             path="/report-registered-olimpist"
             element={
-              <Suspense fallback={<PageLoader />}>
-                <ReportRegisterOliPage />
-              </Suspense>
+              <AdminGuard>
+                <Suspense fallback={<PageLoader />}>
+                  <ReportRegisterOliPage />
+                </Suspense>
+              </AdminGuard>
             }
           />
         </Route>

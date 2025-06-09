@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 export const Home = lazy(() =>
-  import('@/features/olympiads/pages/home').then((module) => ({
+  import('@/features/home/home-administrator').then((module) => ({
     default: module.Home,
   })),
 );
@@ -67,8 +67,15 @@ export const UploadPaymentPage = lazy(
 export const RegistrationGuard = lazy(
   () => import('@/components/guards/registration-guard'),
 );
+export const AdminGuard = lazy(() => import('@/components/guards/admin-guard'));
+
 export const Presentation = lazy(() =>
-  import('@/features/olympiads/pages/presentation').then((module) => ({
+  import('@/features/home/home-index').then((module) => ({
     default: module.Presentation,
+  })),
+);
+export const Login = lazy(() =>
+  import('@/features/auth/login').then((module) => ({
+    default: module.Login,
   })),
 );
