@@ -34,7 +34,7 @@ export default function FormInfo() {
       year: '',
     },
   });
-  const { submitForm } = useApiForm('olympidas');
+  const { submitForm } = useApiForm('olympiads');
   const [justReset, setJustReset] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<
@@ -51,7 +51,7 @@ export default function FormInfo() {
 
   const fetchOlimpiadas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/olympidas`);
+      const response = await axios.get(`${API_URL}/olympiads`);
       setOlimpiadasExistentes(response.data);
     } catch (error) {
       console.error('Error al obtener olimpiadas:', error);
