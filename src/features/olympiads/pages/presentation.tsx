@@ -23,8 +23,7 @@ export const Presentation = () => {
               label="Administrador"
               className="lg:w-40"
               onClick={() => {
-                localStorage.setItem('userRole', 'admin');
-                navigate('/administrator');
+                navigate('/login');
               }}
             />
             <Button
