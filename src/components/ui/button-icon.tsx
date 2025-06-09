@@ -14,6 +14,7 @@ export const ButtonIcon = ({
     variant1: 'text-white bg-primary hover:bg-secondary2 transition',
     variant2: 'text-primary hover:bg-primary hover:text-white transition',
     variant3: 'text-primary hover:text-secondary2',
+    variant4: 'text-primary hover:text-secondary',
     variantDesactivate: 'text-neutral2',
   };
 
