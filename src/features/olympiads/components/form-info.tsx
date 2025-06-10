@@ -244,7 +244,8 @@ export default function FormInfo() {
                   const exists = olimpiadasExistentes.some(
                     (olimpiada) =>
                       olimpiada.gestion === Number(year) &&
-                      olimpiada.nombre_olimpiada.toUpperCase() === value.toUpperCase()
+                      olimpiada.nombre_olimpiada.toUpperCase() ===
+                        value.toUpperCase(),
                   );
 
                   if (exists) {
@@ -292,14 +293,14 @@ export default function FormInfo() {
                   message:
                     'El límite debe ser un número entero positivo sin comas ni puntos',
                 },
-                required: 'Se debe ingresar un valor mayor o igual a 0',
+                required: 'Se debe ingresar un valor mayor a 0',
                 min: {
-                  value: 0,
-                  message: 'Se debe ingresar un valor mayor o igual a 0',
+                  value: 1,
+                  message: 'Se debe ingresar un valor mayor a 0',
                 },
                 max: {
-                  value: 100,
-                  message: 'Se debe ingresar un valor menor a 100',
+                  value: 15,
+                  message: 'Se debe ingresar un valor menor o igual a 15',
                 },
               }}
               errors={errors}

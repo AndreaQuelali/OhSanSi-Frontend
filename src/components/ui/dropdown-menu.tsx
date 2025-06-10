@@ -28,7 +28,7 @@ export default function DropdownMenu({ label, options }: DropdownMenuProps) {
       <span
         className={`subtitle-sm p-1 cursor-pointer ${
           options.some((option) => location.pathname.startsWith(option.path))
-            ? 'text-red-500 border-b-[1px] border-b-red-500'
+            ? 'text-secondary border-b-[1px] border-b-secondary'
             : 'text-primary hover:text-secondary'
         }`}
       >
@@ -46,13 +46,13 @@ export default function DropdownMenu({ label, options }: DropdownMenuProps) {
               key={index}
               className={`hover:bg-gray-100 ${
                 location.pathname === option.path
-                  ? 'text-red-500'
+                  ? 'text-secondary'
                   : 'text-primary'
               }`}
             >
               <Link
                 to={option.path}
-                className="block px-4 py-2 text-sm hover:text-secondary"
+                className="block px-4 py-2 subtitle-sm hover:text-secondary"
               >
                 {option.label}
               </Link>

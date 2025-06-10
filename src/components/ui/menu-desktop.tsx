@@ -54,20 +54,15 @@ export default function DesktopMenu({
           <li
             className={`${location.pathname === '/' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
           >
-            <Link
-              to="/"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
-            >
+            <Link to="/" className="p-1 subtitle-sm hover:text-secondary">
               Inicio
             </Link>
           </li>
-          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
+          <p className="text-neutral2 cursor-default p-1 subtitle-sm">
             Noticias
           </p>
-          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
-            Comité
-          </p>{' '}
-          <p className="text-neutral2 cursor-default text-sm block px-1 pb-[2px]">
+          <p className="text-neutral2 cursor-default p-1 subtitle-sm">Comité</p>{' '}
+          <p className="text-neutral2 cursor-default p-1 subtitle-sm">
             Calendario
           </p>
         </>
@@ -76,23 +71,23 @@ export default function DesktopMenu({
       {userRole === 'olympian' && (
         <>
           <li
-            className={`${location.pathname === '/olympian' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/olympian"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Guía de Registro
             </Link>
           </li>
           <li
-            className={`${location.pathname === '/olympian/register-data-excel' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian/register-data-excel' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/olympian/register-data-excel"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Registro Excel
             </Link>
@@ -124,12 +119,12 @@ export default function DesktopMenu({
           />
 
           <li
-            className={`${location.pathname === '/olympian/registrations' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/olympian/registrations' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/olympian/registrations"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Inscripciones
             </Link>
@@ -147,23 +142,23 @@ export default function DesktopMenu({
       {userRole === 'admin' && (
         <>
           <li
-            className={`${location.pathname === '/administrator' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/administrator"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Inicio
             </Link>
           </li>
           <li
-            className={`${location.pathname === '/administrator/register-info' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator/register-info' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/administrator/register-info"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Registro General
             </Link>
@@ -190,12 +185,12 @@ export default function DesktopMenu({
             ]}
           />
           <li
-            className={`${location.pathname === '/administrator/report-registered-olimpist' ? 'text-red-500 border-b-[1px] border-b-red-500' : 'text-primary'}`}
+            className={`${location.pathname === '/administrator/report-registered-olimpist' ? 'text-secondary border-b-[1px] border-b-secondary' : 'text-primary'}`}
             ref={adminMenuRef}
           >
             <Link
               to="/administrator/report-registered-olimpist"
-              className="block px-1 pb-[2px] text-sm hover:text-secondary"
+              className="p-1 subtitle-sm hover:text-secondary"
             >
               Reportes
             </Link>
