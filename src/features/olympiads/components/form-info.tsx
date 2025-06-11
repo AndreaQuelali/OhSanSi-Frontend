@@ -329,6 +329,13 @@ export default function FormInfo() {
                   }
 
                   const inputYear = value.split('-')[0];
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0); 
+                  const selectedDate = new Date(value);
+                  
+                  if (selectedDate < today) {
+                    return 'La fecha de inicio debe ser igual o posterior a la fecha actual';
+                  }
 
                   if (inputYear !== selectedYear) {
                     return `La fecha de inicio debe estar dentro del año ${selectedYear}`;
