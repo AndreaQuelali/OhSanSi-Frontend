@@ -333,8 +333,6 @@ export default function FormInfo() {
                   today.setHours(0, 0, 0, 0); 
                   const selectedDate = new Date();
                   selectedDate.setHours(0, 0, 0, 0);
-                  console.log(today);
-                  console.log(selectedDate); 
                   if (selectedDate < today) {
                     return 'La fecha de inicio debe ser igual o posterior a la fecha actual';
                   }
