@@ -120,6 +120,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
               message: 'Este número de cédula ya está registrado',
             });
           }
+          clearErrors();
           setIsRegisteredTutor(true);
           setCiTutorFound(ciValue);
         } else {

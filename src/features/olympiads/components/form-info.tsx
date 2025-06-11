@@ -249,7 +249,7 @@ export default function FormInfo() {
                   );
 
                   if (exists) {
-                    return `Ya existe una olimpiada llamada "${value}" para el año ${year}`;
+                    return `El nombre de la Olimpiada ya está registrada en la gestión actual`;
                   }
 
                   return true;
