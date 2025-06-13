@@ -22,7 +22,7 @@ import {
   RegistrationGuard,
   AdminGuard,
   Login,
-} from './lazy-components';
+} from './lazy-routes';
 
 export default function AppRoutes() {
   return (
