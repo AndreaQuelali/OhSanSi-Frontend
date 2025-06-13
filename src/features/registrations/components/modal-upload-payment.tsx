@@ -141,6 +141,7 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
           const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 
           const applyKernel = (x: number, y: number, c: number) => {
+            const idx = (y * width + x) * 4;
             let sum = 0;
             let i = 0;
             for (let ky = -1; ky <= 1; ky++) {

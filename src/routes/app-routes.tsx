@@ -4,10 +4,8 @@ import NavbarLayout from '@/layouts/navbar-layout';
 import { PageLoader } from '@/components/ui/loadings';
 import NotFound from './not-found';
 import {
-  Home,
-  Presentation,
-  RegisterInfoPage,
   RegisterAreas,
+  RegisterInfoPage,
   RegisterLevelsPage,
   RegisterLevelsGradesPage,
   RegisterLevelsAreaPage,
@@ -120,17 +118,10 @@ export default function AppRoutes() {
                 </AdminGuard>
               }
             />
-          </Route>{' '}
-          {/* Olympian Routes */}
+          </Route>
+
           <Route path="/olympian">
-            <Route
-              index
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <Home />
-                </Suspense>
-              }
-            />
+            <Route index element={<Home />} />
             <Route
               path="register-olympians"
               element={
