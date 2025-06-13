@@ -5,7 +5,7 @@ const NotFound: React.FC = () => {
     <div className="w-full min-h-screen flex flex-col font-roboto items-center justify-center bg-white text-primary text-center">
       <div className="flex items-center justify-center min-h-screen gap-10">
         <img
-          src="/public/assets/images/not-found.jpg"
+          src="/assets/images/not-found.jpg"
           alt="People search"
           className="w-96"
         />

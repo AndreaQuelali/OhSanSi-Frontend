@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { postDataAsJson } from '@/services/api-service';
-import { FormData, LoginResponse } from './types/login';
+import { FormData, LoginResponse } from './interface/login';
 
 export const Login = () => {
   const {
@@ -35,8 +35,8 @@ export const Login = () => {
         localStorage.setItem('userEmail', response.user.email);
         setLoginSuccess(`¡Bienvenido ${response.user.name}!`);
 
-        setInterval(() => {
-          navigate('/administrator');
+        setTimeout(() => {
+          navigate('/administrator', { replace: true });
         }, 700);
       } else {
         setLoginError(response.message || 'Error de autenticación');

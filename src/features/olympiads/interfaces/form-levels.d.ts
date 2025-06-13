@@ -1,4 +1,3 @@
-
 export type FormData = {
   area: string;
   level: string;

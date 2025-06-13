@@ -46,7 +46,7 @@ export default function FormAreaPart() {
   const ciOlimpista = watch('olimpista.ci');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | 'alert'| null
+    'success' | 'error' | 'alert' | null
   >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const navigate = useNavigate();
@@ -227,7 +227,9 @@ export default function FormAreaPart() {
     const areasConSelecciones = Object.keys(nivelesSeleccionados).length;
     if (areasConSelecciones >= maxCategorias) {
       setConfirmationStatus('alert');
-      setConfirmationMessage(`Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`);
+      setConfirmationMessage(
+        `Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`,
+      );
       setShowConfirmationModal(true);
       return;
     }
@@ -276,10 +278,7 @@ export default function FormAreaPart() {
     };
 
     try {
-      await axios.post(
-        `${API_URL}/enrollments/with-tutor`,
-        payload,
-      );
+      await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
       setConfirmationStatus('success');
       setConfirmationMessage(
         'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',

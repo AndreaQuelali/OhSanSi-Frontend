@@ -33,12 +33,12 @@ export const InputText = <T extends FieldValues>({
 
   return (
     <div className="flex flex-col">
-    <label
-      htmlFor={name as string}
-      className={`subtitle-md ${labelPadding} ${disabled ? 'text-neutral2' : 'text-primary'}`}
-    >
-      {label} {isRequired && <span className="text-error">*</span>}
-    </label>
+      <label
+        htmlFor={name as string}
+        className={`subtitle-md ${labelPadding} ${disabled ? 'text-neutral2' : 'text-primary'}`}
+      >
+        {label} {isRequired && <span className="text-error">*</span>}
+      </label>
       <div className="w-full">
         <input
           id={name as string}

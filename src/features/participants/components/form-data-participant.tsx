@@ -70,9 +70,7 @@ export default function FormDataPart() {
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/olympists/${ciValue}`,
-        );
+        const response = await axios.get(`${API_URL}/olympists/${ciValue}`);
         if (response.data) {
           const data = response.data;
 
@@ -91,6 +89,7 @@ export default function FormDataPart() {
             type: 'manual',
             message: 'Este número de cédula ya está registrado.',
           });
+          clearErrors();
           setIsRegisteredOlimpista(true);
           setCiOlimpistaFound(ciValue);
         } else {
@@ -179,9 +178,7 @@ export default function FormDataPart() {
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/tutors/${ciTutorValue}`,
-        );
+        const response = await axios.get(`${API_URL}/tutors/${ciTutorValue}`);
         if (response.data) {
           clearErrors('olimpista.citutor');
           setIsTutorRegistered(false);
@@ -588,8 +585,12 @@ export default function FormDataPart() {
                   validationRules={{
                     required: 'El número de celular es obligatorio',
                     pattern: {
-                      value: /^[0-9]{8,15}$/,
-                      message: 'Debe contener solo números y entre 8 y 15 dígitos',
+                      value: /^[0-9]{8,}$/,
+                      message: 'Debe contener solo números y al menos 8 dígitos',
+                    },
+                    maxLength: {
+                      value: 15,
+                      message: 'Debe contener como máximo 15 dígitos',
                     },
                   }}
                   errors={errors}

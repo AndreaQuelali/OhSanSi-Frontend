@@ -39,7 +39,7 @@ export const useFetchDataWithBody = <T>(
     };
 
     fetchData();
-  }, [endpoint, JSON.stringify(options)]); 
+  }, [endpoint, JSON.stringify(options)]);
 
   return { data, loading, error };
 };

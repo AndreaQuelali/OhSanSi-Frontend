@@ -65,16 +65,12 @@ export const ConfirmationModal = ({
           />
         </div>
         <div className="flex flex-row items-center">
-          <div>
-            {getStatusIcon()}
-          </div>
+          <div>{getStatusIcon()}</div>
           <h2 className={`subtitle-md mb-2 ml-1 ${getStatusColor()}`}>
             {getStatusTitle()}
           </h2>
         </div>
-        <div className="body-lg text-onBack whitespace-pre-line">
-          {message}
-        </div>
+        <div className="body-lg text-onBack whitespace-pre-line">{message}</div>
         <div className="flex justify-end space-x-2 mb-4">
           {status === 'success' && nextStepText && onNextStep && (
             <Button
@@ -85,11 +81,7 @@ export const ConfirmationModal = ({
           )}
         </div>
         <div className="flex justify-end space-x-2">
-          <Button
-            label="Aceptar"
-            onClick={onClose}
-            variantColor="variant1"
-          />
+          <Button label="Aceptar" onClick={onClose} variantColor="variant1" />
         </div>
       </div>
     </div>

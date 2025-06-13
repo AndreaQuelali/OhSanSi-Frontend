@@ -1,5 +1,4 @@
 import React from 'react';
-import { Users } from 'lucide-react';
 
 interface CardTotalProps {
   title: string;

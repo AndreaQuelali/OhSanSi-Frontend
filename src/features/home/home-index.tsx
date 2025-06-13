@@ -7,6 +7,7 @@ import {
   getCurrentYear,
 } from '@/utils/olympiad';
 import { useFetchData } from '@/hooks/use-fetch-data';
+import { PageLoader } from '@/components/ui/loadings';
 
 export const Presentation = () => {
   const navigate = useNavigate();
@@ -55,7 +56,9 @@ export const Presentation = () => {
         <h1 className="headline-lg text-primary mb-4">Inscripción</h1>
         <div className="flex flex-col items-start">
           {loading ? (
-            <p className="text-base mb-4">Cargando información...</p>
+            <div className="w-full flex justify-center items-center h-36">
+              <PageLoader />
+            </div>
           ) : currentOlympiad ? (
             <>
               <p className="text-base mb-1">

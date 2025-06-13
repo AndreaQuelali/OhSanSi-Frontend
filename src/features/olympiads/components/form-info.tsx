@@ -18,13 +18,14 @@ export default function FormInfo() {
       gestion: number;
       fecha_inicio: string;
       fecha_fin: string;
+      nombre_olimpiada: string;
     }>
   >([]);
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isValid },
+    formState: { errors, isValid, dirtyFields },
     getValues,
     watch,
     trigger,
@@ -181,6 +182,13 @@ export default function FormInfo() {
   useEffect(() => {
     fetchOlimpiadas();
   }, []);
+
+  useEffect(() => {
+    if (selectedYear && dirtyFields.inputNameOlimpiada) {
+      trigger('inputNameOlimpiada');
+    }
+  }, [selectedYear, trigger, dirtyFields.inputNameOlimpiada]);
+
   return (
     <div className="flex flex-col items-center mx-5 md:mx-5 lg:mx-0">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 mb-32">
@@ -227,6 +235,25 @@ export default function FormInfo() {
                   value: 50,
                   message: 'El nombre no puede exceder los 50 caracteres',
                 },
+                validate: (value: any) => {
+                  const year = getValues('year');
+                  if (!year) {
+                    return 'Seleccione un año primero';
+                  }
+
+                  const exists = olimpiadasExistentes.some(
+                    (olimpiada) =>
+                      olimpiada.gestion === Number(year) &&
+                      olimpiada.nombre_olimpiada.toUpperCase() ===
+                        value.toUpperCase(),
+                  );
+
+                  if (exists) {
+                    return `El nombre de la Olimpiada ya está registrada en la gestión actual`;
+                  }
+
+                  return true;
+                },
               }}
             />
           </div>
@@ -266,14 +293,14 @@ export default function FormInfo() {
                   message:
                     'El límite debe ser un número entero positivo sin comas ni puntos',
                 },
-                required: 'Se debe ingresar un valor mayor o igual a 0',
+                required: 'Se debe ingresar un valor mayor a 0',
                 min: {
-                  value: 0,
-                  message: 'Se debe ingresar un valor mayor o igual a 0',
+                  value: 1,
+                  message: 'Se debe ingresar un valor mayor a 0',
                 },
                 max: {
-                  value: 100,
-                  message: 'Se debe ingresar un valor menor a 100',
+                  value: 15,
+                  message: 'Se debe ingresar un valor menor o igual a 15',
                 },
               }}
               errors={errors}
@@ -302,6 +329,13 @@ export default function FormInfo() {
                   }
 
                   const inputYear = value.split('-')[0];
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0); 
+                  const selectedDate = new Date();
+                  selectedDate.setHours(0, 0, 0, 0);
+                  if (selectedDate < today) {
+                    return 'La fecha de inicio debe ser igual o posterior a la fecha actual';
+                  }
 
                   if (inputYear !== selectedYear) {
                     return `La fecha de inicio debe estar dentro del año ${selectedYear}`;

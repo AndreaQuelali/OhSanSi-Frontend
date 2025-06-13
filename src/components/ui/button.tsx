@@ -13,10 +13,12 @@ export const Button = ({
     'button-lg rounded-[20px] h-10 text-center flex items-center whitespace-nowrap';
 
   const varCol: Record<string, string> = {
-    variant1: 'pl-4 pr-5 text-white bg-primary hover:bg-secondary2 cursor-pointer',
+    variant1:
+      'pl-4 pr-5 text-white bg-primary hover:bg-secondary2 cursor-pointer',
     variant2:
       'pl-4 pr-5 text-primary bg-white border-[1px] border-primary hover:bg-secondary2 cursor-pointer',
-    variant3: 'pl-4 pr-5 text-primary hover:bg-primary hover:text-white cursor-pointer',
+    variant3:
+      'pl-4 pr-5 text-primary hover:bg-primary hover:text-white cursor-pointer',
     variant4: 'text-primary hover:text-secondary2 cursor-pointer',
     variant5: 'pl-4 pr-5 text-primary opacity-40',
     variantDesactivate: 'pl-4 pr-5 bg-primary text-white opacity-40',

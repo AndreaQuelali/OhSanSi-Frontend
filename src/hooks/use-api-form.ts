@@ -11,7 +11,7 @@ export const useApiForm = (endpoint: string) => {
       const response = await postData(endpoint, data);
       setSuccess(true);
       return response;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
       throw err;
