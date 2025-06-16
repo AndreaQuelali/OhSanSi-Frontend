@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { postDataAsJson } from '@/services/api-service';
-import { FormData, LoginResponse } from './interface/login';
+import { FormData, LoginResponse } from '../interface/login';
 
 export const Login = () => {
   const {

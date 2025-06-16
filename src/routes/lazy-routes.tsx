@@ -70,7 +70,7 @@ export const RegistrationGuard = lazy(
 export const AdminGuard = lazy(() => import('@/components/guards/admin-guard'));
 
 export const Presentation = lazy(() =>
-  import('@/features/home/pages/home-index').then((module) => ({
+  import('@/features/home/pages/hero').then((module) => ({
     default: module.Presentation,
   })),
 );

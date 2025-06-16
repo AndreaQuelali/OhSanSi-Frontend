@@ -1,10 +1,10 @@
 import { Button } from '@/components';
 import { useNavigate } from 'react-router';
-import CardTotal from './components/card-total';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { OlympiadInfo, OlympiadStatistics } from '@/interfaces/olympiad';
 import { getCurrentYear } from '@/utils/olympiad';
 import { PageLoader } from '@/components/ui/loadings';
+import CardTotal from '../components/card-total';
 
 export const Home = () => {
   const navigate = useNavigate();
