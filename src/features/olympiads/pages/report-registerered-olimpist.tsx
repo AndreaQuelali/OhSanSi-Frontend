@@ -1,17 +1,16 @@
 import { Button, Dropdown, Modal } from '@/components';
-import { TableRegisterOli } from '../components/table-report-olimpist';
 import IconPrint from '@/components/icons/icon-print';
 import IconDownloadB from '@/components/icons/icon-downloadb';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { API_URL } from '@/config/api-config';
 import { useForm } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
-import { Format } from 'react-data-table-component/dist/DataTable/types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { FilterModal } from '../components/modal-filter';
+import { FilterModal } from '../components/modals/modal-filter';
+import { TableRegisterOli } from '../components/tables/table-report-olimpist';
 
 interface FormData {
   olympiad: string;
@@ -21,6 +20,17 @@ interface FormData {
   depa: string;
   prov: string;
   colegio: string;
+}
+
+interface Participant {
+  Apellido: string;
+  Nombre: string;
+  Departamento: string;
+  Provincia: string;
+  UnidadEducativa: string;
+  Grado: string;
+  Area: string;
+  NivelCategoria: string;
 }
 
 export const ReportRegisterOliPage = () => {
@@ -40,13 +50,13 @@ export const ReportRegisterOliPage = () => {
       colegio: '',
     },
   });
-  const [participants, setParticipants] = useState<typeof data>([]);
-  const [originalParticipants, setOriginalParticipants] = useState<typeof data>(
-    [],
-  );
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [originalParticipants, setOriginalParticipants] = useState<
+    Participant[]
+  >([]);
 
   const [showModal, setShowModal] = useState(false);
-  const [formatSelected, setFormatSelected] = useState<Format>('pdf');
+  const [formatSelected, setFormatSelected] = useState('pdf');
   const tableRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date().toLocaleDateString('es-BO', {
     year: 'numeric',

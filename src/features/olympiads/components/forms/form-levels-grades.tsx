@@ -1,12 +1,12 @@
-import { Button, Dropdown, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect, useCallback } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
-import { Table } from './table';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { Button, Dropdown, Modal } from '@/components';
+import { Table } from '../tables/table';
 
 interface FormData {
   level: string;

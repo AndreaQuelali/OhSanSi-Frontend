@@ -1,12 +1,12 @@
-import { Button, Dropdown, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect, useCallback } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
-import { TableLevesArea } from './table-levels-area';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { Button, Dropdown, Modal } from '@/components';
+import { TableLevesArea } from '../tables/table-levels-area';
 
 interface FormData {
   olympiad: string;
@@ -129,6 +129,7 @@ export default function FormLevelsArea() {
       const currentDate = new Date();
 
       const olimpiada = olimpResponse.data.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (olimpiada: any) => olimpiada.id_olimpiada === olympiadId,
       );
 

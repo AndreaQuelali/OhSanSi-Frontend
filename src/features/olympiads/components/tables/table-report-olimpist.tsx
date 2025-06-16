@@ -44,7 +44,7 @@ const customStyles = {
       fontWeight: '500',
       color: '#26326c',
       justifyContent: 'center',
-      textAlign: 'center',
+      textAlign: 'center' as const,
     },
   },
   rows: {
@@ -58,7 +58,7 @@ const customStyles = {
   cells: {
     style: {
       justifyContent: 'center',
-      textAlign: 'center',
+      textAlign: 'center' as const,
     },
   },
 };

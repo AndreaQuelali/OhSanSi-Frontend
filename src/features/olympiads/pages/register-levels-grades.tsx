@@ -1,4 +1,4 @@
-import FormLevelsGrades from '../components/form-levels-grades';
+import { FormLevelsGrades } from "../components";
 
 export const RegisterLevelsGradesPage = () => {
   return (

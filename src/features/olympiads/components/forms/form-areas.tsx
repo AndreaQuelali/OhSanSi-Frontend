@@ -1,19 +1,19 @@
-import { Button, InputText, Modal } from '../../../components';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
-import { TableLevel } from './table-level';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { Button, InputText, Modal } from '@/components';
+import { TableAreas } from '../tables/table-areas';
 
 type FormData = {
-  inputLevel: string;
+  inputArea: string;
 };
 
 type TableRow = {
   id: number;
-  level: string;
+  area: string;
 };
 
 const normalizeAreaName = (str: string) =>
@@ -25,7 +25,7 @@ const normalizeAreaName = (str: string) =>
 const removeAccents = (str: string) =>
   str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-export const FormLevel = () => {
+const FormAreas = () => {
   const {
     register,
     handleSubmit,
@@ -40,82 +40,86 @@ export const FormLevel = () => {
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
+  const [areasRegistradas, setAreasRegistradas] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<
     'success' | 'error' | null
   >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const fetchTableLevels = async () => {
+  const fetchAreas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/levels`);
-      const levelsFromDB = response.data.niveles;
+      const response = await axios.get(`${API_URL}/areas`);
+      const areasFromDB = response.data;
 
-      const formatted = levelsFromDB.map(
-        (niveles: { id_nivel: number; nombre: string }) => ({
-          id: niveles.id_nivel,
-          level: niveles.nombre,
+      const formatted = areasFromDB.map(
+        (area: { id_area: number; nombre: string }) => ({
+          id: area.id_area,
+          area: area.nombre,
         }),
       );
 
-      setLevelsRegistered(formatted);
+      setAreasRegistradas(formatted);
     } catch (error) {
-      console.error('Error al obtener los niveles:', error);
+      console.error('Error al obtener las áreas:', error);
     }
   };
 
   useEffect(() => {
-    fetchTableLevels();
+    fetchAreas();
   }, []);
 
   const onSubmit = async () => {
-    clearErrors('inputLevel');
-    const inputLevel = getValues('inputLevel');
+    clearErrors('inputArea');
+    const inputArea = getValues('inputArea');
 
     try {
-      const response = await axios.get(`${API_URL}/levels`);
-      const levels = response.data.niveles;
+      const response = await axios.get(`${API_URL}/areas`);
+      const areas = response.data;
 
-      const isDuplicate = levels.some(
-        (nivel: { nombre: string }) =>
-          normalizeAreaName(nivel.nombre) === normalizeAreaName(inputLevel),
+      const isDuplicate = areas.some(
+        (area: { nombre: string }) =>
+          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea),
       );
 
       if (isDuplicate) {
-        setError('inputLevel', {
+        setError('inputArea', {
           type: 'manual',
-          message: 'Este nivel ya se encuentra registrado.',
+          message: 'Esta área ya se encuentra registrada.',
         });
         return;
       }
 
       setIsModalOpen(true);
     } catch (error) {
-      console.error('Error al verificar los niveles:', error);
-      alert('No se pudo verificar si el nivel ya existe. Intente nuevamente.');
+      console.error('Error al verificar las áreas:', error);
+      alert('No se pudo verificar si el área ya existe. Intente nuevamente.');
     }
   };
 
   const handleRegister = async () => {
     setIsModalOpen(false);
-    const nameLevel = getValues('inputLevel');
+    const inputArea = getValues('inputArea');
 
     try {
       const payload = {
-        nombre: nameLevel,
+        nombre: inputArea,
       };
 
-      await axios.post(`${API_URL}/levels`, payload);
+      await axios.post(`${API_URL}/areas`, payload);
+
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso del nivel.');
+      setConfirmationMessage('Registro exitoso del área.');
       setShowConfirmationModal(true);
       reset();
-      fetchTableLevels();
-    } catch {
+      fetchAreas();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Error al registrar el área:', error);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        'Error al registrar el nivel. Por favor, intente nuevamente.',
+        error.response?.data?.message ||
+          'Error al registrar el área. Por favor, intente nuevamente.',
       );
       setShowConfirmationModal(true);
     }
@@ -135,31 +139,29 @@ export const FormLevel = () => {
       >
         <div className="flex flex-col">
           <h1 className="text-center headline-lg text-primary">
-            Registro de Niveles/Categorías de Competencia
+            Registro de Áreas de Competencia
           </h1>
 
           <div className="grid grid-cols-1 mb-2 md:mt-5 lg:mt-0">
             <InputText
-              label="Nombre del Nivel/Categoría"
-              name="inputLevel"
-              placeholder="Ingresar nombre del nivel o categoría"
+              label="Nombre del Área"
+              name="inputArea"
+              placeholder="Ingresar nombre del área"
               type="text"
               className="w-full"
               labelPadding="py-5"
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre del nivel es obligatorio',
+                required: 'El nombre del área es obligatorio',
                 pattern: {
-                  value:
-                    /^[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?:(?: |-| - | -|- | - )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)*$/,
+                  value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
                   message:
-                    'Solo se permiten letras, números, guiones en medio y un solo espacio entre palabras',
+                    'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
                 },
-
                 maxLength: {
-                  value: 30,
-                  message: 'El nombre no puede exceder los 30 caracteres',
+                  value: 50,
+                  message: 'El nombre no puede exceder los 50 caracteres',
                 },
               }}
             />
@@ -180,17 +182,17 @@ export const FormLevel = () => {
             />
           </div>
           <h2 className="text-primary subtitle-md mb-5 mt-7 md:mt-5">
-            Niveles/Categorías registradas
+            Áreas registradas
           </h2>
           <div className="mt-2 md:w-11/12 mx-auto">
-            <TableLevel data={levelsRegistered} />
+            <TableAreas data={areasRegistradas} />
           </div>
         </div>
       </form>
 
       {isModalOpen && (
         <Modal
-          text="¿Está seguro de registrar este nivel o categoría?"
+          text="¿Está seguro de registrar esta área?"
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleRegister}
         />
@@ -205,3 +207,5 @@ export const FormLevel = () => {
     </div>
   );
 };
+
+export default FormAreas;
