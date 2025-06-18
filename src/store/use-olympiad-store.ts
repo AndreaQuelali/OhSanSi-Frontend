@@ -27,8 +27,8 @@ export const useOlimpiadaStore = create<OlimpiadaStore>((set, get) => ({
 
     for (let i = 0; i < olimpiadas.length; i++) {
       const olimpiada = olimpiadas[i];
-      const startDate = new Date(olimpiada.fecha_inicio);
-      const endDate = new Date(olimpiada.fecha_fin);
+      const startDate = new Date(olimpiada.start_date);
+      const endDate = new Date(olimpiada.end_date);
 
       if (currentDate >= startDate && currentDate <= endDate) {
         return true;

@@ -32,7 +32,7 @@ export default function FormDataPart() {
   const { submitForm } = useApiForm('/olympists');
 
   const { data: departamentos, loading: loadingDepartamentos } =
-    useFetchData<Departamento[]>('/departaments');
+    useFetchData<Departamento[]>('/departments');
 
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [loadingProvincias, setLoadingProvincias] = useState(false);
@@ -75,16 +75,16 @@ export default function FormDataPart() {
           const data = response.data;
 
           // Autocompletar datos
-          setValue('olimpista.name', data.nombres || '');
-          setValue('olimpista.lastname', data.apellidos || '');
-          setValue('olimpista.birthday', data.fecha_nacimiento || '');
-          setValue('olimpista.email', data.correo_electronico || '');
-          setValue('olimpista.phone', data.celular || '');
-          setValue('olimpista.citutor', data.ci_tutor_legal || '');
-          setValue('olimpista.depa', data.id_departamento || '');
-          setValue('olimpista.prov', data.id_provincia || '');
-          setValue('olimpista.colegio', data.id_colegio || '');
-          setValue('olimpista.grade', data.id_grado || '');
+          setValue('olimpista.name', data.names || '');
+          setValue('olimpista.lastname', data.surnames || '');
+          setValue('olimpista.birthday', data.birthdate || '');
+          setValue('olimpista.email', data.email || '');
+          setValue('olimpista.phone', data.phone || '');
+          setValue('olimpista.citutor', data.guardian_legal_ci || '');
+          setValue('olimpista.depa', data.department_id || '');
+          setValue('olimpista.prov', data.province_id || '');
+          setValue('olimpista.colegio', data.school_id || '');
+          setValue('olimpista.grade', data.grade_id || '');
           setError('olimpista.ci', {
             type: 'manual',
             message: 'Este número de cédula ya está registrado.',
@@ -285,56 +285,56 @@ export default function FormDataPart() {
     }
   }, [selectedProv]);
 
-  const handleDepartamentoChange = (id_departamento: string) => {
-    setValue('olimpista.depa', id_departamento, { shouldValidate: true });
+  const handleDepartamentoChange = (department_id: string) => {
+    setValue('olimpista.depa', department_id, { shouldValidate: true });
     setValue('olimpista.prov', '');
     setValue('olimpista.colegio', '');
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.depa = parseInt(id_departamento, 10);
+    formData.olimpista.depa = parseInt(department_id, 10);
     formData.olimpista.prov = '';
     formData.olimpista.colegio = '';
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
-  const handleGradoChange = (id_grado: string) => {
-    setValue('olimpista.grade', id_grado, { shouldValidate: true });
+  const handleGradoChange = (grade_id: string) => {
+    setValue('olimpista.grade', grade_id, { shouldValidate: true });
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.grade = parseInt(id_grado, 10);
+    formData.olimpista.grade = parseInt(grade_id, 10);
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
-  const handleProvinciaChange = (id_provincia: string) => {
-    setValue('olimpista.prov', id_provincia, { shouldValidate: true });
+  const handleProvinciaChange = (province_id: string) => {
+    setValue('olimpista.prov', province_id, { shouldValidate: true });
     setValue('olimpista.colegio', '');
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.prov = parseInt(id_provincia, 10);
+    formData.olimpista.prov = parseInt(province_id, 10);
     formData.olimpista.colegio = '';
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
-  const handleColegioChange = (id_colegio: string) => {
-    setValue('olimpista.colegio', id_colegio, { shouldValidate: true });
+  const handleColegioChange = (school_id: string) => {
+    setValue('olimpista.colegio', school_id, { shouldValidate: true });
     const savedData = localStorage.getItem('participantData');
     const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.colegio = parseInt(id_colegio, 10);
+    formData.olimpista.colegio = parseInt(school_id, 10);
     localStorage.setItem('participantData', JSON.stringify(formData));
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRegister = async (data: any) => {
     const payload = {
-      cedula_identidad: data.olimpista.ci,
-      nombres: data.olimpista.name,
-      apellidos: data.olimpista.lastname,
-      fecha_nacimiento: data.olimpista.birthday,
-      correo_electronico: data.olimpista.email,
-      ci_tutor: data.olimpista.citutor,
-      celular: data.olimpista.phone,
-      unidad_educativa: data.olimpista.colegio,
-      id_grado: data.olimpista.grade,
+      olympist_ci: data.olimpista.ci,
+      names: data.olimpista.name,
+      surnames: data.olimpista.lastname,
+      birthdate: data.olimpista.birthday,
+      email: data.olimpista.email,
+      tutor_ci: data.olimpista.citutor,
+      phone: data.olimpista.phone,
+      school: data.olimpista.colegio,
+      grade_id: data.olimpista.grade,
     };
 
     try {
@@ -608,8 +608,8 @@ export default function FormDataPart() {
                 options={
                   departamentos
                     ? departamentos.map((departamento) => ({
-                        id: departamento.id_departamento.toString(),
-                        name: departamento.nombre_departamento,
+                        id: departamento.department_id.toString(),
+                        name: departamento.department_name,
                       }))
                     : []
                 }
@@ -635,8 +635,8 @@ export default function FormDataPart() {
                   options={
                     provincias
                       ? provincias.map((provincia) => ({
-                          id: provincia.id_provincia.toString(),
-                          name: provincia.nombre_provincia,
+                          id: provincia.province_id.toString(),
+                          name: provincia.province_name,
                         }))
                       : []
                   }
@@ -672,8 +672,8 @@ export default function FormDataPart() {
                   options={
                     colegios
                       ? colegios.map((colegio) => ({
-                          id: colegio.id_colegio.toString(),
-                          name: colegio.nombre_colegio,
+                          id: colegio.school_id.toString(),
+                          name: colegio.school_name,
                         }))
                       : []
                   }
@@ -706,8 +706,8 @@ export default function FormDataPart() {
                 options={
                   grados
                     ? grados.map((grado) => ({
-                        id: grado.id_grado.toString(),
-                        name: grado.nombre_grado,
+                        id: grado.grade_id.toString(),
+                        name: grado.grade_name,
                       }))
                     : []
                 }
