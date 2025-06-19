@@ -117,7 +117,7 @@ const customStyles = {
   },
 };
 
-export const TablaOlimpistas: React.FC<TableProps> = ({ data }) => {
+export const TableOlympians: React.FC<TableProps> = ({ data }) => {
   return (
     <div className="w-full overflow-x-auto">
       {data.length === 0 ? (

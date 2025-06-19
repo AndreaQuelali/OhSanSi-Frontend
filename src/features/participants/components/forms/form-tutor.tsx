@@ -1,6 +1,6 @@
-import { Button, InputText, Modal } from '../../../components';
+import { Button, InputText, Modal } from '../../../../components';
 import { useState, useEffect } from 'react';
-import { FormData } from '../interfaces/form-tutor';
+import { FormData } from '../../interfaces/form-tutor';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';

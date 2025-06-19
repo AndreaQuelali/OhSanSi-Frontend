@@ -8,10 +8,10 @@ import {
   useFormValidity,
   useOlimpistaData,
   useTutorValidation,
-} from '../hooks';
+} from '../../hooks';
 import ParticipantFormHeader from './form-header';
-import AreasGridSection from './selection-grid-areas';
-import AreaSelectionModal from './selection-areas-modal';
+import AreasGridSection from './../grids/selection-grid-areas';
+import AreaSelectionModal from './../modals/selection-areas-modal';
 import FormButtons from '@/components/ui/form-buttons';
 import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';

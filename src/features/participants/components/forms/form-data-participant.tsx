@@ -1,5 +1,5 @@
 import { useFetchData } from '@/hooks/use-fetch-data';
-import { Button, Dropdown, InputText, Modal } from '../../../components';
+import { Button, Dropdown, InputText, Modal } from '@/components';
 import { useForm } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 import { API_URL } from '@/config/api-config';
@@ -9,7 +9,7 @@ import {
   Grado,
   Provincia,
   UnidadEducativa,
-} from '../interfaces/register-participants';
+} from '../../interfaces/register-participants.d';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';

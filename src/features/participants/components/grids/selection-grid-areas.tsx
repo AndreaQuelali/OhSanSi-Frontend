@@ -1,4 +1,4 @@
-import CardArea from './card-area';
+import CardArea from '../cards/card-area';
 
 interface NivelType {
   id_nivel: number;

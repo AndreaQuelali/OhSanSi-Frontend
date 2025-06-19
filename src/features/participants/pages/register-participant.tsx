@@ -1,4 +1,4 @@
-import FormDataPart from '../components/form-data-participant';
+import FormDataPart from '../components/forms/form-data-participant';
 
 export default function RegisterParticipantPage() {
   return (

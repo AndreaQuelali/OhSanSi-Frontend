@@ -1,14 +1,14 @@
 import { Button, InputText, Modal } from '@/components';
-import CardUploadFile from './card-upload-file';
+import CardUploadFile from '../cards/card-upload-file';
 import { useNavigate } from 'react-router';
 import { useState, useRef } from 'react';
 import IconDownload from '@/components/icons/icon-download';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-import { TablaOlimpistas } from './table-data-excel';
+import { TableOlympians } from '../tables/table-data-excel';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useForm } from 'react-hook-form';
-import ErrorModal from './modal-error';
+import ErrorModal from '../modals/modal-error';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 interface OlimpistaRow {
@@ -345,7 +345,7 @@ export default function FormDataExcel() {
         )}
         {!isLoading && (
           <div className="w-full">
-            <TablaOlimpistas data={olimpistas} />
+            <TableOlympians data={olimpistas} />
           </div>
         )}
 
