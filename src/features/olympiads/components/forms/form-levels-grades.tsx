@@ -36,7 +36,9 @@ export default function FormLevelsGrades() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const {
@@ -48,19 +50,23 @@ export default function FormLevelsGrades() {
     error,
     setError: setLevelsGradesError,
     setTableData,
-    setLevels
+    setLevels,
   } = useLevelsGrades();
 
-  const { data: olympiads } = useFetchData<{
-    id_olimpiada: number;
-    gestion: number;
-    nombre_olimpiada: string;
-  }[]>(`/api/olympiads/now`);
+  const { data: olympiads } = useFetchData<
+    {
+      olympiad_id: number;
+      year: number;
+      olympiad_name: string;
+    }[]
+  >(`/olympiads/now`);
 
-  const { data: grades } = useFetchData<{
-    id_grado: number;
-    nombre_grado: string;
-  }[]>(`/api/grades`);
+  const { data: grades } = useFetchData<
+    {
+      grade_id: number;
+      grade_name: string;
+    }[]
+  >(`/grades`);
 
   useEffect(() => {
     if (minGrade) {
@@ -97,7 +103,9 @@ export default function FormLevelsGrades() {
       if (selectedOlympiad) fetchTableData(Number(selectedOlympiad));
     } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(result.message || LEVELS_GRADES_ERROR_MESSAGES.REGISTER_ERROR);
+      setConfirmationMessage(
+        result.message || LEVELS_GRADES_ERROR_MESSAGES.REGISTER_ERROR,
+      );
       setShowConfirmationModal(true);
     }
     setIsSubmitting(false);
@@ -132,8 +140,8 @@ export default function FormLevelsGrades() {
                 className="w-full"
                 options={
                   olympiads?.map((olimpiada) => ({
-                    id: olimpiada.id_olimpiada.toString(),
-                    name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
+                    id: olimpiada.olympiad_id.toString(),
+                    name: `${olimpiada.year} - ${olimpiada.olympiad_name}`,
                   })) || []
                 }
                 displayKey="name"
@@ -151,8 +159,8 @@ export default function FormLevelsGrades() {
                 placeholder="Seleccionar nivel o categoría"
                 options={
                   levels?.map((level) => ({
-                    id: level.id_nivel.toString(),
-                    name: level.nombre,
+                    id: level.level_id.toString(),
+                    name: level.level_name,
                   })) || []
                 }
                 displayKey="name"
@@ -170,8 +178,8 @@ export default function FormLevelsGrades() {
                 options={
                   grades
                     ? grades.map((grade) => ({
-                        id: grade.id_grado.toString(),
-                        name: grade.nombre_grado,
+                        id: grade.grade_id.toString(),
+                        name: grade.grade_name,
                       }))
                     : []
                 }
@@ -191,8 +199,8 @@ export default function FormLevelsGrades() {
                   options={
                     grades
                       ? grades.slice(1).map((grade) => ({
-                          id: grade.id_grado.toString(),
-                          name: grade.nombre_grado,
+                          id: grade.grade_id.toString(),
+                          name: grade.grade_name,
                         }))
                       : []
                   }
@@ -204,11 +212,11 @@ export default function FormLevelsGrades() {
                       if (value === '') return true;
 
                       const minOrder = grades?.find(
-                        (grade) => grade.id_grado.toString() === minGrade,
-                      )?.id_grado;
+                        (grade) => grade.grade_id.toString() === minGrade,
+                      )?.grade_id;
                       const maxOrder = grades?.find(
-                        (grade) => grade.id_grado.toString() === value,
-                      )?.id_grado;
+                        (grade) => grade.grade_id.toString() === value,
+                      )?.grade_id;
 
                       if (!minOrder) {
                         return 'Debe seleccionar primero el grado mínimo';

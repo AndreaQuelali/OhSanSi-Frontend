@@ -7,7 +7,7 @@ export type FormData = {
 
 export type TableRow = {
   id: number;
-  area?: string;
+  area: string;
   level: string;
   grade: string;
-}; 
+};
