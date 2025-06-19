@@ -53,9 +53,9 @@ export const FormLevel = () => {
       const levelsFromDB = response.data.niveles;
 
       const formatted = levelsFromDB.map(
-        (niveles: { id_nivel: number; nombre: string }) => ({
-          id: niveles.id_nivel,
-          level: niveles.nombre,
+        (niveles: { level_id: number; level_name: string }) => ({
+          id: niveles.level_id,
+          level: niveles.level_name,
         }),
       );
 
@@ -78,8 +78,8 @@ export const FormLevel = () => {
       const levels = response.data.niveles;
 
       const isDuplicate = levels.some(
-        (nivel: { nombre: string }) =>
-          normalizeAreaName(nivel.nombre) === normalizeAreaName(inputLevel),
+        (nivel: { level_name: string }) =>
+          normalizeAreaName(nivel.level_name) === normalizeAreaName(inputLevel),
       );
 
       if (isDuplicate) {
@@ -103,7 +103,7 @@ export const FormLevel = () => {
 
     try {
       const payload = {
-        nombre: nameLevel,
+        name: nameLevel,
       };
 
       await axios.post(`${API_URL}/levels`, payload);
