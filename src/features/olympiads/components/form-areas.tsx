@@ -53,9 +53,9 @@ const FormAreas = () => {
       const areasFromDB = response.data;
 
       const formatted = areasFromDB.map(
-        (area: { id_area: number; nombre: string }) => ({
-          id: area.id_area,
-          area: area.nombre,
+        (area: { area_id: number; area_name: string }) => ({
+          id: area.area_id,
+          area: area.area_name,
         }),
       );
 
@@ -78,8 +78,8 @@ const FormAreas = () => {
       const areas = response.data;
 
       const isDuplicate = areas.some(
-        (area: { nombre: string }) =>
-          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea),
+        (area: { area_name: string }) =>
+          normalizeAreaName(area.area_name) === normalizeAreaName(inputArea),
       );
 
       if (isDuplicate) {
@@ -103,7 +103,7 @@ const FormAreas = () => {
 
     try {
       const payload = {
-        nombre: inputArea,
+        name: inputArea,
       };
 
       await axios.post(`${API_URL}/areas`, payload);
