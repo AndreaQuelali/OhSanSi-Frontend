@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { OlympiadApiService } from '../services/olympiad-api';
 import { OlympiadData } from '../interfaces/olympiad';
 
-
 export const useOlympiads = () => {
   const [olympiads, setOlympiads] = useState<OlympiadData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,6 @@ export const useOlympiads = () => {
     }
   };
 
-
   const createOlympiad = async (
     payload: Parameters<typeof OlympiadApiService.createOlympiad>[0],
   ) => {
@@ -40,14 +38,13 @@ export const useOlympiads = () => {
     }
   };
 
-
   const deleteOlympiad = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
       await OlympiadApiService.deleteOlympiad(id);
       setOlympiads((prev) =>
-        prev.filter((olympiad) => olympiad.id_olimpiada !== id),
+        prev.filter((olympiad) => olympiad.olympiad_id !== id),
       );
     } catch (err) {
       setError('Error al eliminar la olimpiada');
@@ -57,7 +54,6 @@ export const useOlympiads = () => {
     }
   };
 
- 
   const updateOlympiad = async (
     id: number,
     payload: Parameters<typeof OlympiadApiService.updateOlympiad>[1],
@@ -71,7 +67,7 @@ export const useOlympiads = () => {
       );
       setOlympiads((prev) =>
         prev.map((olympiad) =>
-          olympiad.id_olimpiada === id ? updatedOlympiad : olympiad,
+          olympiad.olympiad_id === id ? updatedOlympiad : olympiad,
         ),
       );
       return updatedOlympiad;
@@ -83,18 +79,16 @@ export const useOlympiads = () => {
     }
   };
 
-
   const checkOlympiadNameExists = (name: string, year: number): boolean => {
     return olympiads.some(
       (olympiad) =>
-        olympiad.gestion === year &&
-        olympiad.nombre_olimpiada.toUpperCase() === name.toUpperCase(),
+        olympiad.year === year &&
+        olympiad.olympiad_name.toUpperCase() === name.toUpperCase(),
     );
   };
 
-
   const getOlympiadsByYear = (year: number): OlympiadData[] => {
-    return olympiads.filter((olympiad) => olympiad.gestion === year);
+    return olympiads.filter((olympiad) => olympiad.year === year);
   };
 
   useEffect(() => {
