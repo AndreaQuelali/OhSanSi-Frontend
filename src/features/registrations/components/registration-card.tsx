@@ -4,7 +4,7 @@ import PaymentOrderModal from './payment-order-modal';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
 import { PaymentOrderModalInd } from './payment-order-modal-individual';
-import { ModalUploadPay } from './modal-upload-payment';
+import { ModalUploadPay } from './modals/upload-payment-modal';
 import { PaymentData, Props } from '../interfaces/registrations';
 
 const RegistrationCard: React.FC<Props> = ({

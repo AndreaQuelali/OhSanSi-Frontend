@@ -7,11 +7,7 @@ export const ResponsibleModal = ({ onClose, text, onConfirm, children }: ModalPr
 
     const {
         register,
-        handleSubmit,
-        watch,
-        setError,
-        clearErrors,
-        formState: { errors, isValid },
+        formState: { errors },
       } = useForm<FormData>({
         mode: 'onChange',
         defaultValues: {},
