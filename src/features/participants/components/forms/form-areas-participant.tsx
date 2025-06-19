@@ -1,26 +1,28 @@
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
 import { formattedDate } from '@/utils/date';
 import {
   useFormValidity,
   useOlimpistaData,
   useTutorValidation,
+  useAreaSelection,
+  useConfirmationModal,
+  useResponsibleModal,
 } from '../../hooks';
-import ParticipantFormHeader from './form-header';
-import AreasGridSection from './../grids/selection-grid-areas';
-import AreaSelectionModal from './../modals/selection-areas-modal';
-import FormButtons from '@/components/ui/form-buttons';
-import ResponsiblePersonModal from '@/components/ui/modal-responsible';
+import {
+  ParticipantFormHeader,
+  AreasGridSection,
+  AreaSelectionModal,
+  FormButtons,
+  ResponsiblePersonModal,
+} from '@/features/participants/components';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 import { ERROR_MESSAGES, ROUTES } from '../../constants/participant-constants';
-import { FormData } from '../../interfaces/form-areas-participant';
-import { useAreaSelection } from '../../hooks/use-area-selection';
-import { useConfirmationModal } from '../../hooks/use-confirmation-modal';
-import { useResponsibleModal } from '../../hooks/use-responsible-modal';
-import { buildEnrollmentPayload } from '../../utils/payload-builder';
+import { FormData } from '../../interfaces';
+import { buildEnrollmentPayload } from '../../utils';
+import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
 
 export default function FormAreaPart() {
   const {
