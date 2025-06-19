@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
@@ -17,7 +16,11 @@ import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 import { ERROR_MESSAGES, ROUTES } from '../../constants/participant-constants';
-import { FormData } from '../../interfaces/form-areas-participant'
+import { FormData } from '../../interfaces/form-areas-participant';
+import { useAreaSelection } from '../../hooks/use-area-selection';
+import { useConfirmationModal } from '../../hooks/use-confirmation-modal';
+import { useResponsibleModal } from '../../hooks/use-responsible-modal';
+import { buildEnrollmentPayload } from '../../utils/payload-builder';
 
 export default function FormAreaPart() {
   const {
@@ -34,14 +37,8 @@ export default function FormAreaPart() {
       tutor: { ci: '' },
     },
   });
-  const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | 'alert' | null
-  >(null);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const navigate = useNavigate();
 
   const {
@@ -61,12 +58,6 @@ export default function FormAreaPart() {
     ciTutor,
   });
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedArea, setSelectedArea] = useState<string | null>(null);
-  const [nivelesSeleccionadosTemp, setNivelesSeleccionadosTemp] = useState<
-    { id_nivel: number; nombre_nivel: string; registrado?: boolean }[]
-  >([]);
-
   const { data: maxCategoriasData } = useFetchDataWithBody<{
     success: boolean;
     fecha: string;
@@ -75,160 +66,22 @@ export default function FormAreaPart() {
   }>(`${API_URL}/olympiads/max-categories?fecha=${formattedDate}`, {
     method: 'GET',
   });
-  const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>(
-    {},
-  );
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
+
+  const confirmationModal = useConfirmationModal();
+  const areaSelection = useAreaSelection({
+    nivelesSeleccionados,
+    setNivelesSeleccionados,
+    areasDisponibles,
+    maxCategorias,
+    setValue,
+    ciTutor,
+    openConfirmationModal: confirmationModal.openConfirmationModal,
+  });
+  const responsibleModal = useResponsibleModal();
 
   const clearTutorError = () => {
     setTutorError(null);
-  };
-
-  const handleNivelToggle = (nivel: {
-    id_nivel: number;
-    nombre_nivel: string;
-    registrado?: boolean;
-  }) => {
-    if (nivel.registrado) {
-      alert(ERROR_MESSAGES.UNREGISTER_LEVEL);
-      return;
-    }
-
-    const nivelesYaRegistrados = nivelesSeleccionadosTemp.filter(
-      (n) => n.registrado,
-    );
-
-    if (nivelesSeleccionadosTemp.some((n) => n.id_nivel === nivel.id_nivel)) {
-      setNivelesSeleccionadosTemp([...nivelesYaRegistrados]);
-    } else {
-      setNivelesSeleccionadosTemp([...nivelesYaRegistrados, nivel]);
-    }
-  };
-
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    if (confirmationStatus === 'success') {
-      window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
-    }
-    setConfirmationStatus(null);
-    setConfirmationMessage('');
-  };
-
-  const handleModalAceptar = () => {
-    if (selectedArea) {
-      const hayNivelesNuevosSeleccionados = nivelesSeleccionadosTemp.some(
-        (nivel) => !nivel.registrado,
-      );
-
-      if (hayNivelesNuevosSeleccionados) {
-        setTutoresPorArea((prev) => ({
-          ...prev,
-          [selectedArea]: ciTutor || '',
-        }));
-      } else {
-        setTutoresPorArea((prev) => {
-          const { [selectedArea]: _, ...rest } = prev;
-          return rest;
-        });
-      }
-
-      const nivelesRegistradosEnArea =
-        areasDisponibles[selectedArea]?.filter((nivel) => nivel.registrado) ||
-        [];
-
-      const todosLosNivelesRegistradosIncluidos =
-        nivelesRegistradosEnArea.every((nivelReg) =>
-          nivelesSeleccionadosTemp.some(
-            (nivel) => nivel.id_nivel === nivelReg.id_nivel,
-          ),
-        );
-
-      if (
-        nivelesRegistradosEnArea.length > 0 &&
-        !todosLosNivelesRegistradosIncluidos
-      ) {
-        alert(ERROR_MESSAGES.LEVELS_ALREADY_REGISTERED);
-        setModalVisible(false);
-        return;
-      }
-
-      const nivelesDisponiblesSinRegistrar =
-        areasDisponibles[selectedArea]?.filter((nivel) => !nivel.registrado) ||
-        [];
-
-      if (nivelesDisponiblesSinRegistrar.length === 0) {
-        alert(ERROR_MESSAGES.REGISTER_NO_LEVELS_AREA);
-        setModalVisible(false);
-        return;
-      }
-
-      setNivelesSeleccionados((prev) => {
-        if (nivelesSeleccionadosTemp.length === 0) {
-          const nivelesRegistrados = prev[selectedArea]?.filter(
-            (n) => n.registrado,
-          );
-          if (nivelesRegistrados?.length > 0) {
-            return {
-              ...prev,
-              [selectedArea]: nivelesRegistrados,
-            };
-          } else {
-            const { [selectedArea]: _, ...rest } = prev;
-            return rest;
-          }
-        } else {
-          return {
-            ...prev,
-            [selectedArea]: nivelesSeleccionadosTemp,
-          };
-        }
-      });
-    }
-
-    setValue('tutor.ci', '');
-    setModalVisible(false);
-  };
-
-  const handleModalCancelar = () => {
-    setModalVisible(false);
-    setNivelesSeleccionadosTemp([]);
-  };
-
-  const handleAreaClick = (area: string) => {
-    const seleccionados = nivelesSeleccionados[area] || [];
-    const tutorCiForArea = tutoresPorArea[area] || '';
-    setValue('tutor.ci', tutorCiForArea);
-    if (seleccionados.length > 0) {
-      setSelectedArea(area);
-      setNivelesSeleccionadosTemp([...seleccionados]);
-      setModalVisible(true);
-      return;
-    }
-
-    if (maxCategorias <= 0) {
-      console.warn(
-        'Valor de maxCategorias no válido:',
-        maxCategorias,
-        'permitiendo selección',
-      );
-      setSelectedArea(area);
-      setNivelesSeleccionadosTemp([]);
-      setModalVisible(true);
-      return;
-    }
-
-    const areasConSelecciones = Object.keys(nivelesSeleccionados).length;
-    if (areasConSelecciones >= maxCategorias) {
-      setConfirmationStatus('alert');
-      setConfirmationMessage(
-        `Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`,
-      );
-      setShowConfirmationModal(true);
-      return;
-    }
-    setSelectedArea(area);
-    setNivelesSeleccionadosTemp([]);
-    setModalVisible(true);
   };
 
   const handleRegistrar = async () => {
@@ -236,53 +89,48 @@ export default function FormAreaPart() {
       alert(ERROR_MESSAGES.ADD_OLYMPIAN_CI);
       return;
     }
-
     const nivelesNuevos = Object.values(nivelesSeleccionados)
       .flat()
       .filter((nivel) => !nivel.registrado)
       .map((nivel) => nivel.id_nivel);
-
     if (nivelesNuevos.length === 0) {
       alert(ERROR_MESSAGES.REGISTER_NO_LEVELS);
       return;
     }
-
-    setShowResponsibleModal(true);
+    responsibleModal.openResponsibleModal();
   };
 
   const handleResponsibleConfirm = async (responsibleCi: string) => {
-    const nivelesNuevosFlat = Object.entries(nivelesSeleccionados).flatMap(
-      ([area, niveles]) => {
-        return niveles
-          .filter((nivel) => !nivel.registrado)
-          .map((nivel) => ({
-            id_nivel: nivel.id_nivel,
-            ...(tutoresPorArea[area]
-              ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
-              : {}),
-          }));
-      },
-    );
-
-    const payload = {
-      ci: parseInt(ciOlimpista),
-      niveles: nivelesNuevosFlat,
-      ci_responsable: parseInt(responsibleCi),
-    };
-
+    const payload = buildEnrollmentPayload({
+      ciOlimpista,
+      nivelesSeleccionados,
+      tutoresPorArea: areaSelection.tutoresPorArea,
+      responsibleCi,
+    });
     try {
       await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
-      setConfirmationStatus('success');
-      setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS);
+      confirmationModal.openConfirmationModal(
+        'success',
+        ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS
+      );
     } catch (err: any) {
       console.error('Error:', err);
-      setConfirmationStatus('error');
-      setConfirmationMessage(
-        err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS);
+      confirmationModal.openConfirmationModal(
+        'error',
+        err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS
+      );
     } finally {
-      setShowResponsibleModal(false);
-      setShowConfirmationModal(true);
+      responsibleModal.closeResponsibleModal();
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    confirmationModal.closeConfirmationModal();
+    if (confirmationModal.confirmationStatus === 'success') {
+      window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
+    }
+    confirmationModal.setConfirmationStatus(null);
+    confirmationModal.setConfirmationMessage('');
   };
 
   const handleNextStep = () => {
@@ -309,17 +157,17 @@ export default function FormAreaPart() {
           olimpistaError={olimpistaError}
           areasDisponibles={areasDisponibles}
           nivelesSeleccionados={nivelesSeleccionados}
-          onAreaClick={handleAreaClick}
+          onAreaClick={areaSelection.handleAreaClick}
         />
 
-        {modalVisible && selectedArea && (
+        {areaSelection.modalVisible && areaSelection.selectedArea && (
           <AreaSelectionModal
-            selectedArea={selectedArea}
+            selectedArea={areaSelection.selectedArea}
             areasDisponibles={areasDisponibles}
-            nivelesSeleccionadosTemp={nivelesSeleccionadosTemp}
-            onToggleNivel={handleNivelToggle}
-            onAccept={handleModalAceptar}
-            onCancel={handleModalCancelar}
+            nivelesSeleccionadosTemp={areaSelection.nivelesSeleccionadosTemp}
+            onToggleNivel={areaSelection.handleNivelToggle}
+            onAccept={areaSelection.handleModalAceptar}
+            onCancel={areaSelection.handleModalCancelar}
             register={register}
             errors={errors}
             tutorError={tutorError}
@@ -331,22 +179,22 @@ export default function FormAreaPart() {
         <FormButtons formIsValid={formIsValid} />
       </form>
       <ResponsiblePersonModal
-        isOpen={showResponsibleModal}
-        onClose={() => setShowResponsibleModal(false)}
+        isOpen={responsibleModal.showResponsibleModal}
+        onClose={responsibleModal.closeResponsibleModal}
         onConfirm={handleResponsibleConfirm}
       />
-      {showConfirmationModal && (
+      {confirmationModal.showConfirmationModal && (
         <ConfirmationModal
           onClose={handleCloseConfirmationModal}
-          status={confirmationStatus || 'error'}
-          message={confirmationMessage}
+          status={confirmationModal.confirmationStatus || 'error'}
+          message={confirmationModal.confirmationMessage}
           nextStepText={
-            confirmationStatus === 'success'
+            confirmationModal.confirmationStatus === 'success'
               ? ERROR_MESSAGES.NEXT_STEP_AREAS
               : undefined
           }
           onNextStep={
-            confirmationStatus === 'success' ? handleNextStep : undefined
+            confirmationModal.confirmationStatus === 'success' ? handleNextStep : undefined
           }
         />
       )}
