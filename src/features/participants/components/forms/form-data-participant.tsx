@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router';
 import { useApiForm } from '@/hooks/use-api-form';
 import { debounce } from 'lodash';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+import { ERROR_MESSAGES, MESSAGES, ROUTES, VALIDATION_LIMITS, VALIDATION_PATTERNS } from '../../constants/participant-constants';
 
 export default function FormDataPart() {
   const {
@@ -74,7 +75,6 @@ export default function FormDataPart() {
         if (response.data) {
           const data = response.data;
 
-          // Autocompletar datos
           setValue('olimpista.name', data.nombres || '');
           setValue('olimpista.lastname', data.apellidos || '');
           setValue('olimpista.birthday', data.fecha_nacimiento || '');
@@ -87,7 +87,7 @@ export default function FormDataPart() {
           setValue('olimpista.grade', data.id_grado || '');
           setError('olimpista.ci', {
             type: 'manual',
-            message: 'Este número de cédula ya está registrado.',
+            message: ERROR_MESSAGES.DUPLICATE_CI,
           });
           clearErrors();
           setIsRegisteredOlimpista(true);
@@ -146,7 +146,7 @@ export default function FormDataPart() {
   }, [ciValue, ciOlimpistaFound, clearErrors, setValue]);
 
   useEffect(() => {
-    if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
+    if (ciValue && String(ciValue).length >= 4 && VALIDATION_PATTERNS.CI.test(ciValue)) {
       setCiConfirmed(true);
     } else {
       setCiConfirmed(false);
@@ -185,14 +185,14 @@ export default function FormDataPart() {
         } else {
           setError('olimpista.citutor', {
             type: 'manual',
-            message: 'Este CI de tutor no está registrado.',
+            message: ERROR_MESSAGES.TUTOR_CI_UNREGISTERED,
           });
           setIsTutorRegistered(true);
         }
       } catch {
         setError('olimpista.citutor', {
           type: 'manual',
-          message: 'Este CI de tutor no está registrado.',
+          message: ERROR_MESSAGES.TUTOR_CI_UNREGISTERED,
         });
         setIsTutorRegistered(true);
       }
@@ -249,7 +249,7 @@ export default function FormDataPart() {
           );
           setProvincias(response.data);
         } catch (error) {
-          console.error('Error al cargar las provincias:', error);
+          console.error( ERROR_MESSAGES.PROVINCE_LOADING_ERROR , error);
           setProvincias([]);
         } finally {
           setLoadingProvincias(false);
@@ -272,7 +272,7 @@ export default function FormDataPart() {
           );
           setColegios(response.data);
         } catch (error) {
-          console.error('Error al cargar las unidades educativas:', error);
+          console.error(ERROR_MESSAGES.DEPARTMENT_LOADING_ERROR , error);
           setColegios([]);
         } finally {
           setLoadingColegios(false);
@@ -340,14 +340,12 @@ export default function FormDataPart() {
     try {
       await submitForm(payload);
       setConfirmationStatus('success');
-      setConfirmationMessage(
-        'Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.',
-      );
+      setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_OLYMPIAN);
     } catch (error: any) {
-      console.error('Error al registrar al olimpista:', error);
+      console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN , error);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        error.data?.message || 'Error al registrar al olimpista',
+        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN,
       );
     } finally {
       setShowConfirmationModal(true);
@@ -365,11 +363,11 @@ export default function FormDataPart() {
   };
 
   const handleNextStep = () => {
-    navigate('/olympian/register-selected-areas');
+    navigate(ROUTES.REGISTER_SELECTED_AREAS);
   };
 
   const onNextStep = () => {
-    navigate('/olympian/register-tutor');
+    navigate(ROUTES.REGISTER_TUTOR);
   };
 
   return (
@@ -395,18 +393,18 @@ export default function FormDataPart() {
               className="w-full "
               register={register}
               validationRules={{
-                required: 'El número de cédula es obligatorio',
+                required: ERROR_MESSAGES.REQUIRED_CI,
                 minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
+                  value: VALIDATION_LIMITS.CI_MIN_LENGTH,
+                  message: ERROR_MESSAGES.CI_MIN_LENGTH,
                 },
                 maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
+                  value: VALIDATION_LIMITS.CI_MAX_LENGTH,
+                  message: ERROR_MESSAGES.CI_MAX_LENGTH,
                 },
                 pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
+                  value: VALIDATION_PATTERNS.CI,
+                  message: ERROR_MESSAGES.INVALID_CI,
                 },
                 onchange: checkCi,
               }}
@@ -431,14 +429,12 @@ export default function FormDataPart() {
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
                 <p>
-                  Este número de cédula ya está registrado. Si desea inscribir
-                  al olimpista en áreas de competencia, puede continuar con el
-                  siguiente paso.
+                  {MESSAGES.FORM_OLYMPIAN_CI_REGISTERED}
                 </p>
                 <div className="mt-3 flex justify-end">
                   <Button
                     label="Ir a registro de olimpista en áreas de competencia"
-                    onClick={() => navigate(`/register-selected-areas`)}
+                    onClick={() => navigate(ROUTES.REGISTER_SELECTED_AREAS)}
                     variantColor="variant4"
                   />
                 </div>
@@ -457,11 +453,10 @@ export default function FormDataPart() {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El nombre es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_NAME,
                   pattern: {
-                    value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
-                    message:
-                      'Solo se permiten letras y un solo espacio entre palabras',
+                    value: VALIDATION_PATTERNS.NAME,
+                    message: ERROR_MESSAGES.INVALID_NAME,
                   },
                 }}
                 errors={errors}
@@ -474,11 +469,10 @@ export default function FormDataPart() {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El apellido es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_LASTNAME,
                   pattern: {
-                    value: /^[A-Za-zÑñÁÉÍÓÚáéíóú]+(?: [A-Za-zÑñÁÉÍÓÚáéíóú]+)*$/,
-                    message:
-                      'Solo se permiten letras y un solo espacio entre palabras',
+                    value: VALIDATION_PATTERNS.LASTNAME,
+                    message: ERROR_MESSAGES.INVALID_LASTNAME,
                   },
                 }}
                 errors={errors}
@@ -494,9 +488,9 @@ export default function FormDataPart() {
                 className="w-full "
                 register={register}
                 validationRules={{
-                  required: 'La fecha de nacimiento es obligatoria',
+                  required: ERROR_MESSAGES.REQUIRED_BIRTHDATE,
                   validate: (value: string) => {
-                    if (!value) return 'La fecha de nacimiento es obligatoria';
+                    if (!value) return ERROR_MESSAGES.REQUIRED_BIRTHDATE;
                     const today = new Date();
                     const birthDate = new Date(value);
                     const age = today.getFullYear() - birthDate.getFullYear();
@@ -507,7 +501,7 @@ export default function FormDataPart() {
                     const exactAge = hasBirthdayPassed ? age : age - 1;
                     return (
                       (exactAge >= 6 && exactAge <= 18) ||
-                      'Debe tener entre 6 y 18 años'
+                      ERROR_MESSAGES.INVALID_BIRTHDATE
                     );
                   },
                 }}
@@ -522,11 +516,10 @@ export default function FormDataPart() {
                 className="w-full "
                 register={register}
                 validationRules={{
-                  required: 'El correo electrónico es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_EMAIL,
                   pattern: {
-                    value:
-                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
-                    message: 'Correo electrónico no válido.',
+                    value: VALIDATION_PATTERNS.EMAIL,
+                    message: ERROR_MESSAGES.INVALID_EMAIL,
                   },
                 }}
                 errors={errors}
@@ -540,18 +533,18 @@ export default function FormDataPart() {
                   className="w-full "
                   register={register}
                   validationRules={{
-                    required: 'El número de cédula es obligatorio',
+                    required: ERROR_MESSAGES.REQUIRED_CI,
                     minLength: {
-                      value: 4,
-                      message: 'Debe tener al menos 4 dígitos',
+                      value: VALIDATION_LIMITS.CI_MIN_LENGTH,
+                      message: ERROR_MESSAGES.CI_MIN_LENGTH,
                     },
                     maxLength: {
-                      value: 8,
-                      message: 'No puede tener más de 8 dígitos',
+                      value: VALIDATION_LIMITS.CI_MAX_LENGTH,
+                      message: ERROR_MESSAGES.CI_MAX_LENGTH,
                     },
                     pattern: {
-                      value: /^[0-9]+$/,
-                      message: 'Solo se permiten números',
+                      value: VALIDATION_PATTERNS.CI,
+                      message: ERROR_MESSAGES.INVALID_CI,
                     },
                     validate: (value: string) => {
                       return value === ci ? true : undefined;
@@ -583,14 +576,14 @@ export default function FormDataPart() {
                   className="w-full"
                   register={register}
                   validationRules={{
-                    required: 'El número de celular es obligatorio',
+                    required: ERROR_MESSAGES.REQUIRED_PHONE,
                     pattern: {
-                      value: /^[0-9]{8,}$/,
-                      message: 'Debe contener solo números y al menos 8 dígitos',
+                      value: VALIDATION_PATTERNS.PHONE,
+                      message: ERROR_MESSAGES.INVALID_PHONE,
                     },
                     maxLength: {
-                      value: 15,
-                      message: 'Debe contener como máximo 15 dígitos',
+                      value: VALIDATION_LIMITS.PHONE_MAX_LENGTH,
+                      message: ERROR_MESSAGES.PHONE_MAX_LENGTH,
                     },
                   }}
                   errors={errors}
@@ -623,7 +616,7 @@ export default function FormDataPart() {
                 disabled={loadingDepartamentos || isRegisteredOlimpista}
                 errors={errors}
                 validationRules={{
-                  required: 'El departamento es obligatorio',
+                  required: ERROR_MESSAGES.DEPARTMENT_REQUIRED,
                 }}
               />
               <div>
@@ -650,7 +643,7 @@ export default function FormDataPart() {
                   disabled={loadingProvincias || isRegisteredOlimpista}
                   errors={errors}
                   validationRules={{
-                    required: 'La provincia es obligatoria',
+                    required: ERROR_MESSAGES.PROVINCE_REQUIRED,
                   }}
                 />
                 <div>
@@ -687,7 +680,7 @@ export default function FormDataPart() {
                   disabled={loadingColegios || isRegisteredOlimpista}
                   errors={errors}
                   validationRules={{
-                    required: 'La unidad educativa es obligatoria',
+                    required: ERROR_MESSAGES.SCHOOL_REQUIRED,
                   }}
                 />
                 <div>
@@ -715,7 +708,7 @@ export default function FormDataPart() {
                 displayKey="name"
                 valueKey="id"
                 {...register('olimpista.grade', {
-                  required: 'El grado es obligatorio',
+                  required: ERROR_MESSAGES.GRADE_REQUIRED,
                   onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleGradoChange(e.target.value),
                 })}
@@ -730,7 +723,7 @@ export default function FormDataPart() {
                     label="Cancelar"
                     variantColor="variant2"
                     className="mt-5 md:mt-0"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate(ROUTES.OLYMPIAN_MENU)}
                   />
                   <Button
                     type="submit"
@@ -748,7 +741,7 @@ export default function FormDataPart() {
                   <Button
                     label="Cancelar"
                     variantColor="variant2"
-                    onClick={() => navigate('/olympian')}
+                    onClick={() => navigate(ROUTES.OLYMPIAN_MENU)}
                   />
                 </div>
               )}
@@ -758,7 +751,7 @@ export default function FormDataPart() {
         {showModal && (
           <Modal
             onClose={() => setShowModal(false)}
-            text="¿Estás seguro de que deseas registrar esta información?"
+            text={ERROR_MESSAGES.CONFIRMATION_TEXT_OLYMPIAN}
             onConfirm={handleSubmit(handleRegister)}
           />
         )}
@@ -769,7 +762,7 @@ export default function FormDataPart() {
             message={confirmationMessage}
             nextStepText={
               confirmationStatus === 'success'
-                ? 'Ir a registro de olimpista en áreas de competencia'
+                ? ERROR_MESSAGES.NEXT_STEP_TEXT_OLYMPIAN
                 : undefined
             }
             onNextStep={

@@ -7,6 +7,7 @@ import {
   VALIDATION_PATTERNS,
   VALIDATION_LIMITS,
   ROUTES,
+  MESSAGES,
 } from '../../constants/participant-constants';
 import { useSubmitTutor, useTutorFormLogic } from '../../hooks';
 
@@ -107,8 +108,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
                 <p>
-                  Este número de cédula ya está registrado. Si desea registrar a
-                  un olimpista, puedes continuar con el siguiente paso.
+                  {MESSAGES.FORM_TUTOR_CI_REGISTERED}
                 </p>
                 <div className="mt-3 flex justify-end">
                   <Button
