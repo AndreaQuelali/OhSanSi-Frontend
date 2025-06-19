@@ -1,0 +1,67 @@
+import { useState, useCallback } from 'react';
+import axios from 'axios';
+import { API_URL } from '@/config/api-config';
+import { normalizeAreaName } from '../utils/olympiad-helpers';
+import { TableRow } from '../interfaces/form-levels';
+import { LEVEL_ERROR_MESSAGES } from '../constants/level-constants';
+
+export function useLevels() {
+  const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTableLevels = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${API_URL}/levels`);
+      const levelsFromDB = response.data.niveles;
+      const formatted = levelsFromDB.map(
+        (niveles: { level_id: number; level_name: string }) => ({
+          id: niveles.level_id,
+          level: niveles.level_name,
+        }),
+      );
+      setLevelsRegistered(formatted);
+    } catch (err) {
+      setError(LEVEL_ERROR_MESSAGES.VERIFY_ERROR);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const checkDuplicateLevel = useCallback(async (inputLevel: string) => {
+    try {
+      const response = await axios.get(`${API_URL}/levels`);
+      const levels = response.data.niveles;
+      return levels.some(
+        (nivel: { level_name: string }) =>
+          normalizeAreaName(nivel.level_name) === normalizeAreaName(inputLevel),
+      );
+    } catch {
+      setError(LEVEL_ERROR_MESSAGES.VERIFY_ERROR);
+      return false;
+    }
+  }, []);
+
+  const registerLevel = useCallback(async (nameLevel: string) => {
+    try {
+      const payload = { name: nameLevel };
+      await axios.post(`${API_URL}/levels`, payload);
+      return { success: true };
+    } catch {
+      return { success: false };
+    }
+  }, []);
+
+  return {
+    levelsRegistered,
+    fetchTableLevels,
+    checkDuplicateLevel,
+    registerLevel,
+    loading,
+    error,
+    setError,
+    setLevelsRegistered,
+  };
+}
