@@ -1,19 +1,13 @@
 import { useForm } from 'react-hook-form';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useFetchData } from '@/hooks/use-fetch-data';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, Dropdown, Modal } from '@/components';
 import { Table } from '../tables/table';
-
-interface FormData {
-  level: string;
-  gmin: string;
-  gmax: string;
-  olympiad: string;
-}
+import { useLevelsGrades } from '../../hooks/use-levels-grades';
+import { LEVELS_GRADES_ERROR_MESSAGES } from '../../constants/levels-grades-constants';
+import type { FormData } from '../../interfaces/form-levels-grades';
 
 export default function FormLevelsGrades() {
   const {
@@ -23,6 +17,9 @@ export default function FormLevelsGrades() {
     watch,
     trigger,
     setValue,
+    clearErrors,
+    reset,
+    getValues,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -38,43 +35,32 @@ export default function FormLevelsGrades() {
   const selectedOlympiad = watch('olympiad');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tableData, setTableData] = useState<
-    { id: number; area: string; level: string; grade: string }[]
-  >([]);
-
-  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>(
-    [],
-  );
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const fetchLevels = useCallback(async (olympiadId: number) => {
-    if (!olympiadId) return;
-    try {
-      const response = await axios.get(`${API_URL}/levels/${olympiadId}`);
-      setLevels(response.data.niveles);
-    } catch (error) {
-      console.error('Error al obtener los niveles:', error);
-    }
-  }, []);
+  const {
+    tableData,
+    fetchTableData,
+    levels,
+    fetchLevels,
+    registerAssociation,
+    error,
+    setError: setLevelsGradesError,
+    setTableData,
+    setLevels
+  } = useLevelsGrades();
 
-  const { data: olympiads } = useFetchData<
-    {
-      id_olimpiada: number;
-      gestion: number;
-      nombre_olimpiada: string;
-    }[]
-  >(`${API_URL}/olympiads/now`);
+  const { data: olympiads } = useFetchData<{
+    id_olimpiada: number;
+    gestion: number;
+    nombre_olimpiada: string;
+  }[]>(`/api/olympiads/now`);
 
-  const { data: grades } = useFetchData<
-    {
-      id_grado: number;
-      nombre_grado: string;
-    }[]
-  >(`${API_URL}/grades`);
+  const { data: grades } = useFetchData<{
+    id_grado: number;
+    nombre_grado: string;
+  }[]>(`/api/grades`);
 
   useEffect(() => {
     if (minGrade) {
@@ -88,31 +74,6 @@ export default function FormLevelsGrades() {
     }
   }, [minGrade]);
 
-  const fetchTableData = useCallback(async (olympiadId: number) => {
-    if (!olympiadId) {
-      return;
-    }
-    try {
-      const response = await axios.get(
-        `${API_URL}/grades/levels/${olympiadId}`,
-      );
-      const levelstable = response.data;
-
-      const formatted = levelstable.map((nivel: any) => ({
-        level: nivel.nombre_nivel,
-        grade:
-          nivel.grados.length > 1
-            ? `${nivel.grados[0].nombre_grado} a ${
-                nivel.grados[nivel.grados.length - 1].nombre_grado
-              }`
-            : nivel.grados[0].nombre_grado,
-      }));
-      setTableData(formatted);
-    } catch (error) {
-      console.error('Error al obtener los niveles con sus grados:', error);
-    }
-  }, []);
-
   useEffect(() => {
     if (selectedOlympiad) {
       fetchTableData(Number(selectedOlympiad));
@@ -120,56 +81,26 @@ export default function FormLevelsGrades() {
     }
   }, [selectedOlympiad, fetchLevels, fetchTableData]);
 
+  const onSubmit = () => {
+    setIsModalOpen(true);
+  };
+
   const handleRegister = async (data: FormData) => {
-    const levelId = levels.find(
-      (level) => level.id_nivel.toString() === data.level,
-    )?.id_nivel;
-
-    if (!levelId) {
-      console.error('Nivel no encontrado');
-      return;
-    }
-    const gminId = Number(data.gmin);
-    const gmaxId = data.gmax ? Number(data.gmax) : Number(data.gmin);
-    const olympiadId = Number(data.olympiad);
-
-    if (!levelId) {
-      alert('Datos inválidos');
-      return;
-    }
-
-    const response = await axios.get(`${API_URL}/grades/levels/${olympiadId}`);
-    const alreadyRegistered = response.data.some(
-      (item: any) => item.id_nivel === levelId,
-    );
-    if (alreadyRegistered) {
-      alert('Este nivel ya se encuentra asociado a grados');
-      return;
-    }
-    const payload = {
-      id_nivel: levelId,
-      id_grado_min: gminId,
-      id_grado_max: gmaxId,
-      id_olimpiada: olympiadId,
-    };
     setIsSubmitting(true);
-
-    try {
-      await axios.post(`${API_URL}/grades/levels`, payload);
-      setIsModalOpen(false);
+    const result = await registerAssociation(data, levels);
+    setIsModalOpen(false);
+    if (result.success) {
       setConfirmationStatus('success');
-      setConfirmationMessage('Nivel asociado a grado(s) exitosamente.');
+      setConfirmationMessage(LEVELS_GRADES_ERROR_MESSAGES.REGISTER_SUCCESS);
       setShowConfirmationModal(true);
-    } catch (error: any) {
+      reset();
+      if (selectedOlympiad) fetchTableData(Number(selectedOlympiad));
+    } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(
-        error.data?.message || 'Error al registrar el nivel.',
-      );
+      setConfirmationMessage(result.message || LEVELS_GRADES_ERROR_MESSAGES.REGISTER_ERROR);
       setShowConfirmationModal(true);
-      console.error('Error al registrar:', error);
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const handleCloseConfirmationModal = () => {
@@ -185,7 +116,7 @@ export default function FormLevelsGrades() {
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
         <form
-          onSubmit={handleSubmit(() => setIsModalOpen(true))}
+          onSubmit={handleSubmit(onSubmit)}
           className="mt-10 mb-32 mx-5 md:w-9/12 lg:w-9/12"
         >
           <div className="flex flex-col">
@@ -210,7 +141,7 @@ export default function FormLevelsGrades() {
                 register={register}
                 errors={errors}
                 validationRules={{
-                  required: 'Debe seleccionar un año/gestión',
+                  required: LEVELS_GRADES_ERROR_MESSAGES.REQUIRED_OLYMPIAD,
                 }}
               />
               <Dropdown
@@ -228,7 +159,7 @@ export default function FormLevelsGrades() {
                 valueKey="id"
                 register={register}
                 validationRules={{
-                  required: 'Debe seleccionar un nivel o categoría',
+                  required: LEVELS_GRADES_ERROR_MESSAGES.REQUIRED_LEVEL,
                 }}
                 errors={errors}
               />
@@ -248,7 +179,7 @@ export default function FormLevelsGrades() {
                 valueKey="id"
                 register={register}
                 validationRules={{
-                  required: 'Debe seleccionar el grado mínimo',
+                  required: LEVELS_GRADES_ERROR_MESSAGES.REQUIRED_GMIN,
                 }}
                 errors={errors}
               />
@@ -287,7 +218,7 @@ export default function FormLevelsGrades() {
                         if (minGrade === '12') {
                           return 'El grado mínimo es el más alto';
                         }
-                        return 'El grado máximo debe ser mayor al grado mínimo';
+                        return LEVELS_GRADES_ERROR_MESSAGES.INVALID_GMAX;
                       }
 
                       return true;
