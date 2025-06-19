@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RegistrationCard from './registration-card';
+import RegistrationCard from './cards/registration-card';
 import { Button, InputText } from '@/components';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
