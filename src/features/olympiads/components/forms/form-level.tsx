@@ -1,29 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, InputText, Modal } from '@/components';
 import { TableLevel } from '../tables/table-level';
-
-type FormData = {
-  inputLevel: string;
-};
-
-type TableRow = {
-  id: number;
-  level: string;
-};
-
-const normalizeAreaName = (str: string) =>
-  removeAccents(str.toUpperCase())
-    .replace(/ ?- ?/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const removeAccents = (str: string) =>
-  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+import { useLevels } from '../../hooks/use-levels';
+import { LEVEL_ERROR_MESSAGES, LEVEL_VALIDATION_PATTERNS, LEVEL_VALIDATION_LIMITS } from '../../constants/level-constants';
+import type { FormData } from '../../interfaces/form-level';
 
 export const FormLevel = () => {
   const {
@@ -40,83 +23,51 @@ export const FormLevel = () => {
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [levelsRegistered, setLevelsRegistered] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const fetchTableLevels = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/levels`);
-      const levelsFromDB = response.data.niveles;
-
-      const formatted = levelsFromDB.map(
-        (niveles: { id_nivel: number; nombre: string }) => ({
-          id: niveles.id_nivel,
-          level: niveles.nombre,
-        }),
-      );
-
-      setLevelsRegistered(formatted);
-    } catch (error) {
-      console.error('Error al obtener los niveles:', error);
-    }
-  };
+  const {
+    levelsRegistered,
+    fetchTableLevels,
+    checkDuplicateLevel,
+    registerLevel,
+    error,
+    setError: setLevelsError,
+    setLevelsRegistered
+  } = useLevels();
 
   useEffect(() => {
     fetchTableLevels();
-  }, []);
+  }, [fetchTableLevels]);
 
   const onSubmit = async () => {
     clearErrors('inputLevel');
     const inputLevel = getValues('inputLevel');
-
-    try {
-      const response = await axios.get(`${API_URL}/levels`);
-      const levels = response.data.niveles;
-
-      const isDuplicate = levels.some(
-        (nivel: { nombre: string }) =>
-          normalizeAreaName(nivel.nombre) === normalizeAreaName(inputLevel),
-      );
-
-      if (isDuplicate) {
-        setError('inputLevel', {
-          type: 'manual',
-          message: 'Este nivel ya se encuentra registrado.',
-        });
-        return;
-      }
-
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error al verificar los niveles:', error);
-      alert('No se pudo verificar si el nivel ya existe. Intente nuevamente.');
+    const isDuplicate = await checkDuplicateLevel(inputLevel);
+    if (isDuplicate) {
+      setError('inputLevel', {
+        type: 'manual',
+        message: LEVEL_ERROR_MESSAGES.DUPLICATE,
+      });
+      return;
     }
+    setIsModalOpen(true);
   };
 
   const handleRegister = async () => {
     setIsModalOpen(false);
     const nameLevel = getValues('inputLevel');
-
-    try {
-      const payload = {
-        nombre: nameLevel,
-      };
-
-      await axios.post(`${API_URL}/levels`, payload);
+    const result = await registerLevel(nameLevel);
+    if (result.success) {
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso del nivel.');
+      setConfirmationMessage(LEVEL_ERROR_MESSAGES.REGISTER_SUCCESS);
       setShowConfirmationModal(true);
       reset();
       fetchTableLevels();
-    } catch {
+    } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(
-        'Error al registrar el nivel. Por favor, intente nuevamente.',
-      );
+      setConfirmationMessage(LEVEL_ERROR_MESSAGES.REGISTER_ERROR);
       setShowConfirmationModal(true);
     }
   };
@@ -149,17 +100,14 @@ export const FormLevel = () => {
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre del nivel es obligatorio',
+                required: LEVEL_ERROR_MESSAGES.REQUIRED,
                 pattern: {
-                  value:
-                    /^[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+(?:(?: |-| - | -|- | - )[A-Za-zÑñÁÉÍÓÚáéíóú0-9]+)*$/,
-                  message:
-                    'Solo se permiten letras, números, guiones en medio y un solo espacio entre palabras',
+                  value: LEVEL_VALIDATION_PATTERNS.NAME,
+                  message: LEVEL_ERROR_MESSAGES.PATTERN,
                 },
-
                 maxLength: {
-                  value: 30,
-                  message: 'El nombre no puede exceder los 30 caracteres',
+                  value: LEVEL_VALIDATION_LIMITS.MAX_LENGTH,
+                  message: LEVEL_ERROR_MESSAGES.MAX_LENGTH,
                 },
               }}
             />
