@@ -1,17 +1,17 @@
 import React from 'react';
 import { Button, ButtonIcon } from '@/components';
 import CloseIcon from '@/components/icons/close';
-import { PaymentOrderModalProps } from '../interfaces/payment-order-modal';
-import { usePaymentOrderModal } from '../hooks/use-payment-order-modal';
-import { PaymentOrderContent } from './payment-order-content';
+import { PaymentOrderGroupModalProps } from '../../interfaces/payment-order-modal';
+import { usePaymentOrderGroupModal } from '../../hooks/use-payment-order-group-modal';
+import { PaymentOrderGroupContent } from '../templates/payment-order-group-content';
 
-export const PaymentOrderModalInd: React.FC<PaymentOrderModalProps> = ({
+const PaymentOrderModal: React.FC<PaymentOrderGroupModalProps> = ({
   isOpen,
   onClose,
   data,
 }) => {
   const { contentRef, handleDownload, formattedData } =
-    usePaymentOrderModal(data);
+    usePaymentOrderGroupModal(data);
 
   if (!isOpen) return null;
 
@@ -30,7 +30,7 @@ export const PaymentOrderModalInd: React.FC<PaymentOrderModalProps> = ({
           />
         </div>{' '}
         <div ref={contentRef} className="px-6">
-          <PaymentOrderContent formattedData={formattedData} />
+          <PaymentOrderGroupContent formattedData={formattedData} />
         </div>
         <div className="flex justify-end space-x-4 mt-6 px-6">
           <Button onClick={handleDownload} label="Descargar" />
@@ -39,3 +39,5 @@ export const PaymentOrderModalInd: React.FC<PaymentOrderModalProps> = ({
     </div>
   );
 };
+
+export default PaymentOrderModal;

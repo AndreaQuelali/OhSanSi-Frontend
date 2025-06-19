@@ -1,9 +1,9 @@
 import { Button } from '@/components';
 import React, { useState } from 'react';
-import PaymentOrderModal from './payment-order-modal';
+import PaymentOrderModal from './modals/payment-order-modal';
 import { API_URL } from '@/config/api-config';
 import axios from 'axios';
-import { PaymentOrderModalInd } from './payment-order-modal-individual';
+import { PaymentOrderModalInd } from './modals/payment-order-modal-individual';
 import { ModalUploadPay } from './modals/upload-payment-modal';
 import { PaymentData, Props } from '../interfaces/registrations';
 

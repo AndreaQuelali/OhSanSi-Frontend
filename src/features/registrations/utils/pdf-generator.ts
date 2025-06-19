@@ -2,10 +2,21 @@ import html2pdf from 'html2pdf.js';
 import {
   PDFGenerationOptions,
   PaymentData,
+  PaymentDataGroup,
 } from '../interfaces/payment-order-modal';
 
 export const pdfUtils = {
   generatePaymentOrderOptions: (data: PaymentData): PDFGenerationOptions => ({
+    margin: 0.5,
+    filename: `OrdenPago_${data.nroOrden}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 3 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  }),
+
+  generatePaymentOrderGroupOptions: (
+    data: PaymentDataGroup,
+  ): PDFGenerationOptions => ({
     margin: 0.5,
     filename: `OrdenPago_${data.nroOrden}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
