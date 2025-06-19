@@ -16,10 +16,12 @@ export function useLevels() {
     try {
       const response = await axios.get(`${API_URL}/levels`);
       const levelsFromDB = response.data.niveles;
-      const formatted = levelsFromDB.map((niveles: { id_nivel: number; nombre: string }) => ({
-        id: niveles.id_nivel,
-        level: niveles.nombre,
-      }));
+      const formatted = levelsFromDB.map(
+        (niveles: { level_id: number; level_name: string }) => ({
+          id: niveles.level_id,
+          level: niveles.level_name,
+        }),
+      );
       setLevelsRegistered(formatted);
     } catch (err) {
       setError(LEVEL_ERROR_MESSAGES.VERIFY_ERROR);
@@ -32,7 +34,10 @@ export function useLevels() {
     try {
       const response = await axios.get(`${API_URL}/levels`);
       const levels = response.data.niveles;
-      return levels.some((nivel: { nombre: string }) => normalizeAreaName(nivel.nombre) === normalizeAreaName(inputLevel));
+      return levels.some(
+        (nivel: { level_name: string }) =>
+          normalizeAreaName(nivel.level_name) === normalizeAreaName(inputLevel),
+      );
     } catch {
       setError(LEVEL_ERROR_MESSAGES.VERIFY_ERROR);
       return false;
@@ -41,7 +46,7 @@ export function useLevels() {
 
   const registerLevel = useCallback(async (nameLevel: string) => {
     try {
-      const payload = { nombre: nameLevel };
+      const payload = { name: nameLevel };
       await axios.post(`${API_URL}/levels`, payload);
       return { success: true };
     } catch {
@@ -57,6 +62,6 @@ export function useLevels() {
     loading,
     error,
     setError,
-    setLevelsRegistered
+    setLevelsRegistered,
   };
-} 
+}
