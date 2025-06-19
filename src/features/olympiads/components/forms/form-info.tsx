@@ -72,10 +72,12 @@ export default function FormInfo() {
     });
 
     try {
+      console.log(payload);
       const response = await submitForm(payload);
+
       if (response) {
         showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION);
-        localStorage.setItem('gestion', formData.year);
+        localStorage.setItem('year', formData.year);
       }
     } catch (error) {
       const errorMessage = formatApiError(error);
@@ -200,7 +202,6 @@ export default function FormInfo() {
                   if (exists) {
                     return ERROR_MESSAGES.OLYMPIAD_NAME_EXISTS;
                   }
-
                   return true;
                 },
               }}
