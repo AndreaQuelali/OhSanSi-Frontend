@@ -1,29 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { useNavigate } from 'react-router';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, InputText, Modal } from '@/components';
 import { TableAreas } from '../tables/table-areas';
-
-type FormData = {
-  inputArea: string;
-};
-
-type TableRow = {
-  id: number;
-  area: string;
-};
-
-const normalizeAreaName = (str: string) =>
-  removeAccents(str.toUpperCase())
-    .replace(/ ?- ?/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const removeAccents = (str: string) =>
-  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+import { useAreas } from '../../hooks/use-areas';
+import { AREA_ERROR_MESSAGES, AREA_VALIDATION_PATTERNS, AREA_VALIDATION_LIMITS } from '../../constants/area-constants';
+import type { FormData } from '../../interfaces/form-area';
 
 const FormAreas = () => {
   const {
@@ -40,87 +23,51 @@ const FormAreas = () => {
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [areasRegistradas, setAreasRegistradas] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const fetchAreas = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/areas`);
-      const areasFromDB = response.data;
-
-      const formatted = areasFromDB.map(
-        (area: { id_area: number; nombre: string }) => ({
-          id: area.id_area,
-          area: area.nombre,
-        }),
-      );
-
-      setAreasRegistradas(formatted);
-    } catch (error) {
-      console.error('Error al obtener las áreas:', error);
-    }
-  };
+  const {
+    areasRegistered,
+    fetchTableAreas,
+    checkDuplicateArea,
+    registerArea,
+    error,
+    setError: setAreasError,
+    setAreasRegistered
+  } = useAreas();
 
   useEffect(() => {
-    fetchAreas();
-  }, []);
+    fetchTableAreas();
+  }, [fetchTableAreas]);
 
   const onSubmit = async () => {
     clearErrors('inputArea');
     const inputArea = getValues('inputArea');
-
-    try {
-      const response = await axios.get(`${API_URL}/areas`);
-      const areas = response.data;
-
-      const isDuplicate = areas.some(
-        (area: { nombre: string }) =>
-          normalizeAreaName(area.nombre) === normalizeAreaName(inputArea),
-      );
-
-      if (isDuplicate) {
-        setError('inputArea', {
-          type: 'manual',
-          message: 'Esta área ya se encuentra registrada.',
-        });
-        return;
-      }
-
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error al verificar las áreas:', error);
-      alert('No se pudo verificar si el área ya existe. Intente nuevamente.');
+    const isDuplicate = await checkDuplicateArea(inputArea);
+    if (isDuplicate) {
+      setError('inputArea', {
+        type: 'manual',
+        message: AREA_ERROR_MESSAGES.DUPLICATE,
+      });
+      return;
     }
+    setIsModalOpen(true);
   };
 
   const handleRegister = async () => {
     setIsModalOpen(false);
-    const inputArea = getValues('inputArea');
-
-    try {
-      const payload = {
-        nombre: inputArea,
-      };
-
-      await axios.post(`${API_URL}/areas`, payload);
-
+    const nameArea = getValues('inputArea');
+    const result = await registerArea(nameArea);
+    if (result.success) {
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso del área.');
+      setConfirmationMessage(AREA_ERROR_MESSAGES.REGISTER_SUCCESS);
       setShowConfirmationModal(true);
       reset();
-      fetchAreas();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error('Error al registrar el área:', error);
+      fetchTableAreas();
+    } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(
-        error.response?.data?.message ||
-          'Error al registrar el área. Por favor, intente nuevamente.',
-      );
+      setConfirmationMessage(AREA_ERROR_MESSAGES.REGISTER_ERROR);
       setShowConfirmationModal(true);
     }
   };
@@ -153,15 +100,14 @@ const FormAreas = () => {
               register={register}
               errors={errors}
               validationRules={{
-                required: 'El nombre del área es obligatorio',
+                required: AREA_ERROR_MESSAGES.REQUIRED,
                 pattern: {
-                  value: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
-                  message:
-                    'Solo se permiten letras mayúsculas, guion en medio y un solo espacio entre palabras',
+                  value: AREA_VALIDATION_PATTERNS.NAME,
+                  message: AREA_ERROR_MESSAGES.PATTERN,
                 },
                 maxLength: {
-                  value: 50,
-                  message: 'El nombre no puede exceder los 50 caracteres',
+                  value: AREA_VALIDATION_LIMITS.MAX_LENGTH,
+                  message: AREA_ERROR_MESSAGES.MAX_LENGTH,
                 },
               }}
             />
@@ -185,7 +131,7 @@ const FormAreas = () => {
             Áreas registradas
           </h2>
           <div className="mt-2 md:w-11/12 mx-auto">
-            <TableAreas data={areasRegistradas} />
+            <TableAreas data={areasRegistered} />
           </div>
         </div>
       </form>
