@@ -1,21 +1,28 @@
-import { useFetchData } from '@/hooks/use-fetch-data';
-import { Button, Dropdown, InputText, Modal } from '@/components';
 import { useForm } from 'react-hook-form';
-import { useEffect, useRef, useState } from 'react';
-import { API_URL } from '@/config/api-config';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useFetchData } from '@/hooks/use-fetch-data';
+import { useApiForm } from '@/hooks/use-api-form';
+import { Button, Dropdown, InputText, Modal } from '@/components';
+import { ConfirmationModal } from '@/components/ui/modal-confirmation';
+
+import {
+  ERROR_MESSAGES,
+  MESSAGES,
+  ROUTES,
+  VALIDATION_LIMITS,
+  VALIDATION_PATTERNS,
+} from '../../constants/participant-constants';
+
 import {
   Departamento,
   FormValues,
   Grado,
-  Provincia,
-  UnidadEducativa,
-} from '../../interfaces/register-participants.d';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
-import { useApiForm } from '@/hooks/use-api-form';
-import { debounce } from 'lodash';
-import { ConfirmationModal } from '@/components/ui/modal-confirmation';
-import { ERROR_MESSAGES, MESSAGES, ROUTES, VALIDATION_LIMITS, VALIDATION_PATTERNS } from '../../constants/participant-constants';
+} from '../../interfaces/register-participants';
+
+import { useCheckOlympianCI, useCheckTutorCI, useLoadSchools } from '../../hooks';
+import { saveFieldToLocalStorage, buildOlimpistaPayload } from '../../utils';
+import { useConfirmation } from '@/features/olympiads';
 
 export default function FormDataPart() {
   const {
@@ -27,177 +34,48 @@ export default function FormDataPart() {
     formState: { errors, isValid },
     watch,
   } = useForm<FormValues>({ mode: 'onChange' });
+
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  const { data: grados, loading } = useFetchData<Grado[]>('/grades');
+  const { data: grados, loading: loading, } = useFetchData<Grado[]>('/grades');
+  const { data: departamentos,   loading: loadingDepartamentos } = useFetchData<Departamento[]>('/departaments');
   const { submitForm } = useApiForm('/olympists');
-
-  const { data: departamentos, loading: loadingDepartamentos } =
-    useFetchData<Departamento[]>('/departaments');
-
-  const [provincias, setProvincias] = useState<Provincia[]>([]);
-  const [loadingProvincias, setLoadingProvincias] = useState(false);
-
-  const [colegios, setColegios] = useState<UnidadEducativa[]>([]);
-  const [loadingColegios, setLoadingColegios] = useState(false);
-
-  const selectedDepartment = watch('olimpista.depa');
-  const selectedProv = watch('olimpista.prov');
 
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
+  const selectedDepartment = watch('olimpista.depa');
+  const selectedProv = watch('olimpista.prov');
 
-  const ciValue = watch('olimpista.ci') || '';
-  const [isRegisteredOlimpista, setIsRegisteredOlimpista] = useState(false);
-  const [ciOlimpistaFound, setCiOlimpistaFound] = useState<string | null>(null);
   const [ciConfirmed, setCiConfirmed] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
-  const [isTutorRegistered, setIsTutorRegistered] = useState(false);
 
-  const debouncedCheckCiRef = useRef(
-    debounce(async (ciValue: string) => {
-      if (!ciValue || ciValue.length < 4 || ciValue.length > 8) {
-        setIsRegisteredOlimpista(false);
-        setCiOlimpistaFound(null);
-        if (errors?.olimpista?.ci?.type === 'manual') {
-          clearErrors('olimpista.ci');
-        }
-        return;
-      }
+  const {
+    showModal,
+    showConfirmationModal,
+    confirmationStatus,
+    confirmationMessage,
+    openModal,
+    closeModal,
+    showSuccess,
+    showError,
+    closeConfirmationModal,
+  } = useConfirmation();
 
-      try {
-        const response = await axios.get(`${API_URL}/olympists/${ciValue}`);
-        if (response.data) {
-          const data = response.data;
+  const {
+    isRegisteredOlimpista,
+    ciOlimpistaFound,
+    debouncedCheckCiRef,
+    setIsRegisteredOlimpista,
+    setCiOlimpistaFound,
+  } = useCheckOlympianCI(ci, setValue, setError, clearErrors, errors);
 
-          setValue('olimpista.name', data.nombres || '');
-          setValue('olimpista.lastname', data.apellidos || '');
-          setValue('olimpista.birthday', data.fecha_nacimiento || '');
-          setValue('olimpista.email', data.correo_electronico || '');
-          setValue('olimpista.phone', data.celular || '');
-          setValue('olimpista.citutor', data.ci_tutor_legal || '');
-          setValue('olimpista.depa', data.id_departamento || '');
-          setValue('olimpista.prov', data.id_provincia || '');
-          setValue('olimpista.colegio', data.id_colegio || '');
-          setValue('olimpista.grade', data.id_grado || '');
-          setError('olimpista.ci', {
-            type: 'manual',
-            message: ERROR_MESSAGES.DUPLICATE_CI,
-          });
-          clearErrors();
-          setIsRegisteredOlimpista(true);
-          setCiOlimpistaFound(ciValue);
-        } else {
-          if (errors?.olimpista?.ci?.type === 'manual') {
-            clearErrors('olimpista.ci');
-          }
-          setIsRegisteredOlimpista(false);
-          setCiOlimpistaFound(null);
-          setValue('olimpista.name', '');
-          setValue('olimpista.lastname', '');
-          setValue('olimpista.birthday', '');
-          setValue('olimpista.email', '');
-          setValue('olimpista.phone', '');
-          setValue('olimpista.citutor', '');
-          setValue('olimpista.depa', '');
-          setValue('olimpista.prov', '');
-          setValue('olimpista.colegio', '');
-          setValue('olimpista.grade', '');
-        }
-      } catch (error) {
-        console.error('Error al verificar el CI:', error);
-        if (errors?.olimpista?.ci?.type === 'manual') {
-          clearErrors('olimpista.ci');
-        }
-        setIsRegisteredOlimpista(false);
-        setCiOlimpistaFound(null);
-      }
-    }, 500),
-  );
+  const { isTutorRegistered, debouncedCheckCiTutorRef } = useCheckTutorCI(citutor, ci, setError, clearErrors);
 
-  useEffect(() => {
-    debouncedCheckCiRef.current(ciValue);
-  }, [ciValue]);
-
-  useEffect(() => {
-    if (ciOlimpistaFound && ciValue !== ciOlimpistaFound) {
-      if (errors?.olimpista?.ci?.type === 'manual') {
-        clearErrors('olimpista.ci');
-      }
-      setIsRegisteredOlimpista(false);
-      setCiOlimpistaFound(null);
-
-      setValue('olimpista.name', '');
-      setValue('olimpista.lastname', '');
-      setValue('olimpista.birthday', '');
-      setValue('olimpista.email', '');
-      setValue('olimpista.phone', '');
-      setValue('olimpista.citutor', '');
-      setValue('olimpista.depa', '');
-      setValue('olimpista.prov', '');
-      setValue('olimpista.colegio', '');
-      setValue('olimpista.grade', '');
-    }
-  }, [ciValue, ciOlimpistaFound, clearErrors, setValue]);
-
-  useEffect(() => {
-    if (ciValue && String(ciValue).length >= 4 && VALIDATION_PATTERNS.CI.test(ciValue)) {
-      setCiConfirmed(true);
-    } else {
-      setCiConfirmed(false);
-    }
-  }, [ciValue]);
-
-  useEffect(() => {
-    if (isRegisteredOlimpista) {
-      setShowMessage(true);
-    } else {
-      const timeout = setTimeout(() => setShowMessage(false), 50);
-      return () => clearTimeout(timeout);
-    }
-  }, [isRegisteredOlimpista]);
-
-  const debouncedCheckCiTutorRef = useRef(
-    debounce(async (ciTutorValue: string, ciOlimpistaValue: string) => {
-      if (!ciTutorValue || ciTutorValue.length < 4) {
-        return;
-      }
-
-      if (ciTutorValue.length > 8) {
-        return;
-      }
-
-      if (ciTutorValue === ciOlimpistaValue) {
-        clearErrors('olimpista.citutor');
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${API_URL}/tutors/${ciTutorValue}`);
-        if (response.data) {
-          clearErrors('olimpista.citutor');
-          setIsTutorRegistered(false);
-        } else {
-          setError('olimpista.citutor', {
-            type: 'manual',
-            message: ERROR_MESSAGES.TUTOR_CI_UNREGISTERED,
-          });
-          setIsTutorRegistered(true);
-        }
-      } catch {
-        setError('olimpista.citutor', {
-          type: 'manual',
-          message: ERROR_MESSAGES.TUTOR_CI_UNREGISTERED,
-        });
-        setIsTutorRegistered(true);
-      }
-    }, 500),
-  );
+  const {
+    provincias,
+    colegios,
+    loadingProvincias,
+    loadingColegios,
+  } = useLoadSchools(selectedDepartment, selectedProv);
 
   const checkCi = () => {
     if (ci && ci.length <= 8) {
@@ -221,145 +99,84 @@ export default function FormDataPart() {
   };
 
   useEffect(() => {
-    if (ci && ci.length >= 4) {
-      debouncedCheckCiRef.current(ci);
+    if (ciOlimpistaFound && ci !== ciOlimpistaFound) {
+      if (errors?.olimpista?.ci?.type === 'manual') {
+        clearErrors('olimpista.ci');
+      }
+      setIsRegisteredOlimpista(false);
+      setCiOlimpistaFound(null);
+      setValue('olimpista.name', '');
+      setValue('olimpista.lastname', '');
+      setValue('olimpista.birthday', '');
+      setValue('olimpista.email', '');
+      setValue('olimpista.phone', '');
+      setValue('olimpista.citutor', '');
+      setValue('olimpista.depa', '');
+      setValue('olimpista.prov', '');
+      setValue('olimpista.colegio', '');
+      setValue('olimpista.grade', '');
     }
+  }, [ci, ciOlimpistaFound, clearErrors, setValue]);
+
+  useEffect(() => {
+    setCiConfirmed(
+      !!ci && ci.length >= 4 && VALIDATION_PATTERNS.CI.test(ci)
+    );
   }, [ci]);
 
   useEffect(() => {
-    if (!citutor || citutor.length < 4) {
-      return;
-    }
-
-    if (citutor === ci) {
-      clearErrors('olimpista.citutor');
-      return;
-    }
-
-    debouncedCheckCiTutorRef.current(citutor, ci);
-  }, [citutor, ci, clearErrors]);
-
-  useEffect(() => {
-    if (selectedDepartment) {
-      const fetchProvincias = async () => {
-        setLoadingProvincias(true);
-        try {
-          const response = await axios.get(
-            `${API_URL}/provinces/${selectedDepartment}`,
-          );
-          setProvincias(response.data);
-        } catch (error) {
-          console.error( ERROR_MESSAGES.PROVINCE_LOADING_ERROR , error);
-          setProvincias([]);
-        } finally {
-          setLoadingProvincias(false);
-        }
-      };
-
-      fetchProvincias();
+    if (isRegisteredOlimpista) {
+      setShowMessage(true);
     } else {
-      setProvincias([]);
+      const timeout = setTimeout(() => setShowMessage(false), 50);
+      return () => clearTimeout(timeout);
     }
-  }, [selectedDepartment]);
-
-  useEffect(() => {
-    if (selectedProv) {
-      const fetchColegios = async () => {
-        setLoadingColegios(true);
-        try {
-          const response = await axios.get(
-            `${API_URL}/schools/provinces/${selectedProv}`,
-          );
-          setColegios(response.data);
-        } catch (error) {
-          console.error(ERROR_MESSAGES.DEPARTMENT_LOADING_ERROR , error);
-          setColegios([]);
-        } finally {
-          setLoadingColegios(false);
-        }
-      };
-
-      fetchColegios();
-    } else {
-      setColegios([]);
-    }
-  }, [selectedProv]);
+  }, [isRegisteredOlimpista]);
 
   const handleDepartamentoChange = (id_departamento: string) => {
     setValue('olimpista.depa', id_departamento, { shouldValidate: true });
     setValue('olimpista.prov', '');
     setValue('olimpista.colegio', '');
-    const savedData = localStorage.getItem('participantData');
-    const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.depa = parseInt(id_departamento, 10);
-    formData.olimpista.prov = '';
-    formData.olimpista.colegio = '';
-    localStorage.setItem('participantData', JSON.stringify(formData));
+    saveFieldToLocalStorage('depa', parseInt(id_departamento));
+    saveFieldToLocalStorage('prov', '');
+    saveFieldToLocalStorage('colegio', '');
   };
 
   const handleGradoChange = (id_grado: string) => {
     setValue('olimpista.grade', id_grado, { shouldValidate: true });
-    const savedData = localStorage.getItem('participantData');
-    const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.grade = parseInt(id_grado, 10);
-    localStorage.setItem('participantData', JSON.stringify(formData));
+    saveFieldToLocalStorage('grade', parseInt(id_grado));
   };
 
   const handleProvinciaChange = (id_provincia: string) => {
     setValue('olimpista.prov', id_provincia, { shouldValidate: true });
     setValue('olimpista.colegio', '');
-    const savedData = localStorage.getItem('participantData');
-    const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.prov = parseInt(id_provincia, 10);
-    formData.olimpista.colegio = '';
-    localStorage.setItem('participantData', JSON.stringify(formData));
+    saveFieldToLocalStorage('prov', parseInt(id_provincia));
+    saveFieldToLocalStorage('colegio', '');
   };
 
   const handleColegioChange = (id_colegio: string) => {
     setValue('olimpista.colegio', id_colegio, { shouldValidate: true });
-    const savedData = localStorage.getItem('participantData');
-    const formData = savedData ? JSON.parse(savedData) : {};
-    formData.olimpista.colegio = parseInt(id_colegio, 10);
-    localStorage.setItem('participantData', JSON.stringify(formData));
+    saveFieldToLocalStorage('colegio', parseInt(id_colegio));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleRegister = async (data: any) => {
-    const payload = {
-      cedula_identidad: data.olimpista.ci,
-      nombres: data.olimpista.name,
-      apellidos: data.olimpista.lastname,
-      fecha_nacimiento: data.olimpista.birthday,
-      correo_electronico: data.olimpista.email,
-      ci_tutor: data.olimpista.citutor,
-      celular: data.olimpista.phone,
-      unidad_educativa: data.olimpista.colegio,
-      id_grado: data.olimpista.grade,
-    };
+  const handleRegister = async (data: FormValues) => {
+    const payload = buildOlimpistaPayload(data);
 
     try {
       await submitForm(payload);
-      setConfirmationStatus('success');
-      setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_OLYMPIAN);
+      showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION_OLYMPIAN);
     } catch (error: any) {
-      console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN , error);
-      setConfirmationStatus('error');
-      setConfirmationMessage(
-        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN,
+      console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN, error);
+      showError(
+        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN
       );
     } finally {
-      setShowConfirmationModal(true);
-      setShowModal(false);
+      closeModal();
     }
   };
 
   const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    if (confirmationStatus === 'success') {
-      window.location.reload();
-    }
-    setConfirmationStatus(null);
-    setConfirmationMessage('');
+    closeConfirmationModal(() => window.location.reload());
   };
 
   const handleNextStep = () => {
@@ -374,7 +191,7 @@ export default function FormDataPart() {
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center ">
         <form
-          onSubmit={handleSubmit(() => setShowModal(true))}
+          onSubmit={handleSubmit(() => openModal())}
           className="mx-5 mt-5 mb-32 md:w-9/12 lg:w-9/12"
         >
           <h1 className="text-primary headline-lg sm:text-xl md:text-2xl font-semibold mb-6 text-center">
@@ -750,7 +567,7 @@ export default function FormDataPart() {
         </form>
         {showModal && (
           <Modal
-            onClose={() => setShowModal(false)}
+            onClose={closeModal}
             text={ERROR_MESSAGES.CONFIRMATION_TEXT_OLYMPIAN}
             onConfirm={handleSubmit(handleRegister)}
           />
