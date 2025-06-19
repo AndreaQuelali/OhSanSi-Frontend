@@ -5,8 +5,13 @@ import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, InputText, Modal } from '@/components';
 import { TableLevel } from '../tables/table-level';
 import { useLevels } from '../../hooks/use-levels';
-import { LEVEL_ERROR_MESSAGES, LEVEL_VALIDATION_PATTERNS, LEVEL_VALIDATION_LIMITS } from '../../constants/level-constants';
+import {
+  LEVEL_ERROR_MESSAGES,
+  LEVEL_VALIDATION_PATTERNS,
+  LEVEL_VALIDATION_LIMITS,
+} from '../../constants/level-constants';
 import type { FormData } from '../../interfaces/form-level';
+import { ROUTES } from '../../constants/olympiad-constants';
 
 export const FormLevel = () => {
   const {
@@ -24,7 +29,9 @@ export const FormLevel = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const {
@@ -34,7 +41,7 @@ export const FormLevel = () => {
     registerLevel,
     error,
     setError: setLevelsError,
-    setLevelsRegistered
+    setLevelsRegistered,
   } = useLevels();
 
   useEffect(() => {
@@ -118,7 +125,7 @@ export const FormLevel = () => {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
-              onClick={() => navigate('/administrator')}
+              onClick={() => navigate(ROUTES.ADMINISTRATOR)}
             />
             <Button
               type="submit"
