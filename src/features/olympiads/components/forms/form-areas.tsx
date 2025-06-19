@@ -5,8 +5,13 @@ import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, InputText, Modal } from '@/components';
 import { TableAreas } from '../tables/table-areas';
 import { useAreas } from '../../hooks/use-areas';
-import { AREA_ERROR_MESSAGES, AREA_VALIDATION_PATTERNS, AREA_VALIDATION_LIMITS } from '../../constants/area-constants';
+import {
+  AREA_ERROR_MESSAGES,
+  AREA_VALIDATION_PATTERNS,
+  AREA_VALIDATION_LIMITS,
+} from '../../constants/area-constants';
 import type { FormData } from '../../interfaces/form-area';
+import { ROUTES } from '../../constants/olympiad-constants';
 
 const FormAreas = () => {
   const {
@@ -24,7 +29,9 @@ const FormAreas = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const {
@@ -34,7 +41,7 @@ const FormAreas = () => {
     registerArea,
     error,
     setError: setAreasError,
-    setAreasRegistered
+    setAreasRegistered,
   } = useAreas();
 
   useEffect(() => {
@@ -118,7 +125,7 @@ const FormAreas = () => {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
-              onClick={() => navigate('/administrator')}
+              onClick={() => navigate(ROUTES.ADMINISTRATOR)}
             />
             <Button
               type="submit"
