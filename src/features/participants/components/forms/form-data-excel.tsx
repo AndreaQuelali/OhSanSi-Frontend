@@ -93,12 +93,17 @@ export default function FormDataExcel() {
       setShowConfirmationModal(true);
     } catch (error: any) {
       const data = error.response?.data;
-      const resultado = data?.resultado;
+      const resultado = data?.response;
 
-      const mensaje = resultado
-        ? parseExcelErrors(resultado, data?.message, ERROR_MESSAGES.ERROR_REGISTER_EXCEL)
-        : data?.error || ERROR_MESSAGES.ERROR_REGISTER_EXCEL;
-
+      let mensaje = '';
+      if (data?.message) mensaje += `${data.message}\n`;
+      if (data?.error && data?.error !== data?.message) mensaje += `${data.error}\n`;
+      if (resultado) {
+        mensaje += parseExcelErrors(resultado, '', ERROR_MESSAGES.ERROR_REGISTER_EXCEL);
+      }
+      if (!mensaje) {
+        mensaje = ERROR_MESSAGES.ERROR_REGISTER_EXCEL;
+      }
         setErrorMessage(mensaje);
         setShowErrorModal(true);
     } finally {

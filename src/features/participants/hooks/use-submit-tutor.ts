@@ -26,11 +26,11 @@ export const useSubmitTutor = () => {
   const onConfirm = async () => {
     if (!formData) return;
     const payload = {
-      nombres: formData.name,
-      apellidos: formData.lastname,
+      names: formData.name,
+      surnames: formData.lastname,
       ci: formData.ci,
-      celular: formData.phone,
-      correo_electronico: formData.email,
+      phone: formData.phone,
+      email: formData.email,
     };
 
     try {

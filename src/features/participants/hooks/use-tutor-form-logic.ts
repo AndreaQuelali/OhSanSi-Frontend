@@ -43,10 +43,10 @@ export const useTutorFormLogic = () => {
       try {
         const response = await getData(`/tutors/${ciValue}`);
         if (response && response.tutor) {
-          setValue('name', response.tutor.nombres || '');
-          setValue('lastname', response.tutor.apellidos || '');
-          setValue('email', response.tutor.correo_electronico || '');
-          setValue('phone', response.tutor.celular || '');
+          setValue('name', response.tutor.names || '');
+          setValue('lastname', response.tutor.surnames || '');
+          setValue('email', response.tutor.email || '');
+          setValue('phone', response.tutor.phone || '');
 
           if (!errors.ci || errors.ci?.type === 'ci-duplicado') {
             setError('ci', {

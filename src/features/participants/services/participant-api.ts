@@ -12,7 +12,7 @@ export class ParticipantApiService {
 
   static async registerExcelData(ciResponsable: string, rawData: any[][]) {
     return axios.post(`${API_URL}/excel/registration`, {
-      ci_responsable_inscripcion: ciResponsable,
+      enrollment_responsible_ci: ciResponsable,
       data: rawData,
     });
   }
@@ -54,7 +54,7 @@ export class ParticipantApiService {
   }
 
   static async getDepartments() {
-    return axios.get(`${API_URL}/departaments`);
+    return axios.get(`${API_URL}/departments`);
   }
 
   static async registerOlimpist(payload: any) {

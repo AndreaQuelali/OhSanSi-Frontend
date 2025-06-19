@@ -34,16 +34,16 @@ export function useCheckOlympianCI(
         const response = await ParticipantApiService.getOlimpistByCI(ciValue);
         if (response.data) {
           const data = response.data;
-          setValue('olimpista.name', data.nombres || '');
-          setValue('olimpista.lastname', data.apellidos || '');
-          setValue('olimpista.birthday', data.fecha_nacimiento || '');
-          setValue('olimpista.email', data.correo_electronico || '');
-          setValue('olimpista.phone', data.celular || '');
-          setValue('olimpista.citutor', data.ci_tutor_legal || '');
-          setValue('olimpista.depa', data.id_departamento || '');
-          setValue('olimpista.prov', data.id_provincia || '');
-          setValue('olimpista.colegio', data.id_colegio || '');
-          setValue('olimpista.grade', data.id_grado || '');
+          setValue('olimpista.name', data.names || '');
+          setValue('olimpista.lastname', data.surnames || '');
+          setValue('olimpista.birthday', data.birthdate || '');
+          setValue('olimpista.email', data.email || '');
+          setValue('olimpista.phone', data.phone || '');
+          setValue('olimpista.citutor', data.guardian_legal_ci || '');
+          setValue('olimpista.depa', data.department_id || '');
+          setValue('olimpista.prov', data.province_id || '');
+          setValue('olimpista.colegio', data.school_id || '');
+          setValue('olimpista.grade', data.grade_id || '');
           clearErrors();
           setError('olimpista.ci', {
             type: 'manual',

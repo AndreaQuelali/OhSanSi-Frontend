@@ -425,8 +425,8 @@ export default function FormDataPart() {
                 options={
                   departamentos
                     ? departamentos.map((departamento) => ({
-                        id: departamento.id_departamento.toString(),
-                        name: departamento.nombre_departamento,
+                        id: departamento.department_id.toString(),
+                        name: departamento.department_name,
                       }))
                     : []
                 }
@@ -452,8 +452,8 @@ export default function FormDataPart() {
                   options={
                     provincias
                       ? provincias.map((provincia) => ({
-                          id: provincia.id_provincia.toString(),
-                          name: provincia.nombre_provincia,
+                          id: provincia.province_id.toString(),
+                          name: provincia.province_name,
                         }))
                       : []
                   }
@@ -489,8 +489,8 @@ export default function FormDataPart() {
                   options={
                     colegios
                       ? colegios.map((colegio) => ({
-                          id: colegio.id_colegio.toString(),
-                          name: colegio.nombre_colegio,
+                          id: colegio.school_id.toString(),
+                          name: colegio.school_name,
                         }))
                       : []
                   }
@@ -523,8 +523,8 @@ export default function FormDataPart() {
                 options={
                   grados
                     ? grados.map((grado) => ({
-                        id: grado.id_grado.toString(),
-                        name: grado.nombre_grado,
+                        id: grado.grade_id.toString(),
+                        name: grado.grade_name,
                       }))
                     : []
                 }

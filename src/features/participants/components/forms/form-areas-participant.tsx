@@ -64,7 +64,7 @@ export default function FormAreaPart() {
     async function fetchMaxCategorias() {
       try {
         const response = await ParticipantApiService.getMaxCategoriesByDate(formattedDate);
-        setMaxCategorias(response.data?.max_categorias_olimpista || 0);
+        setMaxCategorias(response.data?.max_categories_per_olympist || 0);
       } catch {
         setMaxCategorias(0);
       }

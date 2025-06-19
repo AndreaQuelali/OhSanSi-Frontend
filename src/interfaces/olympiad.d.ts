@@ -1,12 +1,12 @@
 export interface OlympiadInfo {
-  id_olimpiada: number;
-  gestion: number;
-  costo: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  creado_en: string;
-  max_categorias_olimpista: number;
-  nombre_olimpiada: string;
+  olympiad_id: number;
+  year: number;
+  cost: string;
+  start_date: string;
+  end_date: string;
+  created_in: string;
+  max_categories_per_olympist: number;
+  olympiad_name: string;
 }
 
 export interface OlympiadStatistics {

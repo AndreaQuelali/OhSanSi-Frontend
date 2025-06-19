@@ -2,10 +2,10 @@ export const parseExcelErrors = (resultado: any, message?: string, errorMsg?: st
   let mensaje = message ? `${message}\n` : '';
 
   const erroresPorEntidad = [
-    { key: 'olimpistas_errores', label: 'Errores en olimpistas' },
-    { key: 'profesores_errores', label: 'Errores en profesores' },
-    { key: 'tutores_errores', label: 'Errores en tutores' },
-    { key: 'inscripciones_errores', label: 'Errores en inscripciones' },
+    { key: 'olympists_errors', label: 'Errores en olimpistas' },
+    { key: 'teachers_errors', label: 'Errores en profesores' },
+    { key: 'tutors_errors', label: 'Errores en tutores' },
+    { key: 'enrollments_errors', label: 'Errores en inscripciones' },
     { key: 'Colegio_errores', label: 'Errores en unidad educativa' },
     { key: 'Departamento_errores', label: 'Errores en departamento' },
     { key: 'Provincia_errores', label: 'Errores en provincia' },
@@ -32,6 +32,7 @@ export const parseExcelErrors = (resultado: any, message?: string, errorMsg?: st
       });
     }
   }
+  console.log("mensajito:",mensaje)
 
   return mensaje || errorMsg || 'Error desconocido';
 };
