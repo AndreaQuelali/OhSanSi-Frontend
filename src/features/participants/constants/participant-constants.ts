@@ -11,6 +11,7 @@ export const VALIDATION_PATTERNS = {
   LASTNAME: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
   PHONE: /^[0-9]{8,}$/,
   EMAIL: /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
+  CI_RESPONSIBLE: /^(?! )[0-9]+(?<! )$/,
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -58,11 +59,24 @@ export const ERROR_MESSAGES = {
   SUCCESS_REGISTRATION_OLYMPIAN: 'Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.',
   ERROR_REGISTRATION_OLYMPPIAN: 'Error al registrar al olimpista',
 
+  NEXT_STEP_TEXT_EXCEL: 'Ir a generar boleta de orden de pago.',
+  MODAL_ERROR_TITLE: 'Error en el archivo Excel',
+  CONFIRMATION_TEXT_EXCEL: '¿Estás seguro de que deseas registrar los datos?',
+  CI_RESPONSIBLE_REQUIRED: 'Debe ingresar la cédula del responsable.',
+  CI_RESPONSIBLE_INVALID: 'Solo se permiten números y no puede haber espacios.',
+  ERROR_REGISTER_EXCEL: 'Hubo un error al registrar los datos. Verifique el formato del Excel.',
+  ERROR_REGISTER_DATA_EXCEL: 'Error al registrar los datos:',
+  SUCCESS_REGISTRATION_EXCEL: 'Datos registrados exitosamente. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
+  CI_RESPONSIBLE_WARNING: 'Debe ingresar el CI del responsable.',
+  REGISTER_NO_DATA: 'No hay datos para registrar.',
+  INCORRECT_FORMAT: 'No se pudo procesar el archivo. Asegúrate de que el formato es correcto.',
+
 } as const;
 
 export const CONFIRMATION_STATUS = {
   SUCCESS: 'success',
   ERROR: 'error',
+  ALERT: 'alert',
 } as const;
 
 export const ROUTES = {
@@ -71,6 +85,8 @@ export const ROUTES = {
   REGISTER_OLYMPIAN: '/olympian/register-olympians',
   OLYMPIAN_MENU: '/olympian',
   REGISTER_SELECTED_AREAS: '/olympian/register-selected-areas',
+  DOWNLOAD_EXCEL_TEMPLATE: '/templates/template-excel.xlsx',
+  GENERATE_ORDER_PAYMENT: '/olympian/generate-order-payment',
 } as const;
 
 export const MESSAGES = {

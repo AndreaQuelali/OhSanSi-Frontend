@@ -1,65 +1,38 @@
 import React from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CustomPagination } from '@/components';
+import { OlympianRow, TableProps } from '../../interfaces/form-data-excel';
 
-interface OlimpistaRow {
-  Nombre: string;
-  Apellido: string;
-  CIOlimpista: string;
-  FechadeNacimiento: string;
-  Correoelectronico: string;
-  Departamento: string;
-  Provincia: string;
-  UnidadEducativa: string;
-  Grado: string;
-  NombresTutorLegal: string;
-  ApellidosTutorLegal: string;
-  CITutorLegal: string;
-  CelularTutorLegal: string;
-  CorreoelectronicoTutorLegal: string;
-  Area: string;
-  NivelCategoria: string;
-  NombresProfesor: string;
-  ApellidosProfesor: string;
-  CIProfesor: string;
-  CelularProfesor: string;
-  CorreoelectronicoProfesor: string;
-}
-
-type TableProps = {
-  data: OlimpistaRow[];
-};
-
-const columns: TableColumn<OlimpistaRow>[] = [
-  { name: 'Nombre(s)', selector: (row) => row.Nombre, sortable: true },
-  { name: 'Apellido(s)', selector: (row) => row.Apellido, sortable: true },
-  { name: 'CI Olimpista', selector: (row) => row.CIOlimpista, sortable: true },
+const columns: TableColumn<OlympianRow>[] = [
+  { name: 'Nombre(s)', selector: (row) => row.Name, sortable: true },
+  { name: 'Apellido(s)', selector: (row) => row.Lastname, sortable: true },
+  { name: 'CI Olimpista', selector: (row) => row.CIOlympian, sortable: true },
   {
     name: 'Fecha de Nacimiento',
-    selector: (row) => row.FechadeNacimiento,
+    selector: (row) => row.Birthdate,
     sortable: true,
   },
   {
     name: 'Correo electrónico',
-    selector: (row) => row.Correoelectronico,
+    selector: (row) => row.Email,
     sortable: true,
   },
-  { name: 'Departamento', selector: (row) => row.Departamento, sortable: true },
-  { name: 'Provincia', selector: (row) => row.Provincia, sortable: true },
+  { name: 'Departamento', selector: (row) => row.Department, sortable: true },
+  { name: 'Provincia', selector: (row) => row.Province, sortable: true },
   {
     name: 'Unidad Educativa',
-    selector: (row) => row.UnidadEducativa,
+    selector: (row) => row.School,
     sortable: true,
   },
-  { name: 'Grado', selector: (row) => row.Grado, sortable: true },
+  { name: 'Grado', selector: (row) => row.Grade, sortable: true },
   {
     name: 'Nombre(s) tutor legal',
-    selector: (row) => row.NombresTutorLegal,
+    selector: (row) => row.NamesTutorLegal,
     sortable: true,
   },
   {
     name: 'Apellido(s) tutor legal',
-    selector: (row) => row.ApellidosTutorLegal,
+    selector: (row) => row.LastnamesTutorLegal,
     sortable: true,
   },
   {
@@ -69,39 +42,39 @@ const columns: TableColumn<OlimpistaRow>[] = [
   },
   {
     name: 'Celular tutor legal',
-    selector: (row) => row.CelularTutorLegal,
+    selector: (row) => row.PhoneTutorLegal,
     sortable: true,
   },
   {
     name: 'Correo electrónico tutor legal',
-    selector: (row) => row.CorreoelectronicoTutorLegal,
+    selector: (row) => row.EmailTutorLegal,
     sortable: true,
   },
   { name: 'Área', selector: (row) => row.Area, sortable: true },
   {
     name: 'Nivel/Categoría',
-    selector: (row) => row.NivelCategoria,
+    selector: (row) => row.Level,
     sortable: true,
   },
   {
     name: 'Nombre(s) profesor',
-    selector: (row) => row.NombresProfesor,
+    selector: (row) => row.NamesTeacher,
     sortable: true,
   },
   {
     name: 'Apellido(s) profesor',
-    selector: (row) => row.ApellidosProfesor,
+    selector: (row) => row.LastNamesTeacher,
     sortable: true,
   },
-  { name: 'CI profesor', selector: (row) => row.CIProfesor, sortable: true },
+  { name: 'CI profesor', selector: (row) => row.CITeacher, sortable: true },
   {
     name: 'Celular profesor',
-    selector: (row) => row.CelularProfesor,
+    selector: (row) => row.PhoneTeacher,
     sortable: true,
   },
   {
     name: 'Correo electrónico profesor',
-    selector: (row) => row.CorreoelectronicoProfesor,
+    selector: (row) => row.EmailTeacher,
     sortable: true,
   },
 ];
