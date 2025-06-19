@@ -42,9 +42,9 @@ export default function FormLevelsGrades() {
     { id: number; area: string; level: string; grade: string }[]
   >([]);
 
-  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>(
-    [],
-  );
+  const [levels, setLevels] = useState<
+    { level_id: number; level_name: string }[]
+  >([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationStatus, setConfirmationStatus] = useState<
     'success' | 'error' | null
