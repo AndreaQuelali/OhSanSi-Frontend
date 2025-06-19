@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
 import { UseFormSetError, UseFormClearErrors } from 'react-hook-form';
 import { FormValues } from '../interfaces/register-participants';
+import { ParticipantApiService } from '../services/participant-api';
 
 export function useCheckTutorCI(
   citutor: string,
@@ -19,18 +18,15 @@ export function useCheckTutorCI(
       if (!ciTutorValue || ciTutorValue.length < 4) {
         return;
       }
-
       if (ciTutorValue.length > 8) {
         return;
       }
-
       if (ciTutorValue === ciOlimpista) {
         clearErrors('olimpista.citutor');
         return;
       }
-
       try {
-        const response = await axios.get(`${API_URL}/tutors/${ciTutorValue}`);
+        const response = await ParticipantApiService.getTutorByCI(ciTutorValue);
         if (response.data) {
           clearErrors('olimpista.citutor');
           setIsTutorRegistered(false);
@@ -55,12 +51,10 @@ export function useCheckTutorCI(
     if (!citutor || citutor.length < 4) {
       return;
     }
-
     if (citutor === ciOlimpista) {
       clearErrors('olimpista.citutor');
       return;
     }
-
     debouncedCheckCiTutorRef.current(citutor, ciOlimpista);
   }, [citutor, ciOlimpista, clearErrors]);
 

@@ -1,9 +1,8 @@
 // src/hooks/use-excel-upload.ts
 import { useRef, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
 import { OlympianRow } from '../interfaces/form-data-excel';
+import { ParticipantApiService } from '../services/participant-api';
 
 export const useExcelUpload = () => {
   const [fileName, setFileName] = useState<string | null>(null);
@@ -24,18 +23,10 @@ export const useExcelUpload = () => {
   const handleFileChange = async (file: File) => {
     setFileName(file.name);
     setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const { data } = await axios.post(`${API_URL}/excel/data`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
+      const { data } = await ParticipantApiService.uploadExcelFile(file);
       const rawData: any[][] = data.data;
       setRawDataToSend(rawData);
-
       const parsed = rawData
         .filter((row) => row.some((cell) => cell !== null && cell !== ''))
         .map((row) => ({
@@ -61,12 +52,10 @@ export const useExcelUpload = () => {
           PhoneTeacher: row[19]?.toString() ?? '',
           EmailTeacher: row[20] ?? '',
         }));
-
       setOlimpistas(parsed);
     } catch (error: any) {
       const errores = error.response?.data?.errors;
       let mensaje = '';
-
       if (errores) {
         mensaje = 'Errores al procesar el archivo Excel:\n';
         if (errores.archivo?.length) mensaje += `\n• ${errores.archivo.join('\n• ')}`;
@@ -74,7 +63,6 @@ export const useExcelUpload = () => {
       } else {
         mensaje = ERROR_MESSAGES.INCORRECT_FORMAT;
       }
-
       setErrorMessage(mensaje);
       setShowErrorModal(true);
       clearFile();

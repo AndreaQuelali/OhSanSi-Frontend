@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { debounce } from 'lodash';
+import { ParticipantApiService } from '../services/participant-api';
 
 export function useOlimpistaData(ciOlimpista: string) {
   const [areasDisponibles, setAreasDisponibles] = useState<
@@ -19,7 +18,6 @@ export function useOlimpistaData(ciOlimpista: string) {
   const [olimpistaError, setOlimpistaError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchData = useCallback(
     debounce(async (ci: string) => {
       if (!ci) {
@@ -28,20 +26,15 @@ export function useOlimpistaData(ciOlimpista: string) {
         setOlimpistaError(null);
         return;
       }
-
       setLoading(true);
       setOlimpistaError(null);
       try {
-        const response = await axios.get(
-          `${API_URL}/olympists/${ci}/areas-levels`,
-        );
-
+        const response = await ParticipantApiService.getOlimpistAreasLevels(ci);
         if (!response.data || response.data.length === 0) {
           setAreasDisponibles({});
           setOlimpistaError('No se encontró un olimpista con esa cédula.');
           return;
         }
-
         const transformedData = response.data.reduce(
           (
             acc: Record<string, { id_nivel: number; nombre_nivel: string }[]>,
@@ -58,7 +51,6 @@ export function useOlimpistaData(ciOlimpista: string) {
           },
           {},
         );
-
         fetchInscripcionesYCombinar(ci, transformedData);
       } catch {
         setAreasDisponibles({});
@@ -77,22 +69,17 @@ export function useOlimpistaData(ciOlimpista: string) {
     >,
   ) => {
     try {
-      const response = await axios.get(
-        `${API_URL}/olympists/${ci}/enrollments`,
-      );
-
+      const response = await ParticipantApiService.getOlimpistEnrollments(ci);
       let nivelesRegistrados: Record<
         string,
         { id_nivel: number; nombre_nivel: string; registrado: boolean }[]
       > = {};
-
       if (
         response.data &&
         response.data.data &&
         response.data.data.inscripciones
       ) {
         const inscripciones = response.data.data.inscripciones;
-
         nivelesRegistrados = inscripciones.reduce(
           (acc: any, inscripcion: any) => {
             const areaNombre = inscripcion.area.nombre;
@@ -101,20 +88,16 @@ export function useOlimpistaData(ciOlimpista: string) {
               nombre_nivel: inscripcion.nivel.nombre,
               registrado: true,
             };
-
             if (!acc[areaNombre]) {
               acc[areaNombre] = [];
             }
-
             acc[areaNombre].push(nivel);
             return acc;
           },
           {},
         );
       }
-
       const areasActualizadas = { ...areasDisp };
-
       Object.keys(nivelesRegistrados).forEach((areaNombre) => {
         if (areasActualizadas[areaNombre]) {
           areasActualizadas[areaNombre] = areasActualizadas[areaNombre].map(
@@ -129,7 +112,6 @@ export function useOlimpistaData(ciOlimpista: string) {
           areasActualizadas[areaNombre] = nivelesRegistrados[areaNombre];
         }
       });
-
       setAreasDisponibles(areasActualizadas);
       setNivelesSeleccionados(nivelesRegistrados);
       setLoading(false);
@@ -147,7 +129,6 @@ export function useOlimpistaData(ciOlimpista: string) {
       setAreasDisponibles({});
       setNivelesSeleccionados({});
     }
-
     return () => {
       debouncedFetchData.cancel();
     };

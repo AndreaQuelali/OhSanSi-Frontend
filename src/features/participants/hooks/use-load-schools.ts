@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { Provincia, UnidadEducativa } from '../interfaces/register-participants';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
+import { ParticipantApiService } from '../services/participant-api';
 
 export function useLoadSchools(selectedDepartment: string, selectedProv: string) {
   const [provincias, setProvincias] = useState<Provincia[]>([]);
@@ -15,7 +14,7 @@ export function useLoadSchools(selectedDepartment: string, selectedProv: string)
       const fetchProvincias = async () => {
         setLoadingProvincias(true);
         try {
-          const response = await axios.get(`${API_URL}/provinces/${selectedDepartment}`);
+          const response = await ParticipantApiService.getProvincesByDepartment(selectedDepartment);
           setProvincias(response.data);
         } catch (error) {
           console.error(ERROR_MESSAGES.PROVINCE_LOADING_ERROR, error);
@@ -35,7 +34,7 @@ export function useLoadSchools(selectedDepartment: string, selectedProv: string)
       const fetchColegios = async () => {
         setLoadingColegios(true);
         try {
-          const response = await axios.get(`${API_URL}/schools/provinces/${selectedProv}`);
+          const response = await ParticipantApiService.getSchoolsByProvince(selectedProv);
           setColegios(response.data);
         } catch (error) {
           console.error(ERROR_MESSAGES.DEPARTMENT_LOADING_ERROR, error);

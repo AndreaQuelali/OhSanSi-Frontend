@@ -11,8 +11,8 @@ import ErrorModal from '../modals/modal-error';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 
 import { useExcelUpload } from '../../hooks/use-excel-upload';
-import { registerExcelData } from '../../services/participant-api';
 import { parseExcelErrors } from '../../utils/parse-excel-errors';
+import { ParticipantApiService } from '../../services/participant-api';
 
 import {
   ERROR_MESSAGES,
@@ -87,7 +87,7 @@ export default function FormDataExcel() {
     setIsRegistering(true);
 
     try {
-      await registerExcelData(ciResponsable, rawDataToSend);
+      await ParticipantApiService.registerExcelData(ciResponsable, rawDataToSend);
       setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_EXCEL);
       setConfirmationStatus('success');
       setShowConfirmationModal(true);

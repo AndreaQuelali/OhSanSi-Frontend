@@ -1,11 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useFetchData } from '@/hooks/use-fetch-data';
-import { useApiForm } from '@/hooks/use-api-form';
 import { Button, Dropdown, InputText, Modal } from '@/components';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
-
 import {
   ERROR_MESSAGES,
   MESSAGES,
@@ -13,16 +10,15 @@ import {
   VALIDATION_LIMITS,
   VALIDATION_PATTERNS,
 } from '../../constants/participant-constants';
-
 import {
   Departamento,
   FormValues,
   Grado,
 } from '../../interfaces/register-participants';
-
 import { useCheckOlympianCI, useCheckTutorCI, useLoadSchools } from '../../hooks';
 import { saveFieldToLocalStorage, buildOlimpistaPayload } from '../../utils';
 import { useConfirmationParticipant } from '../../hooks';
+import { ParticipantApiService } from '../../services/participant-api';
 
 export default function FormDataPart() {
   const {
@@ -36,9 +32,21 @@ export default function FormDataPart() {
   } = useForm<FormValues>({ mode: 'onChange' });
 
   const navigate = useNavigate();
-  const { data: grados, loading: loading, } = useFetchData<Grado[]>('/grades');
-  const { data: departamentos,   loading: loadingDepartamentos } = useFetchData<Departamento[]>('/departaments');
-  const { submitForm } = useApiForm('/olympists');
+  const [grados, setGrados] = useState<Grado[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingDepartamentos, setLoadingDepartamentos] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    ParticipantApiService.getGrades()
+      .then((res) => setGrados(res.data))
+      .finally(() => setLoading(false));
+    setLoadingDepartamentos(true);
+    ParticipantApiService.getDepartments()
+      .then((res) => setDepartamentos(res.data))
+      .finally(() => setLoadingDepartamentos(false));
+  }, []);
 
   const ci = watch('olimpista.ci');
   const citutor = watch('olimpista.citutor');
@@ -161,9 +169,8 @@ export default function FormDataPart() {
 
   const handleRegister = async (data: FormValues) => {
     const payload = buildOlimpistaPayload(data);
-
     try {
-      await submitForm(payload);
+      await ParticipantApiService.registerOlimpist(payload);
       showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION_OLYMPIAN);
     } catch (error: any) {
       console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN, error);

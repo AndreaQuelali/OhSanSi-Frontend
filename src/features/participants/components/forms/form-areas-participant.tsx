@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
+import { useEffect, useState } from 'react';
 import { formattedDate } from '@/utils/date';
 import {
   useFormValidity,
@@ -22,7 +21,7 @@ import { useNavigate } from 'react-router';
 import { ERROR_MESSAGES, ROUTES } from '../../constants/participant-constants';
 import { FormData } from '../../interfaces';
 import { buildEnrollmentPayload } from '../../utils';
-import { useFetchDataWithBody } from '@/hooks/use-fetch-with-body';
+import { ParticipantApiService } from '../../services/participant-api';
 
 export default function FormAreaPart() {
   const {
@@ -60,15 +59,18 @@ export default function FormAreaPart() {
     ciTutor,
   });
 
-  const { data: maxCategoriasData } = useFetchDataWithBody<{
-    success: boolean;
-    fecha: string;
-    id_olimpiada: number;
-    max_categorias_olimpista: number;
-  }>(`${API_URL}/olympiads/max-categories?fecha=${formattedDate}`, {
-    method: 'GET',
-  });
-  const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
+  const [maxCategorias, setMaxCategorias] = useState(0);
+  useEffect(() => {
+    async function fetchMaxCategorias() {
+      try {
+        const response = await ParticipantApiService.getMaxCategoriesByDate(formattedDate);
+        setMaxCategorias(response.data?.max_categorias_olimpista || 0);
+      } catch {
+        setMaxCategorias(0);
+      }
+    }
+    fetchMaxCategorias();
+  }, []);
 
   const confirmationModal = useConfirmationParticipant();
   const areaSelection = useAreaSelection({
@@ -110,7 +112,7 @@ export default function FormAreaPart() {
       responsibleCi,
     });
     try {
-      await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
+      await ParticipantApiService.enrollWithTutor(payload);
       confirmationModal.showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS);
     } catch (err: any) {
       console.error('Error:', err);

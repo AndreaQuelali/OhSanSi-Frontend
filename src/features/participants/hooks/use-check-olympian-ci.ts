@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
 import { FormValues } from '../interfaces/register-participants';
 import {
@@ -10,6 +8,7 @@ import {
   UseFormClearErrors,
   UseFormSetValue,
 } from 'react-hook-form';
+import { ParticipantApiService } from '../services/participant-api';
 
 export function useCheckOlympianCI(
   ci: string,
@@ -31,12 +30,10 @@ export function useCheckOlympianCI(
         }
         return;
       }
-
       try {
-        const response = await axios.get(`${API_URL}/olympists/${ciValue}`);
+        const response = await ParticipantApiService.getOlimpistByCI(ciValue);
         if (response.data) {
           const data = response.data;
-
           setValue('olimpista.name', data.nombres || '');
           setValue('olimpista.lastname', data.apellidos || '');
           setValue('olimpista.birthday', data.fecha_nacimiento || '');
