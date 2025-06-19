@@ -7,7 +7,7 @@ import {
   useOlimpistaData,
   useTutorValidation,
   useAreaSelection,
-  useConfirmationModal,
+  useConfirmationParticipant,
   useResponsibleModal,
 } from '../../hooks';
 import {
@@ -70,7 +70,7 @@ export default function FormAreaPart() {
   });
   const maxCategorias = maxCategoriasData?.max_categorias_olimpista || 0;
 
-  const confirmationModal = useConfirmationModal();
+  const confirmationModal = useConfirmationParticipant();
   const areaSelection = useAreaSelection({
     nivelesSeleccionados,
     setNivelesSeleccionados,
@@ -78,7 +78,7 @@ export default function FormAreaPart() {
     maxCategorias,
     setValue,
     ciTutor,
-    openConfirmationModal: confirmationModal.openConfirmationModal,
+    openConfirmationModal: confirmationModal.showConfirmation,
   });
   const responsibleModal = useResponsibleModal();
 
@@ -111,14 +111,10 @@ export default function FormAreaPart() {
     });
     try {
       await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
-      confirmationModal.openConfirmationModal(
-        'success',
-        ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS
-      );
+      confirmationModal.showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS);
     } catch (err: any) {
       console.error('Error:', err);
-      confirmationModal.openConfirmationModal(
-        'error',
+      confirmationModal.showError(
         err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS
       );
     } finally {
@@ -127,12 +123,11 @@ export default function FormAreaPart() {
   };
 
   const handleCloseConfirmationModal = () => {
-    confirmationModal.closeConfirmationModal();
-    if (confirmationModal.confirmationStatus === 'success') {
-      window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
-    }
-    confirmationModal.setConfirmationStatus(null);
-    confirmationModal.setConfirmationMessage('');
+    confirmationModal.closeConfirmationModal(() => {
+      if (confirmationModal.confirmationStatus === 'success') {
+        window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
+      }
+    });
   };
 
   const handleNextStep = () => {

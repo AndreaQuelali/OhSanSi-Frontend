@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useApiForm } from '@/hooks/use-api-form';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
-import { useConfirmation } from '@/features/olympiads';
+import { useConfirmationParticipant } from '../hooks';
 import { FormData } from '../interfaces/form-tutor';
 
 export const useSubmitTutor = () => {
@@ -16,7 +16,7 @@ export const useSubmitTutor = () => {
     closeConfirmationModal,
     showSuccess,
     showError,
-  } = useConfirmation();
+  } = useConfirmationParticipant();
 
   const onSubmit = (data: FormData) => {
     setFormData(data);

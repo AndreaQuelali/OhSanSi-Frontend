@@ -22,7 +22,7 @@ import {
 
 import { useCheckOlympianCI, useCheckTutorCI, useLoadSchools } from '../../hooks';
 import { saveFieldToLocalStorage, buildOlimpistaPayload } from '../../utils';
-import { useConfirmation } from '@/features/olympiads';
+import { useConfirmationParticipant } from '../../hooks';
 
 export default function FormDataPart() {
   const {
@@ -58,7 +58,7 @@ export default function FormDataPart() {
     showSuccess,
     showError,
     closeConfirmationModal,
-  } = useConfirmation();
+  } = useConfirmationParticipant();
 
   const {
     isRegisteredOlimpista,
