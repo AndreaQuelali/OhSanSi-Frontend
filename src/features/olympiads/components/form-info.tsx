@@ -14,11 +14,11 @@ export default function FormInfo() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [olimpiadasExistentes, setOlimpiadasExistentes] = useState<
     Array<{
-      id_olimpiada: number;
-      gestion: number;
-      fecha_inicio: string;
-      fecha_fin: string;
-      nombre_olimpiada: string;
+      olympiad_id: number;
+      year: number;
+      start_date: string;
+      end_date: string;
+      olympiad_name: string;
     }>
   >([]);
   const {
@@ -65,13 +65,13 @@ export default function FormInfo() {
     const boliviaTime = new Date(now.getTime() - 4 * 60 * 60 * 1000);
 
     const payload = {
-      gestion: Number(formData.year),
-      costo: parseFloat(formData.cost.toString()),
-      fecha_inicio: formData.dateIni,
-      fecha_fin: formData.dateEnd,
-      max_categorias_olimpista: Number(formData.limitAreas),
-      nombre_olimpiada: formData.inputNameOlimpiada,
-      creado_en: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
+      year: Number(formData.year),
+      cost: parseFloat(formData.cost.toString()),
+      start_date: formData.dateIni,
+      end_date: formData.dateEnd,
+      max_categories_per_olympist: Number(formData.limitAreas),
+      olympiad_name: formData.inputNameOlimpiada,
+      // creado_en: boliviaTime.toISOString().slice(0, 19).replace('T', ' '),
     };
 
     try {
@@ -130,10 +130,10 @@ export default function FormInfo() {
     // Validación de solapamiento
     const overlaps = olimpiadasExistentes.some((olimpiada) => {
       // Solo comparar con olimpiadas del mismo año
-      if (olimpiada.gestion !== yearNumber) return false;
+      if (olimpiada.year !== yearNumber) return false;
 
-      const oIni = new Date(olimpiada.fecha_inicio);
-      const oEnd = new Date(olimpiada.fecha_fin);
+      const oIni = new Date(olimpiada.start_date);
+      const oEnd = new Date(olimpiada.end_date);
       const startDate = new Date(dateIni);
       const endDate = new Date(dateEnd);
 
@@ -243,8 +243,8 @@ export default function FormInfo() {
 
                   const exists = olimpiadasExistentes.some(
                     (olimpiada) =>
-                      olimpiada.gestion === Number(year) &&
-                      olimpiada.nombre_olimpiada.toUpperCase() ===
+                      olimpiada.year === Number(year) &&
+                      olimpiada.olympiad_name.toUpperCase() ===
                         value.toUpperCase(),
                   );
 
