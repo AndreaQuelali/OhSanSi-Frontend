@@ -39,6 +39,7 @@ export default function FormAreaPart() {
     defaultValues: {
       olimpista: { ci: '' },
       tutor: { ci: '' },
+
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);

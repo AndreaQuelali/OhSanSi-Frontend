@@ -31,13 +31,6 @@ export const FilterModal = <T extends Record<string, any>>({
     setCurrentValues([...selectedValues]);
   }, [selectedValues]);
 
-  const hasChanges = useMemo(() => {
-    if (currentValues.length !== selectedValues.length) return true;
-
-    const currentSet = new Set(currentValues);
-    return selectedValues.some((val) => !currentSet.has(val));
-  }, [currentValues, selectedValues]);
-
   const filteredOptions = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     const seen = new Set();
