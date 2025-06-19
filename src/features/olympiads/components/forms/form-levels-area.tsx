@@ -1,18 +1,13 @@
 import { useForm } from 'react-hook-form';
-import { useState, useEffect, useCallback } from 'react';
-import { useFetchData } from '@/hooks/use-fetch-data';
-import axios from 'axios';
-import { API_URL } from '@/config/api-config';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { Button, Dropdown, Modal } from '@/components';
 import { TableLevesArea } from '../tables/table-levels-area';
-
-interface FormData {
-  olympiad: string;
-  area: string;
-  level: string;
-}
+import { useLevelsArea } from '../../hooks/use-levels-area';
+import { LEVELS_AREA_ERROR_MESSAGES } from '../../constants/levels-area-constants';
+import type { FormData } from '../../interfaces/form-levels-area';
+import { useFetchData } from '@/hooks/use-fetch-data';
 
 export default function FormLevelsArea() {
   const {
@@ -20,6 +15,8 @@ export default function FormLevelsArea() {
     handleSubmit,
     formState: { errors, isValid },
     watch,
+    reset,
+    getValues,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -34,73 +31,24 @@ export default function FormLevelsArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
-  const [tableData, setTableData] = useState<
-    { id: number; olympiad: string; area: string; level: string }[]
-  >([]);
-  const { data: olympiads } = useFetchData<
-    { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
-  >(`${API_URL}/olympiads/now`);
 
-  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(
-    `${API_URL}/areas`,
-  );
-  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>(
-    [],
-  );
+  const {
+    tableData,
+    fetchTableLA,
+    levels,
+    fetchLevels,
+    registerAssociation,
+    error,
+    setError: setLevelsAreaError,
+    setTableData,
+    setLevels,
+  } = useLevelsArea();
 
-  const fetchLevels = useCallback(async (olympiadId: number) => {
-    if (!olympiadId) return;
-    try {
-      const response = await axios.get(`${API_URL}/levels-areas/${olympiadId}`);
-      setLevels(response.data.niveles);
-    } catch (error) {
-      console.error('Error al obtener los niveles:', error);
-    }
-  }, []);
-
-  const fetchTableLA = useCallback(async (olympiadId: number) => {
-    if (!olympiadId) {
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `${API_URL}/olympiads/${olympiadId}/levels-areas`,
-      );
-
-      if (response.data && response.data.data) {
-        const { gestion, areas } = response.data.data;
-
-        if (Array.isArray(areas)) {
-          let idCounter = 1;
-          const formattedData = areas.flatMap((area) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            area.niveles.map((nivel: { nombre_nivel: any }) => ({
-              id: idCounter++,
-              olympiad: gestion,
-              area: area.nombre_area,
-              level: nivel.nombre_nivel,
-            })),
-          );
-
-          setTableData(formattedData);
-        } else {
-          console.error("La propiedad 'areas' no es un array:", areas);
-          setTableData([]);
-        }
-      } else {
-        console.error('Estructura de datos inesperada:', response.data);
-        setTableData([]);
-      }
-    } catch (error) {
-      console.error('Error al cargar la estructura de la olimpiada:', error);
-      setTableData([]);
-    }
-  }, []);
+  // Hooks reales de datos para olimpiadas y áreas
+  const { data: olympiads } = useFetchData<{ id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]>(`/olympiads/now`);
+  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(`/areas`);
 
   useEffect(() => {
     if (selectedOlympiad) {
@@ -109,106 +57,26 @@ export default function FormLevelsArea() {
     }
   }, [selectedOlympiad, fetchLevels, fetchTableLA]);
 
-  const onSubmitForm = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSubmit(() => setIsModalOpen(true))();
+  const onSubmit = () => {
+    setIsModalOpen(true);
   };
 
   const handleRegister = async (data: FormData) => {
-    const areaId = Number(data.area);
-    const levelId = Number(data.level);
-    const olympiadId = Number(data.olympiad);
-
-    if (!levelId || !areaId || !olympiadId) {
-      alert('Datos inválidos');
-      return;
-    }
-
-    try {
-      const olimpResponse = await axios.get(`${API_URL}/olympiads`);
-      const currentDate = new Date();
-
-      const olimpiada = olimpResponse.data.find(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (olimpiada: any) => olimpiada.id_olimpiada === olympiadId,
-      );
-
-      if (!selectedOlympiad) {
-        alert('No se encontró la olimpiada seleccionada');
-        return;
-      }
-      const fechaInicio = new Date(olimpiada.fecha_inicio);
-      const fechaFin = new Date(olimpiada.fecha_fin);
-      const creadoEn = new Date(olimpiada.creado_en);
-
-      if (currentDate >= fechaInicio && currentDate <= fechaFin) {
-        alert(
-          'No se puede registrar, la olimpiada está en etapa de inscripción',
-        );
-        return;
-      }
-
-      if (!(currentDate >= creadoEn && currentDate < fechaInicio)) {
-        alert(
-          'No se puede registrar fuera del periodo de preparación de la olimpiada',
-        );
-        return;
-      }
-    } catch (error) {
-      console.error('Error al verificar el estado de la olimpiada:', error);
-      alert(
-        'No se pudo verificar la etapa de la olimpiada. Intenta nuevamente.',
-      );
-      return;
-    }
-
-    const response = await axios.get(
-      `${API_URL}/olympiads/${olympiadId}/levels-areas`,
-    );
-
-    const registros = response.data?.data?.areas ?? [];
-
-    const alreadyRegistered = registros.some(
-      (area: any) =>
-        area.id_area === areaId &&
-        area.niveles.some((nivel: any) => nivel.id_nivel === levelId),
-    );
-
-    if (alreadyRegistered) {
-      alert('Este nivel y área ya se encuentra registrado en la olimpiada');
-      return;
-    }
-
-    const payload = {
-      id_olimpiada: olympiadId,
-      id_area: areaId,
-      id_categorias: [levelId],
-      max_niveles: 1,
-    };
-
     setIsSubmitting(true);
-
-    try {
-      await axios.post(`${API_URL}/areas/association`, payload);
+    const result = await registerAssociation(data, areas || [], levels);
+    setIsModalOpen(false);
+    if (result.success) {
       setConfirmationStatus('success');
-      setConfirmationMessage(
-        'Nivel y área registrados en la olimpiada exitosamente.',
-      );
+      setConfirmationMessage(LEVELS_AREA_ERROR_MESSAGES.REGISTER_SUCCESS);
       setShowConfirmationModal(true);
-
-      await fetchTableLA(olympiadId);
-      setIsModalOpen(false);
-    } catch (error: any) {
+      reset();
+      if (selectedOlympiad) fetchTableLA(Number(selectedOlympiad));
+    } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(
-        error.data?.message ||
-          'Error al registrar el nivel y área en la olimpiada.',
-      );
+      setConfirmationMessage(result.message || LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR);
       setShowConfirmationModal(true);
-      console.error('Error al registrar:', error);
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const handleCloseConfirmationModal = () => {
@@ -224,7 +92,7 @@ export default function FormLevelsArea() {
     <div className="flex flex-col w-full">
       <div className="flex flex-col items-center">
         <form
-          onSubmit={onSubmitForm}
+          onSubmit={handleSubmit(onSubmit)}
           className="mt-10 mb-32 mx-5 md:w-9/12 lg:w-9/12"
         >
           <div className="flex flex-col">
@@ -249,7 +117,7 @@ export default function FormLevelsArea() {
                 register={register}
                 errors={errors}
                 validationRules={{
-                  required: 'Debe seleccionar un año/gestión',
+                  required: LEVELS_AREA_ERROR_MESSAGES.REQUIRED_OLYMPIAD,
                 }}
               />
               <Dropdown
@@ -267,7 +135,7 @@ export default function FormLevelsArea() {
                 valueKey="id"
                 register={register}
                 validationRules={{
-                  required: 'Debe seleccionar un área',
+                  required: LEVELS_AREA_ERROR_MESSAGES.REQUIRED_AREA,
                 }}
                 errors={errors}
               />
@@ -286,7 +154,7 @@ export default function FormLevelsArea() {
                 valueKey="id"
                 register={register}
                 validationRules={{
-                  required: 'Debe seleccionar un nivel o categoría',
+                  required: LEVELS_AREA_ERROR_MESSAGES.REQUIRED_LEVEL,
                 }}
                 errors={errors}
               />
