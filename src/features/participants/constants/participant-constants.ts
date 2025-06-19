@@ -57,7 +57,7 @@ export const ERROR_MESSAGES = {
   DEPARTMENT_LOADING_ERROR: 'Error al cargar las unidades educativas:',
 
   SUCCESS_REGISTRATION_OLYMPIAN: 'Registro exitoso del olimpista. Si desea inscribir al olimpista en áreas de competencia, puede continuar con el siguiente paso.',
-  ERROR_REGISTRATION_OLYMPPIAN: 'Error al registrar al olimpista',
+  ERROR_REGISTRATION_OLYMPIAN: 'Error al registrar al olimpista',
 
   NEXT_STEP_TEXT_EXCEL: 'Ir a generar boleta de orden de pago.',
   MODAL_ERROR_TITLE: 'Error en el archivo Excel',
@@ -70,6 +70,15 @@ export const ERROR_MESSAGES = {
   CI_RESPONSIBLE_WARNING: 'Debe ingresar el CI del responsable.',
   REGISTER_NO_DATA: 'No hay datos para registrar.',
   INCORRECT_FORMAT: 'No se pudo procesar el archivo. Asegúrate de que el formato es correcto.',
+
+  NEXT_STEP_AREAS: 'Ir a generar boleta de orden de pago.',
+  ERROR_REGISTRATION_AREAS: 'Error al realizar el registro. Por favor intente nuevamente.',
+  SUCCESS_REGISTRATION_AREAS: 'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
+  REGISTER_NO_LEVELS: 'No hay nuevos niveles para registrar.',
+  REGISTER_NO_LEVELS_AREA: 'No hay nuevos niveles para registrar en esta área.',
+  ADD_OLYMPIAN_CI: 'Por favor, ingrese la cédula del olimpista.',
+  LEVELS_ALREADY_REGISTERED: 'No puedes deseleccionar niveles ya registrados.',
+  UNREGISTER_LEVEL: 'No puedes deseleccionar un nivel ya registrado.',
 
 } as const;
 

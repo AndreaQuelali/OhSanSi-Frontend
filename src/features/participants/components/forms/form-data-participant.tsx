@@ -166,9 +166,9 @@ export default function FormDataPart() {
       await submitForm(payload);
       showSuccess(ERROR_MESSAGES.SUCCESS_REGISTRATION_OLYMPIAN);
     } catch (error: any) {
-      console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN, error);
+      console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN, error);
       showError(
-        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPPIAN
+        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN
       );
     } finally {
       closeModal();

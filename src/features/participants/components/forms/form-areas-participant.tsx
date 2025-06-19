@@ -16,15 +16,8 @@ import FormButtons from '@/components/ui/form-buttons';
 import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
-
-interface FormData {
-  olimpista: {
-    ci: string;
-  };
-  tutor: {
-    ci: string;
-  };
-}
+import { ERROR_MESSAGES, ROUTES } from '../../constants/participant-constants';
+import { FormData } from '../../interfaces/form-areas-participant'
 
 export default function FormAreaPart() {
   const {
@@ -97,7 +90,7 @@ export default function FormAreaPart() {
     registrado?: boolean;
   }) => {
     if (nivel.registrado) {
-      alert('No puedes deseleccionar un nivel ya registrado.');
+      alert(ERROR_MESSAGES.UNREGISTER_LEVEL);
       return;
     }
 
@@ -115,7 +108,7 @@ export default function FormAreaPart() {
   const handleCloseConfirmationModal = () => {
     setShowConfirmationModal(false);
     if (confirmationStatus === 'success') {
-      window.location.href = '/olympian/register-selected-areas';
+      window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
     }
     setConfirmationStatus(null);
     setConfirmationMessage('');
@@ -154,7 +147,7 @@ export default function FormAreaPart() {
         nivelesRegistradosEnArea.length > 0 &&
         !todosLosNivelesRegistradosIncluidos
       ) {
-        alert('No puedes deseleccionar niveles ya registrados.');
+        alert(ERROR_MESSAGES.LEVELS_ALREADY_REGISTERED);
         setModalVisible(false);
         return;
       }
@@ -164,7 +157,7 @@ export default function FormAreaPart() {
         [];
 
       if (nivelesDisponiblesSinRegistrar.length === 0) {
-        alert('No hay nuevos niveles para registrar en esta área.');
+        alert(ERROR_MESSAGES.REGISTER_NO_LEVELS_AREA);
         setModalVisible(false);
         return;
       }
@@ -240,7 +233,7 @@ export default function FormAreaPart() {
 
   const handleRegistrar = async () => {
     if (!ciOlimpista) {
-      alert('Por favor, ingrese la cédula del olimpista.');
+      alert(ERROR_MESSAGES.ADD_OLYMPIAN_CI);
       return;
     }
 
@@ -250,7 +243,7 @@ export default function FormAreaPart() {
       .map((nivel) => nivel.id_nivel);
 
     if (nivelesNuevos.length === 0) {
-      alert('No hay nuevos niveles para registrar.');
+      alert(ERROR_MESSAGES.REGISTER_NO_LEVELS);
       return;
     }
 
@@ -280,16 +273,12 @@ export default function FormAreaPart() {
     try {
       await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
       setConfirmationStatus('success');
-      setConfirmationMessage(
-        'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
-      );
+      setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_AREAS);
     } catch (err: any) {
       console.error('Error:', err);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        err.response?.data?.message ||
-          'Error al realizar el registro. Por favor intente nuevamente.',
-      );
+        err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS);
     } finally {
       setShowResponsibleModal(false);
       setShowConfirmationModal(true);
@@ -297,7 +286,7 @@ export default function FormAreaPart() {
   };
 
   const handleNextStep = () => {
-    navigate('/olympian/generate-order-payment');
+    navigate(ROUTES.GENERATE_ORDER_PAYMENT);
   };
 
   return (
@@ -353,7 +342,7 @@ export default function FormAreaPart() {
           message={confirmationMessage}
           nextStepText={
             confirmationStatus === 'success'
-              ? 'Ir a generar boleta de orden de pago.'
+              ? ERROR_MESSAGES.NEXT_STEP_AREAS
               : undefined
           }
           onNextStep={
