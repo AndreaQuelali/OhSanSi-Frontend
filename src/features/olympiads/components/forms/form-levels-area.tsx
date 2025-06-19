@@ -31,7 +31,9 @@ export default function FormLevelsArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const {
@@ -46,9 +48,12 @@ export default function FormLevelsArea() {
     setLevels,
   } = useLevelsArea();
 
-  // Hooks reales de datos para olimpiadas y áreas
-  const { data: olympiads } = useFetchData<{ id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]>(`/olympiads/now`);
-  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(`/areas`);
+  const { data: olympiads } =
+    useFetchData<
+      { olympiad_id: number; year: number; olympiad_name: string }[]
+    >(`/olympiads/now`);
+  const { data: areas } =
+    useFetchData<{ area_id: number; area_name: string }[]>(`/areas`);
 
   useEffect(() => {
     if (selectedOlympiad) {
@@ -73,7 +78,9 @@ export default function FormLevelsArea() {
       if (selectedOlympiad) fetchTableLA(Number(selectedOlympiad));
     } else {
       setConfirmationStatus('error');
-      setConfirmationMessage(result.message || LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR);
+      setConfirmationMessage(
+        result.message || LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR,
+      );
       setShowConfirmationModal(true);
     }
     setIsSubmitting(false);
@@ -108,8 +115,8 @@ export default function FormLevelsArea() {
                 className="w-full"
                 options={
                   olympiads?.map((olimpiada) => ({
-                    id: olimpiada.id_olimpiada.toString(),
-                    name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
+                    id: olimpiada.olympiad_id.toString(),
+                    name: `${olimpiada.year} - ${olimpiada.olympiad_name}`,
                   })) || []
                 }
                 displayKey="name"
@@ -127,8 +134,8 @@ export default function FormLevelsArea() {
                 placeholder="Seleccionar área"
                 options={
                   areas?.map((area) => ({
-                    id: area.id_area.toString(),
-                    name: area.nombre,
+                    id: area.area_id.toString(),
+                    name: area.area_name,
                   })) || []
                 }
                 displayKey="name"
@@ -146,8 +153,8 @@ export default function FormLevelsArea() {
                 placeholder="Seleccionar nivel o categoría"
                 options={
                   levels?.map((level) => ({
-                    id: level.id_nivel.toString(),
-                    name: level.nombre,
+                    id: level.level_id.toString(),
+                    name: level.name,
                   })) || []
                 }
                 displayKey="name"

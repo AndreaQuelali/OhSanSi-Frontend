@@ -6,7 +6,9 @@ import { TableRow, FormData } from '../interfaces/form-levels-area';
 
 export function useLevelsArea() {
   const [tableData, setTableData] = useState<TableRow[]>([]);
-  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>([]);
+  const [levels, setLevels] = useState<{ level_id: number; name: string }[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +16,7 @@ export function useLevelsArea() {
     if (!olympiadId) return;
     try {
       const response = await axios.get(`${API_URL}/levels-areas/${olympiadId}`);
-      setLevels(response.data.niveles);
+      setLevels(response.data.levels);
     } catch (error) {
       setError('Error al obtener los niveles');
     }
@@ -23,18 +25,20 @@ export function useLevelsArea() {
   const fetchTableLA = useCallback(async (olympiadId: number) => {
     if (!olympiadId) return;
     try {
-      const response = await axios.get(`${API_URL}/olympiads/${olympiadId}/levels-areas`);
+      const response = await axios.get(
+        `${API_URL}/olympiads/${olympiadId}/levels-areas`,
+      );
       if (response.data && response.data.data) {
-        const { gestion, areas } = response.data.data;
+        const { year, areas } = response.data.data;
         if (Array.isArray(areas)) {
           let idCounter = 1;
           const formattedData = areas.flatMap((area) =>
-            area.niveles.map((nivel: { nombre_nivel: string }) => ({
+            area.levels.map((nivel: { level_name: string }) => ({
               id: idCounter++,
-              olympiad: gestion,
-              area: area.nombre_area,
-              level: nivel.nombre_nivel,
-            }))
+              olympiad: year,
+              area: area.area_name,
+              level: nivel.level_name,
+            })),
           );
           setTableData(formattedData);
         } else {
@@ -48,66 +52,103 @@ export function useLevelsArea() {
     }
   }, []);
 
-  const checkDuplicateAssociation = useCallback(async (olympiadId: number, areaId: number, levelId: number) => {
-    try {
-      const response = await axios.get(`${API_URL}/olympiads/${olympiadId}/levels-areas`);
-      const registros = response.data?.data?.areas ?? [];
-      return registros.some(
-        (area: any) =>
-          area.id_area === areaId &&
-          area.niveles.some((nivel: any) => nivel.id_nivel === levelId)
-      );
-    } catch {
-      setError(LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR);
-      return false;
-    }
-  }, []);
+  const checkDuplicateAssociation = useCallback(
+    async (olympiadId: number, areaId: number, levelId: number) => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/olympiads/${olympiadId}/levels-areas`,
+        );
+        const registros = response.data?.data?.areas ?? [];
+        return registros.some(
+          (area: any) =>
+            area.area_id === areaId &&
+            area.levels.some((nivel: any) => nivel.level_id === levelId),
+        );
+      } catch {
+        setError(LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR);
+        return false;
+      }
+    },
+    [],
+  );
 
-  const registerAssociation = useCallback(async (data: FormData, areas: { id_area: number; nombre: string }[], levels: { id_nivel: number; nombre: string }[]) => {
-    const areaId = Number(data.area);
-    const levelId = Number(data.level);
-    const olympiadId = Number(data.olympiad);
-    if (!levelId || !areaId || !olympiadId) {
-      return { success: false, message: 'Datos inválidos' };
-    }
-    // Validar periodo de la olimpiada
-    try {
-      const olimpResponse = await axios.get(`${API_URL}/olympiads`);
-      const currentDate = new Date();
-      const olimpiada = olimpResponse.data.find((olimpiada: any) => olimpiada.id_olimpiada === olympiadId);
-      if (!olimpiada) {
-        return { success: false, message: 'No se encontró la olimpiada seleccionada' };
+  const registerAssociation = useCallback(
+    async (
+      data: FormData,
+      areas: { area_id: number; area_name: string }[],
+      levels: { level_id: number; name: string }[],
+    ) => {
+      const areaId = Number(data.area);
+      const levelId = Number(data.level);
+      const olympiadId = Number(data.olympiad);
+      if (!levelId || !areaId || !olympiadId) {
+        return { success: false, message: 'Datos inválidos' };
       }
-      const fechaInicio = new Date(olimpiada.fecha_inicio);
-      const fechaFin = new Date(olimpiada.fecha_fin);
-      const creadoEn = new Date(olimpiada.creado_en);
-      if (currentDate >= fechaInicio && currentDate <= fechaFin) {
-        return { success: false, message: LEVELS_AREA_ERROR_MESSAGES.ENROLLMENT_ERROR };
+      // Validar periodo de la olimpiada
+      try {
+        const olimpResponse = await axios.get(`${API_URL}/olympiads`);
+        const currentDate = new Date();
+        const olimpiada = olimpResponse.data.find(
+          (olimpiada: any) => olimpiada.olympiad_id === olympiadId,
+        );
+        if (!olimpiada) {
+          return {
+            success: false,
+            message: 'No se encontró la olimpiada seleccionada',
+          };
+        }
+        const fechaInicio = new Date(olimpiada.start_date);
+        const fechaFin = new Date(olimpiada.end_date);
+        const creadoEn = new Date(olimpiada.created_in);
+        if (currentDate >= fechaInicio && currentDate <= fechaFin) {
+          return {
+            success: false,
+            message: LEVELS_AREA_ERROR_MESSAGES.ENROLLMENT_ERROR,
+          };
+        }
+        if (!(currentDate >= creadoEn && currentDate < fechaInicio)) {
+          return {
+            success: false,
+            message: LEVELS_AREA_ERROR_MESSAGES.PERIOD_ERROR,
+          };
+        }
+      } catch {
+        return {
+          success: false,
+          message: LEVELS_AREA_ERROR_MESSAGES.VERIFY_ERROR,
+        };
       }
-      if (!(currentDate >= creadoEn && currentDate < fechaInicio)) {
-        return { success: false, message: LEVELS_AREA_ERROR_MESSAGES.PERIOD_ERROR };
+      // Validar duplicado
+      const alreadyRegistered = await checkDuplicateAssociation(
+        olympiadId,
+        areaId,
+        levelId,
+      );
+      if (alreadyRegistered) {
+        return {
+          success: false,
+          message: LEVELS_AREA_ERROR_MESSAGES.ALREADY_REGISTERED,
+        };
       }
-    } catch {
-      return { success: false, message: LEVELS_AREA_ERROR_MESSAGES.VERIFY_ERROR };
-    }
-    // Validar duplicado
-    const alreadyRegistered = await checkDuplicateAssociation(olympiadId, areaId, levelId);
-    if (alreadyRegistered) {
-      return { success: false, message: LEVELS_AREA_ERROR_MESSAGES.ALREADY_REGISTERED };
-    }
-    const payload = {
-      id_olimpiada: olympiadId,
-      id_area: areaId,
-      id_categorias: [levelId],
-      max_niveles: 1,
-    };
-    try {
-      await axios.post(`${API_URL}/areas/association`, payload);
-      return { success: true };
-    } catch {
-      return { success: false, message: LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR };
-    }
-  }, [checkDuplicateAssociation]);
+      const payload = {
+        olympiad_id: olympiadId,
+        area_id: areaId,
+        level_id: levelId,
+        // max_niveles: 1,
+      };
+      console.log(payload);
+      try {
+        await axios.post(`${API_URL}/areas/association`, payload);
+        return { success: true };
+      } catch {
+        return {
+          success: false,
+          message: LEVELS_AREA_ERROR_MESSAGES.REGISTER_ERROR,
+        };
+      }
+    },
+    [checkDuplicateAssociation],
+  );
 
   return {
     tableData,
@@ -121,4 +162,4 @@ export function useLevelsArea() {
     error,
     setError,
   };
-} 
+}
