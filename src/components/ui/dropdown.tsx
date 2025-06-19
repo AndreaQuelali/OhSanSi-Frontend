@@ -21,7 +21,10 @@ export const Dropdown = <T extends FieldValues>({
   return (
     <div className="flex flex-col">
       {label && (
-        <label htmlFor={name} className={`py-1 subtitle-md ${disabled ? 'text-neutral2' : 'text-primary'}`}>
+        <label
+          htmlFor={name}
+          className={`py-1 subtitle-md ${disabled ? 'text-neutral2' : 'text-primary'}`}
+        >
           {label} {isRequired && <span className="text-error">*</span>}
         </label>
       )}

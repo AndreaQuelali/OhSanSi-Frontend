@@ -26,7 +26,10 @@ export const RadioGroup = <T extends FieldValues>({
 
       <div className={`flex flex-${direction} gap-4 ${className}`}>
         {options.map((option) => (
-          <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={option.value}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               type="radio"
               value={option.value}

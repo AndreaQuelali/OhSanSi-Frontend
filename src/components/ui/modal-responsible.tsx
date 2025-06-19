@@ -84,7 +84,7 @@ export default function ResponsiblePersonModal({
     setError(null);
 
     try {
-      const response = await axios.get(`${API_URL}/persona/${ciValue}`);
+      const response = await axios.get(`${API_URL}/person/${ciValue}`);
 
       if (response.data && response.status === 200) {
         setError(null);
@@ -133,13 +133,11 @@ export default function ResponsiblePersonModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-neutral2 opacity-40" />
       <div
-        className="absolute inset-0 bg-neutral2 opacity-40"
-      />
-        <div
-          ref={modalRef}
-          className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md z-50"
-        >
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md z-50"
+      >
         <h2 className="text-primary text-xl font-semibold mb-4">
           Cédula de identidad del responsable de la inscripción
         </h2>

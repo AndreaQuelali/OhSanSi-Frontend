@@ -29,7 +29,7 @@ export default function FormLevelsGrades() {
       level: '',
       gmin: '',
       gmax: '',
-      olympiad: ''
+      olympiad: '',
     },
   });
 
@@ -42,31 +42,39 @@ export default function FormLevelsGrades() {
     { id: number; area: string; level: string; grade: string }[]
   >([]);
 
-  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>([]);
+  const [levels, setLevels] = useState<{ id_nivel: number; nombre: string }[]>(
+    [],
+  );
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchLevels = useCallback(async (olympiadId: number) => {
     if (!olympiadId) return;
     try {
-      const response = await axios.get(`${API_URL}/get-niveles/${olympiadId}`);
-      setLevels(response.data.niveles); // Guardamos los niveles en el estado
+      const response = await axios.get(`${API_URL}/levels/${olympiadId}`);
+      setLevels(response.data.niveles);
     } catch (error) {
-      console.error("Error al obtener los niveles:", error);
+      console.error('Error al obtener los niveles:', error);
     }
   }, []);
 
-  const { data: olympiads } = useFetchData<{
-    id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
-  >(`${API_URL}/olimpiadas-actuales`);
+  const { data: olympiads } = useFetchData<
+    {
+      id_olimpiada: number;
+      gestion: number;
+      nombre_olimpiada: string;
+    }[]
+  >(`${API_URL}/olympiads/now`);
 
   const { data: grades } = useFetchData<
     {
       id_grado: number;
       nombre_grado: string;
     }[]
-  >(`${API_URL}/grados`);
+  >(`${API_URL}/grades`);
 
   useEffect(() => {
     if (minGrade) {
@@ -85,7 +93,9 @@ export default function FormLevelsGrades() {
       return;
     }
     try {
-      const response = await axios.get(`${API_URL}/grados-niveles/${olympiadId}`);
+      const response = await axios.get(
+        `${API_URL}/grades/levels/${olympiadId}`,
+      );
       const levelstable = response.data;
 
       const formatted = levelstable.map((nivel: any) => ({
@@ -101,7 +111,6 @@ export default function FormLevelsGrades() {
     } catch (error) {
       console.error('Error al obtener los niveles con sus grados:', error);
     }
-
   }, []);
 
   useEffect(() => {
@@ -117,7 +126,7 @@ export default function FormLevelsGrades() {
     )?.id_nivel;
 
     if (!levelId) {
-      console.error("Nivel no encontrado");
+      console.error('Nivel no encontrado');
       return;
     }
     const gminId = Number(data.gmin);
@@ -129,7 +138,7 @@ export default function FormLevelsGrades() {
       return;
     }
 
-    const response = await axios.get(`${API_URL}/grados-niveles/${olympiadId}`);
+    const response = await axios.get(`${API_URL}/grades/levels/${olympiadId}`);
     const alreadyRegistered = response.data.some(
       (item: any) => item.id_nivel === levelId,
     );
@@ -146,7 +155,7 @@ export default function FormLevelsGrades() {
     setIsSubmitting(true);
 
     try {
-      await axios.post(`${API_URL}/asociar-grados-nivel`, payload);
+      await axios.post(`${API_URL}/grades/levels`, payload);
       setIsModalOpen(false);
       setConfirmationStatus('success');
       setConfirmationMessage('Nivel asociado a grado(s) exitosamente.');
@@ -154,7 +163,7 @@ export default function FormLevelsGrades() {
     } catch (error: any) {
       setConfirmationStatus('error');
       setConfirmationMessage(
-        error.data?.message || 'Error al registrar el nivel.'
+        error.data?.message || 'Error al registrar el nivel.',
       );
       setShowConfirmationModal(true);
       console.error('Error al registrar:', error);
@@ -296,7 +305,7 @@ export default function FormLevelsGrades() {
                 label="Cancelar"
                 variantColor="variant2"
                 className="mt-5 md:mt-0"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/administrator')}
               />
               <Button
                 label="Registrar"

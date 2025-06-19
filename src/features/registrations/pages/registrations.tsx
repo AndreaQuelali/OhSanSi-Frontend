@@ -6,7 +6,7 @@ export default function RegistrationsPage() {
 
   return (
     <FormProvider {...methods}>
-      <RegistrationsList title='Registros de Inscripciones' />
+      <RegistrationsList title="Registros de Inscripciones" />
     </FormProvider>
   );
 }

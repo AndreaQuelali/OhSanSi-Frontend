@@ -22,5 +22,4 @@ describe('RegisterInfoPage', () => {
     const submitButton = screen.getByRole('button', { name: /registrar/i });
     expect(submitButton).toBeInTheDocument();
   });
-
 });

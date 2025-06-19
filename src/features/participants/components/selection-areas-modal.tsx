@@ -68,7 +68,7 @@ export default function AreaSelectionModal({
   }, [tutorCi, clearTutorError]);
 
   const onNextStep = () => {
-    navigate('/register-tutor');
+    navigate('/olympian/register-tutor');
   };
 
   return (
@@ -111,11 +111,11 @@ export default function AreaSelectionModal({
         <div>
           {tutorError && tutorCi && (
             <div className="flex justify-end -my-3">
-            <Button
-              label="Ir a registro de tutor"
-              onClick={onNextStep}
-              variantColor="variant4"
-            />
+              <Button
+                label="Ir a registro de tutor"
+                onClick={onNextStep}
+                variantColor="variant4"
+              />
             </div>
           )}
         </div>

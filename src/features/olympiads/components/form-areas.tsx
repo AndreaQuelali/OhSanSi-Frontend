@@ -42,7 +42,9 @@ const FormAreas = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [areasRegistradas, setAreasRegistradas] = useState<TableRow[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
   const fetchAreas = async () => {
@@ -115,7 +117,8 @@ const FormAreas = () => {
       console.error('Error al registrar el área:', error);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        error.response?.data?.message || 'Error al registrar el área. Por favor, intente nuevamente.'
+        error.response?.data?.message ||
+          'Error al registrar el área. Por favor, intente nuevamente.',
       );
       setShowConfirmationModal(true);
     }
@@ -168,7 +171,7 @@ const FormAreas = () => {
               label="Cancelar"
               variantColor="variant2"
               className="mt-5 md:mt-0"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/administrator')}
             />
             <Button
               type="submit"

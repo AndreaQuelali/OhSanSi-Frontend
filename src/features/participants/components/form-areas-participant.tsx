@@ -17,7 +17,7 @@ import ResponsiblePersonModal from '@/components/ui/modal-responsible';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
 import { useNavigate } from 'react-router';
 
-interface DefeaultValues {
+interface FormData {
   olimpista: {
     ci: string;
   };
@@ -25,6 +25,7 @@ interface DefeaultValues {
     ci: string;
   };
 }
+
 export default function FormAreaPart() {
   const {
     register,
@@ -33,22 +34,21 @@ export default function FormAreaPart() {
     watch,
     control,
     setValue,
-  } = useForm<DefeaultValues>({
+  } = useForm<FormData>({
     mode: 'all',
     defaultValues: {
-      olimpista: {
-        ci: '',
-      },
-      tutor: {
-        ci: '',
-      },
+      olimpista: { ci: '' },
+      tutor: { ci: '' },
+
     },
   });
   const [showResponsibleModal, setShowResponsibleModal] = useState(false);
   const ciTutor = watch('tutor.ci');
   const ciOlimpista = watch('olimpista.ci');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | 'alert' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const navigate = useNavigate();
 
@@ -80,7 +80,7 @@ export default function FormAreaPart() {
     fecha: string;
     id_olimpiada: number;
     max_categorias_olimpista: number;
-  }>(`${API_URL}/olimpiada/max-categorias?fecha=${formattedDate}`, {
+  }>(`${API_URL}/olympiads/max-categories?fecha=${formattedDate}`, {
     method: 'GET',
   });
   const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>(
@@ -116,7 +116,7 @@ export default function FormAreaPart() {
   const handleCloseConfirmationModal = () => {
     setShowConfirmationModal(false);
     if (confirmationStatus === 'success') {
-      window.location.href = '/register-selected-areas';
+      window.location.href = '/olympian/register-selected-areas';
     }
     setConfirmationStatus(null);
     setConfirmationMessage('');
@@ -227,7 +227,11 @@ export default function FormAreaPart() {
 
     const areasConSelecciones = Object.keys(nivelesSeleccionados).length;
     if (areasConSelecciones >= maxCategorias) {
-      alert(`Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`);
+      setConfirmationStatus('alert');
+      setConfirmationMessage(
+        `Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`,
+      );
+      setShowConfirmationModal(true);
       return;
     }
     setSelectedArea(area);
@@ -265,7 +269,7 @@ export default function FormAreaPart() {
               ? { ci_tutor_academico: parseInt(tutoresPorArea[area]) }
               : {}),
           }));
-      }
+      },
     );
 
     const payload = {
@@ -275,17 +279,17 @@ export default function FormAreaPart() {
     };
 
     try {
-      await axios.post(
-        `${API_URL}/inscripciones-con-tutor`,
-        payload
-      );
+      await axios.post(`${API_URL}/enrollments/with-tutor`, payload);
       setConfirmationStatus('success');
-      setConfirmationMessage('Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.');
+      setConfirmationMessage(
+        'Registro exitoso. Si desea generar la boleta de orden de pago, puede continuar con el siguiente paso.',
+      );
     } catch (err: any) {
       console.error('Error:', err);
       setConfirmationStatus('error');
       setConfirmationMessage(
-        err.response?.data?.message || 'Error al realizar el registro. Por favor intente nuevamente.'
+        err.response?.data?.message ||
+          'Error al realizar el registro. Por favor intente nuevamente.',
       );
     } finally {
       setShowResponsibleModal(false);
@@ -294,19 +298,19 @@ export default function FormAreaPart() {
   };
 
   const handleNextStep = () => {
-    navigate('/generate-order-payment');
+    navigate('/olympian/generate-order-payment');
   };
 
   return (
-    <div className="my-6">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit(handleRegistrar)(e);
         }}
-        className="max-w-9/12 mx-auto w-full px-0 sm:px-6 md:px-0"
+        className="mx-5 mt-5 mb-32 w-11/12 md:w-9/12 lg:w-9/12"
       >
-        <h2 className="text-primary text-lg sm:text-xl md:text-2xl font-semibold mb-6 md:text-center sm:text-left headline-lg">
+        <h2 className="text-center text-primary mb-8 md:mb-10 headline-lg">
           Registro de Olimpista en una o varias áreas de competencia
         </h2>
 
@@ -348,8 +352,14 @@ export default function FormAreaPart() {
           onClose={handleCloseConfirmationModal}
           status={confirmationStatus || 'error'}
           message={confirmationMessage}
-          nextStepText={confirmationStatus === 'success' ? 'Ir a generar boleta de orden de pago.' : undefined}
-          onNextStep={confirmationStatus === 'success' ? handleNextStep : undefined}
+          nextStepText={
+            confirmationStatus === 'success'
+              ? 'Ir a generar boleta de orden de pago.'
+              : undefined
+          }
+          onNextStep={
+            confirmationStatus === 'success' ? handleNextStep : undefined
+          }
         />
       )}
     </div>

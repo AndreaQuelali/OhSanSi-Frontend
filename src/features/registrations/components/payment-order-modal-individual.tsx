@@ -31,7 +31,7 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
   if (!isOpen) return null;
 
   const handleDownload = async () => {
-    await new Promise((r) => setTimeout(r, 100)); 
+    await new Promise((r) => setTimeout(r, 100));
     if (contentRef.current) {
       const opt = {
         margin: 0.5,
@@ -84,28 +84,43 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
             <p className=" text-primary">
               <strong>Por lo siguiente:</strong>
             </p>
-            <p className=" pr-10 text-primary">
-              <strong>DEBE</strong>
-            </p>
           </div>
           <table className="w-full table-fixed mb-10 mt-10 text-center">
             <thead>
               <tr>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CANTIDAD</strong></th>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>CONCEPTO</strong></th>
-                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center"><strong>P.UNITARIO</strong></th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>CANTIDAD</strong>
+                </th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>CONCEPTO</strong>
+                </th>
+                <th className="w-1/3 border-b border-[#E0E0E0] subtitle-sm px-2 py-2 text-onBack text-center">
+                  <strong>P.UNITARIO</strong>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.niveles.length}</td>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">Inscripciones</td>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">{data.unitario.toFixed(2)} Bs</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  {data.niveles.length}
+                </td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  Inscripciones
+                </td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  {data.unitario.toFixed(2)} Bs
+                </td>
               </tr>
               <tr>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">1</td>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">Total</td>
-                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">{data.total.toFixed(2)} Bs</td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center">
+                  1
+                </td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">
+                  Total
+                </td>
+                <td className="w-1/3 border-b border-[#E0E0E0] px-2 py-3 body-sm text-onBack text-center font-semibold">
+                  {data.total.toFixed(2)} Bs
+                </td>
               </tr>
             </tbody>
           </table>
@@ -128,7 +143,6 @@ export const PaymentOrderModalInd: React.FC<PaymentPreviewModalProps> = ({
           </div>
         </div>
         <div className="flex justify-end space-x-4 mt-6 px-6">
-          <Button onClick={onClose} label="Cancelar" variantColor="variant2" />
           <Button onClick={handleDownload} label="Descargar" />
         </div>
       </div>

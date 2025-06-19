@@ -209,16 +209,12 @@ export const ModalUploadPay = ({ onClose, id_lista }: ModalProps) => {
         formData.append('id_lista', id_lista.toString());
       }
 
-      const uploadResponse = await axios.post(
-        `${API_URL}/prueba-ocr`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          signal: controller.signal,
+      const uploadResponse = await axios.post(`${API_URL}/ocr`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+        signal: controller.signal,
+      });
 
       if (uploadResponse.status !== 200) {
         throw new Error('Error al subir la imagen');

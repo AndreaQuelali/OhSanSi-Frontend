@@ -17,7 +17,7 @@ export function useTutorValidation(ciTutor: string) {
     const timeoutId = setTimeout(() => {
       const verificarTutor = async () => {
         try {
-          const response = await axios.get(`${API_URL}/tutores/cedula/${trimmedCi}`);
+          const response = await axios.get(`${API_URL}/tutors/${trimmedCi}`);
           if (response.data.status === 200) {
             setTutorError(null);
           }

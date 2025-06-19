@@ -75,7 +75,10 @@ export const CustomPagination: React.FC<PaginationComponentProps> = ({
 
     return visiblePages.map((page, index) =>
       page === '...' ? (
-        <span key={`ellipsis-${index}`} className="px-2 pt-2 subtitle-md text-primary">
+        <span
+          key={`ellipsis-${index}`}
+          className="px-2 pt-2 subtitle-md text-primary"
+        >
           ...
         </span>
       ) : (
@@ -86,7 +89,7 @@ export const CustomPagination: React.FC<PaginationComponentProps> = ({
           variantColor={currentPage === page ? 'variant1' : 'variant3'}
           className="rounded-full w-10 h-8 p-0 text-sm font-bold"
         />
-      )
+      ),
     );
   };
 
@@ -102,7 +105,9 @@ export const CustomPagination: React.FC<PaginationComponentProps> = ({
       />
       {renderPages()}
       <ButtonIcon
-        variantColor={currentPage === totalPages ? 'variantDesactivate' : 'variant2'}
+        variantColor={
+          currentPage === totalPages ? 'variantDesactivate' : 'variant2'
+        }
         icon={NextIcon}
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

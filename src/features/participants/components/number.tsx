@@ -1,4 +1,3 @@
-
 export const NumberCircle = ({ number, active }: NumberCircleProps) => {
   return (
     <div

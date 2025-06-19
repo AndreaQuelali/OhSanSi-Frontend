@@ -68,8 +68,7 @@ export const ReportRegisterOliPage = () => {
 
   const { data: olympiads } = useFetchData<
     { id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]
-  >(`${API_URL}/olimpiadas`);
-  //const [loadingOli, setLoadingOli] = useState(false);
+  >(`${API_URL}/olympiads`);
 
   const selectedOlympiad = olympiads?.find(
     (o) => o.id_olimpiada === Number(selectedOlympiadId),
@@ -82,41 +81,37 @@ export const ReportRegisterOliPage = () => {
     `${API_URL}/areas`,
   );
 
-  //const [loadingAreas, setLoadingAreas] = useState(false);
-
   const { data: levels } = useFetchData<{
     niveles: { id_nivel: number; nombre: string }[];
-  }>(`${API_URL}/get-niveles`);
+  }>(`${API_URL}/levels`);
 
   const { data: grades } = useFetchData<
     {
       id_grado: number;
       nombre_grado: string;
     }[]
-  >(`${API_URL}/grados`);
-
-  //const [loadingLevels, setLoaodingLevels] = useState(false);
+  >(`${API_URL}/grades`);
 
   const { data: departamentos } = useFetchData<
     {
       id_departamento: number;
       nombre_departamento: string;
     }[]
-  >(`${API_URL}/departamentos`);
+  >(`${API_URL}/departaments`);
 
   const { data: provincias } = useFetchData<
     {
       id_provincia: number;
       nombre_provincia: string;
     }[]
-  >(`${API_URL}/provincias`);
+  >(`${API_URL}/provinces`);
 
   const { data: colegios } = useFetchData<
     {
       id_colegio: number;
       nombre_colegio: string;
     }[]
-  >(`${API_URL}/colegios/nombres`);
+  >(`${API_URL}/schools/names`);
 
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [showAreaModal, setShowAreaModal] = useState(false);
@@ -150,7 +145,7 @@ export const ReportRegisterOliPage = () => {
 
       try {
         const response = await fetch(
-          `${API_URL}/olimpistas-inscritos/${selectedOlympiadId}`,
+          `${API_URL}/enrollments/participants/${selectedOlympiadId}`,
         );
         const result = await response.json();
 
@@ -234,8 +229,8 @@ export const ReportRegisterOliPage = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(14);
-    doc.text('Universidad Mayor de San Simón', 15, 12); // Izquierda
-    doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' }); // Derecha
+    doc.text('Universidad Mayor de San Simón', 15, 12);
+    doc.text('Olimpiadas Oh!SanSi', 195, 12, { align: 'right' });
 
     doc.setFontSize(16);
     doc.text('Reporte de Olimpistas Inscritos', 105, 20, { align: 'center' });

@@ -31,27 +31,79 @@ type TableProps = {
 };
 
 const columns: TableColumn<OlimpistaRow>[] = [
-  { name: 'Nombre(s)', selector: row => row.Nombre, sortable: true },
-  { name: 'Apellido(s)', selector: row => row.Apellido, sortable: true },
-  { name: 'CI Olimpista', selector: row => row.CIOlimpista, sortable: true },
-  { name: 'Fecha de Nacimiento', selector: row => row.FechadeNacimiento, sortable: true },
-  { name: 'Correo electrónico', selector: row => row.Correoelectronico, sortable: true },
-  { name: 'Departamento', selector: row => row.Departamento, sortable: true },
-  { name: 'Provincia', selector: row => row.Provincia, sortable: true },
-  { name: 'Unidad Educativa', selector: row => row.UnidadEducativa, sortable: true },
-  { name: 'Grado', selector: row => row.Grado, sortable: true },
-  { name: 'Nombre(s) tutor legal', selector: row => row.NombresTutorLegal, sortable: true },
-  { name: 'Apellido(s) tutor legal', selector: row => row.ApellidosTutorLegal, sortable: true },
-  { name: 'CI tutor legal', selector: row => row.CITutorLegal, sortable: true },
-  { name: 'Celular tutor legal', selector: row => row.CelularTutorLegal, sortable: true },
-  { name: 'Correo electrónico tutor legal', selector: row => row.CorreoelectronicoTutorLegal, sortable: true },
-  { name: 'Área', selector: row => row.Area, sortable: true },
-  { name: 'Nivel/Categoría', selector: row => row.NivelCategoria, sortable: true },
-  { name: 'Nombre(s) profesor', selector: row => row.NombresProfesor, sortable: true },
-  { name: 'Apellido(s) profesor', selector: row => row.ApellidosProfesor, sortable: true },
-  { name: 'CI profesor', selector: row => row.CIProfesor, sortable: true },
-  { name: 'Celular profesor', selector: row => row.CelularProfesor, sortable: true },
-  { name: 'Correo electrónico profesor', selector: row => row.CorreoelectronicoProfesor, sortable: true },
+  { name: 'Nombre(s)', selector: (row) => row.Nombre, sortable: true },
+  { name: 'Apellido(s)', selector: (row) => row.Apellido, sortable: true },
+  { name: 'CI Olimpista', selector: (row) => row.CIOlimpista, sortable: true },
+  {
+    name: 'Fecha de Nacimiento',
+    selector: (row) => row.FechadeNacimiento,
+    sortable: true,
+  },
+  {
+    name: 'Correo electrónico',
+    selector: (row) => row.Correoelectronico,
+    sortable: true,
+  },
+  { name: 'Departamento', selector: (row) => row.Departamento, sortable: true },
+  { name: 'Provincia', selector: (row) => row.Provincia, sortable: true },
+  {
+    name: 'Unidad Educativa',
+    selector: (row) => row.UnidadEducativa,
+    sortable: true,
+  },
+  { name: 'Grado', selector: (row) => row.Grado, sortable: true },
+  {
+    name: 'Nombre(s) tutor legal',
+    selector: (row) => row.NombresTutorLegal,
+    sortable: true,
+  },
+  {
+    name: 'Apellido(s) tutor legal',
+    selector: (row) => row.ApellidosTutorLegal,
+    sortable: true,
+  },
+  {
+    name: 'CI tutor legal',
+    selector: (row) => row.CITutorLegal,
+    sortable: true,
+  },
+  {
+    name: 'Celular tutor legal',
+    selector: (row) => row.CelularTutorLegal,
+    sortable: true,
+  },
+  {
+    name: 'Correo electrónico tutor legal',
+    selector: (row) => row.CorreoelectronicoTutorLegal,
+    sortable: true,
+  },
+  { name: 'Área', selector: (row) => row.Area, sortable: true },
+  {
+    name: 'Nivel/Categoría',
+    selector: (row) => row.NivelCategoria,
+    sortable: true,
+  },
+  {
+    name: 'Nombre(s) profesor',
+    selector: (row) => row.NombresProfesor,
+    sortable: true,
+  },
+  {
+    name: 'Apellido(s) profesor',
+    selector: (row) => row.ApellidosProfesor,
+    sortable: true,
+  },
+  { name: 'CI profesor', selector: (row) => row.CIProfesor, sortable: true },
+  {
+    name: 'Celular profesor',
+    selector: (row) => row.CelularProfesor,
+    sortable: true,
+  },
+  {
+    name: 'Correo electrónico profesor',
+    selector: (row) => row.CorreoelectronicoProfesor,
+    sortable: true,
+  },
 ];
 
 const customStyles = {

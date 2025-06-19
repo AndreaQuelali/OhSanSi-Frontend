@@ -8,7 +8,7 @@ export * from './olympiads/components/table-levels';
 export * from './olympiads/components/table';
 export * from './olympiads/index';
 export * from './olympiads/interfaces/form-info.d';
-export * from './olympiads/pages/home';
+export * from './home/home-administrator';
 export * from './olympiads/pages/register-areas';
 export * from './olympiads/pages/register-info';
 export * from './olympiads/pages/register-levels';
