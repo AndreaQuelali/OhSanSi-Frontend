@@ -16,10 +16,12 @@ export function useAreas() {
     try {
       const response = await axios.get(`${API_URL}/areas`);
       const areasFromDB = response.data;
-      const formatted = areasFromDB.map((area: { id_area: number; nombre: string }) => ({
-        id: area.id_area,
-        area: area.nombre,
-      }));
+      const formatted = areasFromDB.map(
+        (area: { area_id: number; area_name: string }) => ({
+          id: area.area_id,
+          area: area.area_name,
+        }),
+      );
       setAreasRegistered(formatted);
     } catch (err) {
       setError(AREA_ERROR_MESSAGES.VERIFY_ERROR);
@@ -32,7 +34,10 @@ export function useAreas() {
     try {
       const response = await axios.get(`${API_URL}/areas`);
       const areas = response.data;
-      return areas.some((area: { nombre: string }) => normalizeAreaName(area.nombre) === normalizeAreaName(inputArea));
+      return areas.some(
+        (area: { area_name: string }) =>
+          normalizeAreaName(area.area_name) === normalizeAreaName(inputArea),
+      );
     } catch {
       setError(AREA_ERROR_MESSAGES.VERIFY_ERROR);
       return false;
@@ -41,7 +46,7 @@ export function useAreas() {
 
   const registerArea = useCallback(async (nameArea: string) => {
     try {
-      const payload = { nombre: nameArea };
+      const payload = { name: nameArea };
       await axios.post(`${API_URL}/areas`, payload);
       return { success: true };
     } catch {
@@ -57,6 +62,6 @@ export function useAreas() {
     loading,
     error,
     setError,
-    setAreasRegistered
+    setAreasRegistered,
   };
 }
