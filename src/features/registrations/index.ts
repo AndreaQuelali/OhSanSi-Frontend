@@ -25,3 +25,10 @@ export * from './interfaces/registration-card';
 export * from './services/registration-card-api';
 export * from './utils/registration-card-helpers';
 export * from './hooks/use-registration-card';
+
+// Registrations List exports
+export * from './interfaces/registrations-list';
+export * from './services/registrations-list-api';
+export * from './utils/registrations-list-helpers';
+export * from './hooks/use-registrations-list';
+export * from './constants/registrations-list';

@@ -61,7 +61,6 @@ export * from './registrations/components/cards/registration-card';
 export * from './registrations/components/registrations-list';
 export * from './registrations/components/scanning-animation';
 export * from './registrations/components/table-boleta';
-export * from './registrations/index';
 export * from './registrations/pages/generate-payment-order-page';
 export * from './registrations/pages/pre-registrations';
 export * from './registrations/pages/registrations';
