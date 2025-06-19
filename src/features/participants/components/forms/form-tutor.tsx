@@ -1,182 +1,52 @@
-import { Button, InputText, Modal } from '../../../../components';
-import { useState, useEffect } from 'react';
-import { FormData } from '../../interfaces/form-tutor';
-import { useForm } from 'react-hook-form';
+import { Button, InputText, Modal } from '@/components';
+import { FormTutorProps } from '../../interfaces/form-tutor';
 import { useNavigate } from 'react-router';
-import { useApiForm } from '@/hooks/use-api-form';
-import { getData } from '@/services/api-service';
 import { ConfirmationModal } from '@/components/ui/modal-confirmation';
-
-type FormTutorProps = {
-  viewTB: boolean;
-};
+import {
+  ERROR_MESSAGES,
+  VALIDATION_PATTERNS,
+  VALIDATION_LIMITS,
+  ROUTES,
+} from '../../constants/participant-constants';
+import { useSubmitTutor, useTutorFormLogic } from '../../hooks';
 
 export default function FormTutor({ viewTB }: FormTutorProps) {
+  const navigate = useNavigate();
+  
   const {
     register,
     handleSubmit,
-    watch,
-    setError,
-    setValue,
-    clearErrors,
-    formState: { errors, isValid },
-  } = useForm<FormData>({
-    mode: 'onChange',
-    defaultValues: {},
-  });
+    errors,
+    isValid,
+    isRegisteredTutor,
+    ciConfirmed,
+    showMessage,
+  } = useTutorFormLogic();
 
-  const ciValue = watch('ci');
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState<FormData | null>(null);
-  const { submitForm } = useApiForm('/tutors');
-  const [isRegisteredTutor, setIsRegisteredTutor] = useState(false);
-  const [ciTutorFound, setCiTutorFound] = useState<string | null>(null);
-  const [ciConfirmed, setCiConfirmed] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [confirmationStatus, setConfirmationStatus] = useState<
-    'success' | 'error' | null
-  >(null);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>('');
-
-  const onSubmit = async (data: FormData) => {
-    setFormData(data);
-    setShowModal(true);
-  };
-
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    if (confirmationStatus === 'success') {
-      window.location.reload();
-    }
-    setConfirmationStatus(null);
-    setConfirmationMessage('');
-  };
+  const {
+    onSubmit,
+    onConfirm,
+    showModal,
+    setShowModal,
+    closeConfirmationModal,
+    showConfirmationModal,
+    confirmationStatus,
+    confirmationMessage,
+  } = useSubmitTutor();
 
   const handleNextStep = () => {
-    navigate('/olympian/register-olympians');
+    navigate(ROUTES.REGISTER_OLYMPIAN);
   };
 
   const onCloseModal = () => {
     setShowModal(false);
   };
 
-  const onConfirm = async () => {
-    if (!formData) return;
-
-    const payload = {
-      nombres: formData.name,
-      apellidos: formData.lastname,
-      ci: formData.ci,
-      celular: formData.phone,
-      correo_electronico: formData.email,
-    };
-
-    try {
-      const response = await submitForm(payload);
-      if (response) {
-        setConfirmationStatus('success');
-        setConfirmationMessage(
-          'Registro exitoso del tutor. Si desea registrar a un olimpista, puede continuar con el siguiente paso.',
-        );
-      }
-    } catch (error: any) {
-      setConfirmationStatus('error');
-      if (error.data?.errors) {
-        const messages = Object.values(error.data.errors).flat().join('\n');
-        setConfirmationMessage(messages);
-      } else {
-        setConfirmationMessage(
-          error.data?.message || 'Ocurrió un error. Intenta de nuevo.',
-        );
-      }
-    }
-    setShowConfirmationModal(true);
-    setShowModal(false);
+  const handleCloseConfirmationModal = () => {
+    closeConfirmationModal(() => {
+      window.location.reload();
+    });
   };
-
-  useEffect(() => {
-    const verificarCI = async () => {
-      if (!ciValue || String(ciValue).length < 4) {
-        setIsRegisteredTutor(false);
-        setCiTutorFound(null);
-        if (errors.ci?.type === 'ci-duplicado') {
-          clearErrors('ci');
-        }
-        return;
-      }
-      try {
-        const response = await getData(`/tutors/${ciValue}`);
-        if (response && response.tutor) {
-          setValue('name', response.tutor.nombres || '');
-          setValue('lastname', response.tutor.apellidos || '');
-          setValue('email', response.tutor.correo_electronico || '');
-          setValue('phone', response.tutor.celular || '');
-
-          if (!errors.ci || errors.ci?.type === 'ci-duplicado') {
-            setError('ci', {
-              type: 'ci-duplicado',
-              message: 'Este número de cédula ya está registrado',
-            });
-          }
-          clearErrors();
-          setIsRegisteredTutor(true);
-          setCiTutorFound(ciValue);
-        } else {
-          if (errors.ci?.type === 'ci-duplicado') {
-            clearErrors('ci');
-          }
-          setIsRegisteredTutor(false);
-          setCiTutorFound(null);
-
-          setValue('name', '');
-          setValue('lastname', '');
-          setValue('email', '');
-          setValue('phone', '');
-        }
-      } catch (error: any) {
-        if (errors.ci?.type === 'ci-duplicado') {
-          clearErrors('ci');
-        }
-        setIsRegisteredTutor(false);
-        setCiTutorFound(null);
-      }
-    };
-
-    verificarCI();
-  }, [ciValue, setError, clearErrors, setValue]);
-
-  useEffect(() => {
-    if (ciTutorFound && ciValue !== ciTutorFound) {
-      if (errors.ci?.type === 'ci-duplicado') {
-        clearErrors('ci');
-      }
-      setIsRegisteredTutor(false);
-      setCiTutorFound(null);
-      setValue('name', '');
-      setValue('lastname', '');
-      setValue('email', '');
-      setValue('phone', '');
-    }
-  }, [ciValue, ciTutorFound, clearErrors, setValue]);
-
-  useEffect(() => {
-    if (ciValue && String(ciValue).length >= 4 && /^[0-9]+$/.test(ciValue)) {
-      setCiConfirmed(true);
-    } else {
-      setCiConfirmed(false);
-    }
-  }, [ciValue]);
-
-  useEffect(() => {
-    if (isRegisteredTutor) {
-      setShowMessage(true);
-    } else {
-      const timeout = setTimeout(() => setShowMessage(false), 50);
-      return () => clearTimeout(timeout);
-    }
-  }, [isRegisteredTutor]);
 
   return (
     <div className="flex flex-col w-full">
@@ -202,18 +72,18 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
               className="w-full"
               register={register}
               validationRules={{
-                required: 'El número de cédula es obligatorio',
+                required: ERROR_MESSAGES.REQUIRED_CI,
                 pattern: {
-                  value: /^[0-9]+$/,
-                  message: 'Solo se permiten números',
+                  value: VALIDATION_PATTERNS.CI,
+                  message: ERROR_MESSAGES.INVALID_CI,
                 },
                 minLength: {
-                  value: 4,
-                  message: 'Debe tener al menos 4 dígitos',
+                  value: VALIDATION_LIMITS.CI_MIN_LENGTH,
+                  message: ERROR_MESSAGES.CI_MIN_LENGTH,
                 },
                 maxLength: {
-                  value: 8,
-                  message: 'No puede tener más de 8 dígitos',
+                  value: VALIDATION_LIMITS.CI_MAX_LENGTH,
+                  message: ERROR_MESSAGES.CI_MAX_LENGTH,
                 },
               }}
               errors={errors}
@@ -243,7 +113,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 <div className="mt-3 flex justify-end">
                   <Button
                     label="Ir a formulario de registro de olimpista"
-                    onClick={() => navigate(`/register-olimpists`)}
+                    onClick={() => navigate(ROUTES.REGISTER_OLYMPIAN)}
                     variantColor="variant4"
                   />
                 </div>
@@ -258,11 +128,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El nombre es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_NAME,
                   pattern: {
-                    value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
-                    message:
-                      'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    value: VALIDATION_PATTERNS.NAME,
+                    message: ERROR_MESSAGES.INVALID_NAME,
                   },
                 }}
                 errors={errors}
@@ -275,11 +144,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El apellido es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_LASTNAME,
                   pattern: {
-                    value: /^[A-ZÑÁÉÍÓÚ]+(?: [A-ZÑÁÉÍÓÚ]+)*$/,
-                    message:
-                      'Solo se permiten letras mayúsculas y un solo espacio entre palabras',
+                    value: VALIDATION_PATTERNS.LASTNAME,
+                    message: ERROR_MESSAGES.INVALID_LASTNAME,
                   },
                 }}
                 errors={errors}
@@ -294,14 +162,14 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El número de celular es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_PHONE,
                   pattern: {
-                    value: /^[0-9]{8,}$/,
-                    message: 'Debe contener solo números y al menos 8 dígitos',
+                    value: VALIDATION_PATTERNS.PHONE,
+                    message: ERROR_MESSAGES.INVALID_PHONE,
                   },
                   maxLength: {
-                    value: 15,
-                    message: 'Debe contener como máximo 15 dígitos',
+                    value: VALIDATION_LIMITS.PHONE_MAX_LENGTH,
+                    message: ERROR_MESSAGES.PHONE_MAX_LENGTH,
                   },
                 }}
                 errors={errors}
@@ -315,11 +183,10 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                 className="w-full"
                 register={register}
                 validationRules={{
-                  required: 'El correo electrónico es obligatorio',
+                  required: ERROR_MESSAGES.REQUIRED_EMAIL,
                   pattern: {
-                    value:
-                      /^[a-zA-Z0-9](?!.*[._-]{2})(\.?[a-zA-Z0-9_-])*@[a-zA-Z0-9](-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}$/,
-                    message: 'Correo electrónico no válido',
+                    value: VALIDATION_PATTERNS.EMAIL,
+                    message: ERROR_MESSAGES.INVALID_EMAIL,
                   },
                 }}
                 errors={errors}
@@ -333,7 +200,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                     label="Cancelar"
                     variantColor="variant2"
                     className="mt-5 md:mt-0"
-                    onClick={() => navigate('/olympian')}
+                    onClick={() => navigate(ROUTES.OLYMPIAN_MENU)}
                   />
                   <Button
                     type="submit"
@@ -351,7 +218,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
                   <Button
                     label="Cancelar"
                     variantColor="variant2"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate(ROUTES.OLYMPIAN_MENU)}
                   />
                 </div>
               )}
@@ -361,7 +228,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
         {showModal && (
           <Modal
             onClose={onCloseModal}
-            text="¿Estás seguro de registrar los datos del tutor?"
+            text={ERROR_MESSAGES.CONFIRMATION_TEXT_TUTOR}
             onConfirm={onConfirm}
           />
         )}
@@ -372,7 +239,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             message={confirmationMessage}
             nextStepText={
               confirmationStatus === 'success'
-                ? 'Ir a formulario de registro de olimpista'
+                ? ERROR_MESSAGES.NEXT_STEP_TEXT_TUTOR
                 : undefined
             }
             onNextStep={

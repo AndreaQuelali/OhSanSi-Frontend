@@ -5,3 +5,7 @@ export type FormData = {
   phone: string;
   email: string;
 };
+
+export type FormTutorProps = {
+  viewTB: boolean;
+};

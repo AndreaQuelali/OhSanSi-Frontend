@@ -1,21 +1,10 @@
-export * from './components/cards/card-area';
-export * from './components/cards/card-upload-file';
-export * from './components/forms/form-areas-participant';
-export * from './components/forms/form-data-excel';
-export * from './components/forms/form-data-participant';
-export * from './components/forms/form-header';
-export * from './components/forms/form-tutor';
-export * from './components/number';
-export * from './components/modals/selection-areas-modal';
-export * from './components/grids/selection-grid-areas';
-export * from './hooks/index';
-export * from './hooks/use-form-validity';
-export * from './hooks/use-olimpist-data';
-export * from './hooks/use-tutor-validation';
-export * from './index';
-export * from './interfaces/form-tutor.d';
-export * from './interfaces/register-participants.d';
-export * from './pages/register-data-excel';
-export * from './pages/register-participant';
-export * from './pages/register-selected-areas';
-export * from './pages/register-tutor';
+export * from './components';
+
+export * from './hooks';
+
+//export * from './services';
+
+//export * from './utils';
+
+export * from './constants/participant-constants';
+export * from './interfaces/form-tutor';
