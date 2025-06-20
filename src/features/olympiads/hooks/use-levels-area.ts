@@ -9,7 +9,7 @@ export function useLevelsArea() {
   const [levels, setLevels] = useState<{ level_id: number; name: string }[]>(
     [],
   );
-  const [loading, setLoading] = useState(false);
+  const [loading ] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLevels = useCallback(async (olympiadId: number) => {
@@ -75,8 +75,6 @@ export function useLevelsArea() {
   const registerAssociation = useCallback(
     async (
       data: FormData,
-      areas: { area_id: number; area_name: string }[],
-      levels: { level_id: number; name: string }[],
     ) => {
       const areaId = Number(data.area);
       const levelId = Number(data.level);

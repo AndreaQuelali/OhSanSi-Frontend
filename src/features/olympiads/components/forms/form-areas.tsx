@@ -39,9 +39,6 @@ const FormAreas = () => {
     fetchTableAreas,
     checkDuplicateArea,
     registerArea,
-    error,
-    setError: setAreasError,
-    setAreasRegistered,
   } = useAreas();
 
   useEffect(() => {

@@ -39,9 +39,6 @@ export const FormLevel = () => {
     fetchTableLevels,
     checkDuplicateLevel,
     registerLevel,
-    error,
-    setError: setLevelsError,
-    setLevelsRegistered,
   } = useLevels();
 
   useEffect(() => {
