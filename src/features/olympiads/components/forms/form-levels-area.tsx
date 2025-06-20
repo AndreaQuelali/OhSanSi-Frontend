@@ -16,7 +16,6 @@ export default function FormLevelsArea() {
     formState: { errors, isValid },
     watch,
     reset,
-    getValues,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -42,10 +41,6 @@ export default function FormLevelsArea() {
     levels,
     fetchLevels,
     registerAssociation,
-    error,
-    setError: setLevelsAreaError,
-    setTableData,
-    setLevels,
   } = useLevelsArea();
 
   const { data: olympiads } =

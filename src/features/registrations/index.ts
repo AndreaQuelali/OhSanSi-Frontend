@@ -17,7 +17,7 @@ export * from './hooks/use-payment-order-modal';
 export * from './hooks/use-payment-order-group-modal';
 export * from './components/templates/payment-order-content';
 export * from './components/templates/payment-order-group-content';
-export * from './components/payment-order-modal-individual';
+export * from './components/modals/payment-order-modal-individual';
 export * from './components/modals/payment-order-modal';
 
 // Registration Card exports

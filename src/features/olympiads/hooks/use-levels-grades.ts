@@ -9,7 +9,7 @@ export function useLevelsGrades() {
   const [levels, setLevels] = useState<
     { level_id: number; level_name: string }[]
   >([]);
-  const [loading, setLoading] = useState(false);
+  const [loading ] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLevels = useCallback(async (olympiadId: number) => {

@@ -65,7 +65,6 @@ export const ReportRegisterOliPage = () => {
     showModal,
     setShowModal,
     tableRef,
-    currentDate,
     handlePrint,
     handleDownload,
   } = useReportOlimpist(selectedOlympiadId);

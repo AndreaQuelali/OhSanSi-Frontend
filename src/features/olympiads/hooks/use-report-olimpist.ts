@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { API_URL } from '@/config/api-config';
 import { REPORT_OLIMPIST_MESSAGES } from '../constants/report-olimpist-constants';
-import { FormData, Participant, FilterState } from '../interfaces/report-olimpist';
+import { Participant, FilterState } from '../interfaces/report-olimpist';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
