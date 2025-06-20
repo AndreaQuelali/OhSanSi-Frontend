@@ -13,7 +13,7 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
   showGenerateButton,
   showUploadButton,
 }) => {
-  const isGroup = list.kind === 'grupal';
+  const isGroup = list.tipo === 'grupal';
   const { state, handlers } = useRegistrationCard(list);
 
   const {
@@ -34,10 +34,11 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
       </h4>
       <div className="flex flex-col md:flex-row gap-0 md:gap-10">
         <div className="flex flex-col gap-1 flex-1">
+          {' '}
           <p className="subtitle-md">
             {' '}
             <strong>Responsable: </strong>
-            {list.responsible}
+            {list.responsable}
           </p>
           {!isGroup && (
             <p className="subtitle-md">
@@ -48,15 +49,10 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
             <p className="subtitle-md">
               <strong>Nro de inscripciones:</strong> {registrations.length}
             </p>
-          )}
+          )}{' '}
           {isGroup && (
             <p className="subtitle-md">
-              <strong>Nro de inscripciones:</strong> {list.cantidad}
-            </p>
-          )}
-          {isGroup && (
-            <p className="subtitle-md">
-              <strong>Nro de olimpistas:</strong> {list.cantidadOlimpistas}
+              <strong>Nro de estudiantes:</strong> {list.cantidadOlimpistas}
             </p>
           )}
         </div>

@@ -1,8 +1,8 @@
 import { PaymentData, PaymentDataGroup } from './payment-order-modal';
-import { ListItem } from './registrations-list';
+import { RegistrationList } from './registrations-list';
 
 export interface RegistrationCardProps {
-  list: ListItem;
+  list: RegistrationList;
   registrations: Array<{
     nombre: string;
     ci: string;
@@ -22,8 +22,11 @@ export interface PaymentVerificationResponse {
 export interface EnrollmentResponse {
   lists: Array<{
     list_id: number;
+    status: string;
     detail: {
       kind: 'individual' | 'grupal';
+      number_of_students?: number;
+      number_of_enrollments?: number;
     };
   }>;
 }
