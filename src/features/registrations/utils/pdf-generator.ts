@@ -28,7 +28,6 @@ export const pdfUtils = {
     element: HTMLElement,
     options: PDFGenerationOptions,
   ): Promise<void> => {
-    // Pequeño delay para asegurar que el renderizado esté completo
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     try {

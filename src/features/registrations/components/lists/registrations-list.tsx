@@ -1,9 +1,9 @@
 import React from 'react';
-import RegistrationCard from './cards/registration-card';
+import RegistrationCard from '../cards/registration-card';
 import { Button, InputText } from '@/components';
-import { RegistrationsListProps } from '../interfaces/registrations';
-import { useRegistrationsList } from '../hooks/use-registrations-list';
-import { REGISTRATION_VALIDATION_RULES } from '../constants/registrations-list';
+import { RegistrationsListProps } from '../../interfaces/registrations';
+import { useRegistrationsList } from '../../hooks/use-registrations-list';
+import { REGISTRATION_VALIDATION_RULES } from '../../constants/registrations-list';
 
 const RegistrationsList: React.FC<RegistrationsListProps> = ({
   showGenerateButton = false,

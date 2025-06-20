@@ -1,6 +1,6 @@
 export * from './index';
 export * from './components/cards/registration-card';
-export * from './components/registrations-list';
+export * from './components/lists/registrations-list';
 export * from './pages/pre-registrations';
 
 // Modal Upload Payment exports

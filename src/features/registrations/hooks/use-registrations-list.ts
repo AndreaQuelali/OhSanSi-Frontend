@@ -39,7 +39,6 @@ export const useRegistrationsList = ({
     updateState({ loading: true, errorMessage: '' });
 
     try {
-      // Verificar comprobante de pago si es necesario
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
         try {
           const paymentData = await registrationsListService.checkPayment(ci);
@@ -62,14 +61,12 @@ export const useRegistrationsList = ({
         }
       }
 
-      // Determinar qué endpoint usar
       const endpointType = registrationsListUtils.getEndpointType(
         showUploadButton,
         title,
         showGenerateButton,
       );
 
-      // Obtener inscripciones según el tipo
       let enrollmentData;
       switch (endpointType) {
         case 'upload':
@@ -84,7 +81,6 @@ export const useRegistrationsList = ({
             await registrationsListService.getEnrollmentsPending(ci);
       }
 
-      // Mapear datos
       const mappedData =
         registrationsListUtils.mapEnrollmentResponse(enrollmentData);
       updateState({ data: mappedData, loading: false });
@@ -92,7 +88,6 @@ export const useRegistrationsList = ({
       console.error('Error al obtener inscripciones', error);
       updateState({ data: [], loading: false });
 
-      // Manejo específico de errores
       if (
         !showUploadButton &&
         !title.includes('Verificar') &&
@@ -123,16 +118,13 @@ export const useRegistrationsList = ({
   };
 
   return {
-    // Form props
     register,
     handleSubmit,
     errors,
     onSubmit,
-    // State
     data: state.data,
     loading: state.loading,
     errorMessage: state.errorMessage,
-    // Actions
     getRegistrations,
   };
 };

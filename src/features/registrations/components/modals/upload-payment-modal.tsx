@@ -8,7 +8,7 @@ import {
   ErrorAnimation,
   ScanningAnimation,
   SuccessAnimation,
-} from '../scanning-animation';
+} from '../animations/scanning-animation';
 
 export const ModalUploadPay = ({
   onClose,
