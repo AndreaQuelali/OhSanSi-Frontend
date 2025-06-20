@@ -42,27 +42,29 @@ export interface PaymentResponse {
 }
 
 export interface EnrollmentApiResponse {
-  responsable: {
-    nombres?: string;
-    apellidos?: string;
-    ci?: string;
+  responsible: {
+    names?: string;
+    surnames?: string;
+    ci?: number;
   };
-  listas: Array<{
-    id_lista: string | number;
-    estado?: string;
-    detalle: {
-      tipo: 'individual' | 'grupal';
-      olimpista?: {
-        nombres?: string;
-        apellidos?: string;
-        ci?: string;
+  lists: Array<{
+    list_id: string | number;
+    status?: string;
+    detail: {
+      kind: 'individual' | 'grupal';
+      registration_quantity?: number;
+      olympist?: {
+        olympist_ci?: number;
+        names?: string;
+        surnames?: string;
       };
-      niveles?: Array<{
-        area?: string;
-        nombre?: string;
+      levels?: Array<{
+        level_id?: number;
+        name_level?: string;
+        name_area?: string;
       }>;
-      cantidad_inscripciones?: number;
-      cantidad_estudiantes?: number;
+      // Para registros grupales (si aplica)
+      student_quantity?: number;
     };
   }>;
 }

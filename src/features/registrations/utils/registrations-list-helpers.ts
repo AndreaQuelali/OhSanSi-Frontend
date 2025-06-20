@@ -3,26 +3,33 @@ import {
   Registration,
   EnrollmentApiResponse,
 } from '../interfaces/registrations-list';
-import { DEFAULT_VALUES } from '../constants/registrations-list';
+import {
+  DEFAULT_VALUES,
+  ERROR_MESSAGES,
+} from '../constants/registrations-list';
 
-type ListItem = EnrollmentApiResponse['listas'][0];
-type Nivel = { area?: string; nombre?: string };
+type ListItem = EnrollmentApiResponse['lists'][0];
+type Level = {
+  level_id?: number;
+  name_level?: string;
+  name_area?: string;
+};
 
 export const registrationsListUtils = {
-  formatResponsableName: (responsable?: {
-    nombres?: string;
-    apellidos?: string;
+  formatResponsableName: (responsible?: {
+    names?: string;
+    surnames?: string;
   }): string => {
-    if (!responsable) return '';
-    return `${responsable.nombres || ''} ${responsable.apellidos || ''}`.trim();
+    if (!responsible) return '';
+    return `${responsible.names || ''} ${responsible.surnames || ''}`.trim();
   },
 
-  formatOlimpistaName: (olimpista?: {
-    nombres?: string;
-    apellidos?: string;
+  formatOlimpistaName: (olympist?: {
+    names?: string;
+    surnames?: string;
   }): string => {
-    if (!olimpista) return '';
-    return `${olimpista.nombres || ''} ${olimpista.apellidos || ''}`.trim();
+    if (!olympist) return '';
+    return `${olympist.names || ''} ${olympist.surnames || ''}`.trim();
   },
 
   mapIndividualRegistration: (
@@ -30,14 +37,14 @@ export const registrationsListUtils = {
     responsableName: string,
     responsableCI: string,
   ): RegistrationData => {
-    const olimpista = item.detalle.olimpista;
-    const niveles = item.detalle.niveles || [];
+    const olympist = item.detail.olympist;
+    const levels = item.detail.levels || [];
 
-    const registrations: Registration[] = niveles.map((nivel: Nivel) => ({
-      nombre: registrationsListUtils.formatOlimpistaName(olimpista),
-      ci: olimpista?.ci || DEFAULT_VALUES.noCI,
-      area: nivel.area || DEFAULT_VALUES.noArea,
-      categoria: nivel.nombre || DEFAULT_VALUES.noCategory,
+    const registrations: Registration[] = levels.map((level: Level) => ({
+      nombre: registrationsListUtils.formatOlimpistaName(olympist),
+      ci: olympist?.olympist_ci?.toString() || DEFAULT_VALUES.noCI,
+      area: level.name_area || DEFAULT_VALUES.noArea,
+      categoria: level.name_level || DEFAULT_VALUES.noCategory,
     }));
     return {
       list: {
@@ -45,8 +52,8 @@ export const registrationsListUtils = {
         cantidadOlimpistas: registrations.length,
         responsable: responsableName,
         ci: responsableCI,
-        estado: item.estado || DEFAULT_VALUES.pendingStatus,
-        id_lista: item.id_lista,
+        estado: item.status || DEFAULT_VALUES.pendingStatus,
+        id_lista: item.list_id,
         tipo: 'individual',
       },
       registrations,
@@ -60,12 +67,12 @@ export const registrationsListUtils = {
   ): RegistrationData => {
     return {
       list: {
-        cantidad: item.detalle.cantidad_inscripciones || 0,
-        cantidadOlimpistas: item.detalle.cantidad_estudiantes || 0,
+        cantidad: item.detail.registration_quantity || 0,
+        cantidadOlimpistas: item.detail.student_quantity || 0,
         responsable: responsableName,
         ci: responsableCI,
-        estado: item.estado || DEFAULT_VALUES.pendingStatus,
-        id_lista: item.id_lista,
+        estado: item.status || DEFAULT_VALUES.pendingStatus,
+        id_lista: item.list_id,
         tipo: 'grupal',
       },
       registrations: [],
@@ -75,19 +82,18 @@ export const registrationsListUtils = {
   mapEnrollmentResponse: (
     response: EnrollmentApiResponse,
   ): RegistrationData[] => {
-    const { responsable, listas } = response;
-
-    if (!Array.isArray(listas)) {
-      throw new Error("El campo 'listas' no es un arreglo.");
+    const { responsible, lists } = response;
+    if (!Array.isArray(lists)) {
+      throw new Error(ERROR_MESSAGES.invalidListsFormat);
     }
 
     const responsableName =
-      registrationsListUtils.formatResponsableName(responsable);
-    const responsableCI = responsable?.ci || DEFAULT_VALUES.noCI;
+      registrationsListUtils.formatResponsableName(responsible);
+    const responsableCI = responsible?.ci?.toString() || DEFAULT_VALUES.noCI;
 
-    return listas
+    return lists
       .map((item: ListItem) => {
-        if (item.detalle?.tipo === 'individual') {
+        if (item.detail?.kind === 'individual') {
           return registrationsListUtils.mapIndividualRegistration(
             item,
             responsableName,
@@ -95,7 +101,7 @@ export const registrationsListUtils = {
           );
         }
 
-        if (item.detalle?.tipo === 'grupal') {
+        if (item.detail?.kind === 'grupal') {
           return registrationsListUtils.mapGroupRegistration(
             item,
             responsableName,
