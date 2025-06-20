@@ -7,7 +7,7 @@ export interface VerificationResult {
   payment_verification: {
     verified: boolean;
     message: string;
-    waiting_list_id?: number;
+    waiting_list_id?: string;
     received_list_id?: string;
     detalle_errores?: string[];
   } | null;
