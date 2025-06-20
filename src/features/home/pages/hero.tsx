@@ -7,7 +7,7 @@ import {
 } from '@/utils/olympiad';
 import { useFetchData } from '@/hooks/use-fetch-data';
 import { PageLoader } from '@/components/ui/loadings';
-import { Header } from './header';
+import { Header } from '../components/header';
 import { CardArea } from '../components/card-area';
 import { useEffect, useState } from 'react';
 import {
@@ -15,6 +15,7 @@ import {
   AlarmClockOff,
   CalendarX,
 } from 'lucide-react';
+import { Footer } from '../components/footer';
 
 export const Presentation = () => {
   const { data, loading } = useFetchData<OlympiadInfo[]>(
@@ -140,7 +141,7 @@ export const Presentation = () => {
         </div>
       </section>
 
-      <section className="text-center w-full py-16 px-6 md:px-20 mb-20 bg-white shadow-inner">
+      <section className="text-center w-full py-16 px-6 md:px-20 mb-10 bg-white shadow-inner">
         <h2 className="text-3xl headline-lg text-primary mb-4">Prerrequisitos</h2>
         <div className='bg-white shadow-md rounded-2xl px-6 py-6 text-left'>
         <ol className="text-left body-lg list-decimal pl-6 space-y-2 text-onBack">
@@ -152,6 +153,9 @@ export const Presentation = () => {
           <li>Contar con correo electrónico personal o del tutor.</li>
         </ol>
         </div>
+      </section>
+      <section className='text-center w-full pb-10 mb-10 bg-white'>
+        <Footer />
       </section>
     </main>
   );
