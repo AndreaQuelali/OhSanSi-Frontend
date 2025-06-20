@@ -64,28 +64,25 @@ export const ModalUploadPay = ({
                     alt="Mejorada"
                     className="w-full h-full object-contain rounded-md border border-green-400"
                   />
-
-                  {state.isSubmitting && <ScanningAnimation />}
-
+                  {state.isSubmitting && <ScanningAnimation />}{' '}
                   {state.showSuccess &&
-                    state.verificationResult?.verificacion_pago && (
+                    state.verificationResult?.payment_verification && (
                       <SuccessAnimation
                         message={
-                          state.verificationResult?.verificacion_pago.mensaje
+                          state.verificationResult?.payment_verification.message
                         }
                       />
                     )}
-
                   {state.showError && (
                     <ErrorAnimation
                       message={
-                        state.verificationResult?.verificacion_pago === null
+                        state.verificationResult?.payment_verification === null
                           ? 'Por favor, sube un comprobante de pago válido.'
-                          : state.verificationResult?.verificacion_pago
-                              ?.mensaje || 'Error al verificar el pago'
+                          : state.verificationResult?.payment_verification
+                              ?.message || 'Error al verificar el pago'
                       }
                       errors={
-                        state.verificationResult?.verificacion_pago
+                        state.verificationResult?.payment_verification
                           ?.detalle_errores
                       }
                       onRetry={handleRetry}

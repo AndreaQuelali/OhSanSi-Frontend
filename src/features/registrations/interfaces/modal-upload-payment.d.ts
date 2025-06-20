@@ -4,9 +4,11 @@ export interface ModalUploadPaymentProps {
 }
 
 export interface VerificationResult {
-  verificacion_pago: {
-    verificado: boolean;
-    mensaje: string;
+  payment_verification: {
+    verified: boolean;
+    message: string;
+    waiting_list_id?: number;
+    received_list_id?: string;
     detalle_errores?: string[];
   } | null;
 }

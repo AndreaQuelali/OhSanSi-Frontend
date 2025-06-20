@@ -107,17 +107,18 @@ export const useUploadPayment = (
         id_lista, // Se mantiene id_lista como parámetro del hook, pero internamente se convierte a list_id
         controller.signal,
       );
-
       updateState({ verificationResult: result });
 
-      if (result.verificacion_pago === null) {
+      if (result.payment_verification === null) {
         updateState({ showError: true });
         return;
       }
 
       if (
-        result.verificacion_pago?.verificado &&
-        !result.verificacion_pago?.mensaje?.includes('ya había sido verificado')
+        result.payment_verification?.verified &&
+        !result.payment_verification?.message?.includes(
+          'ya había sido verificado',
+        )
       ) {
         updateState({ showSuccess: true });
         setTimeout(() => {
