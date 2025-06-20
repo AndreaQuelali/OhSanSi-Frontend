@@ -27,7 +27,7 @@ export const Home = () => {
   const { data: statisticsData, loading: statisticsLoading } =
     useFetchData<OlympiadStatistics>(
       currentOlympiad
-        ? `/olympiads/${currentOlympiad.id_olimpiada}/statistics`
+        ? `/olympiads/${currentOlympiad.olympiad_id}/statistics`
         : '',
     );
 

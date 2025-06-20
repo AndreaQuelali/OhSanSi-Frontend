@@ -12,7 +12,7 @@ import { PageLoader } from '@/components/ui/loadings';
 export const Presentation = () => {
   const navigate = useNavigate();
   const { data, loading } = useFetchData<OlympiadInfo[]>(
-    `/olympiads/${getCurrentYear()}`,
+    `/olympiads/${getCurrentYear()}/management`,
   );
 
   localStorage.setItem('userRole', 'user');
@@ -64,27 +64,27 @@ export const Presentation = () => {
               <p className="text-base mb-1">
                 La fecha de inscripción inicia el{' '}
                 <span className="text-red-500 font-semibold">
-                  {formatDate(currentOlympiad.fecha_inicio)}
+                  {formatDate(currentOlympiad.start_date)}
                 </span>
               </p>
               <p className="text-base mb-1">
                 La fecha de finalización de inscripción será hasta el{' '}
                 <span className="text-red-500 font-semibold">
-                  {formatDate(currentOlympiad.fecha_fin)}
+                  {formatDate(currentOlympiad.end_date)}
                 </span>
               </p>
               <p className="text-base mb-3">
                 El costo de inscripción será de{' '}
                 <span className="text-red-500 font-semibold">
-                  {currentOlympiad.costo} (Bs)
+                  {currentOlympiad.cost} (Bs)
                 </span>{' '}
                 por área
               </p>{' '}
               {(() => {
                 if (!currentOlympiad) return null;
                 const status = getRegistrationStatus(
-                  currentOlympiad.fecha_inicio,
-                  currentOlympiad.fecha_fin,
+                  currentOlympiad.start_date,
+                  currentOlympiad.end_date,
                 );
 
                 const statusColors = {
