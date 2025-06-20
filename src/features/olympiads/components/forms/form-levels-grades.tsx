@@ -17,9 +17,7 @@ export default function FormLevelsGrades() {
     watch,
     trigger,
     setValue,
-    clearErrors,
     reset,
-    getValues,
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -47,10 +45,6 @@ export default function FormLevelsGrades() {
     levels,
     fetchLevels,
     registerAssociation,
-    error,
-    setError: setLevelsGradesError,
-    setTableData,
-    setLevels,
   } = useLevelsGrades();
 
   const { data: olympiads } = useFetchData<

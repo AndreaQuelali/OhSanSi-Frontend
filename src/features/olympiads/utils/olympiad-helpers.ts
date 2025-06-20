@@ -58,7 +58,7 @@ export const validateFutureDate = (date: string): string | true => {
   selectedDate.setHours(0, 0, 0, 0);
 
   if (selectedDate < today) {
-    return 'La fecha debe ser igual o posterior a la fecha actual';
+    return 'La fecha debe ser posterior a la fecha actual';
   }
   return true;
 };

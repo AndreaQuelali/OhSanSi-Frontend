@@ -5,6 +5,14 @@ import { OlympiadInfo, OlympiadStatistics } from '@/interfaces/olympiad';
 import { getCurrentYear } from '@/utils/olympiad';
 import { PageLoader } from '@/components/ui/loadings';
 import CardTotal from '../components/card-total';
+import { CardPaso } from '../components/card-step';
+import IconStep1 from '@/components/icons/icon-step1';
+import IconStep2 from '@/components/icons/icon-step2';
+import IconStep3 from '@/components/icons/icon-step3';
+import IconStep4 from '@/components/icons/icon-step4';
+import IconStep5 from '@/components/icons/icon-step5';
+import IconStep6 from '@/components/icons/icon-step6';
+import IconArrow from '@/components/icons/icon-arrow';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -35,55 +43,85 @@ export const Home = () => {
     <main className="w-full flex flex-col items-center justify-center px-4 md:px-16 py-10 text-onBack">
       {olympiadLoading && <PageLoader />}
       {!olympiadLoading && userRole === 'olympian' && (
-        <section className="text-center mb-16 w-10/12">
-          <h1 className="headline-lg text-primary mb-6">Guía de Registro</h1>
-          <div className="space-y-6 text-left">
-            {[
-              {
-                label: 'Registrar Tutor',
-                ruta: '/olympian/register-tutor',
-                description:
-                  '¿Eres padre/madre o profesor de un participante? Regístrate aquí para que puedas ser asignado a uno o más estudiantes en sus inscripciones. Solo necesitas hacerlo una vez',
-              },
-              {
-                label: 'Registrar olimpista',
-                ruta: '/olympian/register-olympians',
-                description:
-                  'Registra los datos básicos de un participante (nombre, colegio, tutor legal). Luego, podrás inscribirlo en las áreas que desee competir',
-              },
-              {
-                label: 'Registrar áreas de competencia',
-                ruta: '/olympian/register-selected-areas',
-                description:
-                  'Registra las áreas en las que el estudiante desea participar. Puedes seleccionar varias áreas según su interés y nivel académico.',
-              },
-              {
-                label: 'Registrar a través de Excel',
-                ruta: '/olympian/register-data-excel',
-                description:
-                  'Registra a varios estudiantes a la vez a través de Excel. Descarga la plantilla, completa los datos de los estudiantes y súbela aquí.',
-              },
-              {
-                label: 'Ver mis inscripciones',
-                ruta: '/olympian/registrations',
-                description:
-                  'Consulta el estado de tus inscripciones y las áreas en las que estás registrado. Aquí podrás ver si tu inscripción fue exitosa.',
-              },
-            ].map((step, index) => (
-              <div
-                key={index}
-                className="flex lg:items-start lg:flex-row flex-col-reverse gap-4 lg:space-x-12"
-              >
-                <Button
-                  className="lg:w-1/3 w-full mb-6"
-                  onClick={() => navigate(step.ruta)}
-                  label={step.label}
-                />
-                <div className="w-full">
-                  <p className="text-left body-lg">{step.description}</p>
-                </div>
-              </div>
-            ))}
+        <section className="mb-14 w-11/12">
+          <h1 className="headline-lg text-primary mb-6 text-center">
+            Pasos de Inscripción
+          </h1>
+
+          <h2 className="headline-sm text-secondary mb-4 text-left">
+            Inscripción Individual
+          </h2>
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 mb-10">
+            <CardPaso
+              Icon={<IconStep1 />}
+              text="¿Eres padre/madre o profesor del olimpista? Regístrate como tutor, sino salta este paso."
+              route="/olympian/register-tutor"
+            />
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep2 />}
+              text="Registra los datos personales y académicos del olimpista."
+              route="/olympian/register-olympians"
+            />
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep3 />}
+              text="Registra las áreas en las que el olimpista desea participar."
+              route="/olympian/register-selected-areas"
+            />
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep4 />}
+              text="Genera la boleta de orden de pago del registro del olimpista."
+              route="/olympian/generate-order-payment"
+            />
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep5 />}
+              text="Finaliza la inscripción subiendo el comprobante de pago."
+              route="/olympian/upload-payment"
+            />
+          </div>
+
+          <h2 className="headline-sm text-secondary mb-4 text-left">
+            Inscripción por Lista
+          </h2>
+
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 mb-10">
+            <CardPaso
+              Icon={<IconStep6 />}
+              text="Registra varios olimpistas a través de un archivo Excel."
+              route="/olympian/register-data-excel"
+            />
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep4 />}
+              text="Genera la boleta de orden de pago del registro del olimpista."
+              route="/olympian/generate-order-payment"
+            />
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
+              <IconArrow />
+            </div>
+            <CardPaso
+              Icon={<IconStep5 />}
+              text="Finaliza la inscripción subiendo el comprobante de pago."
+              route="/olympian/upload-payment"
+            />
           </div>
         </section>
       )}
