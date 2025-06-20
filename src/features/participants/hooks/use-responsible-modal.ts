@@ -12,4 +12,4 @@ export function useResponsibleModal() {
     closeResponsibleModal,
     setShowResponsibleModal,
   };
-} 
+}

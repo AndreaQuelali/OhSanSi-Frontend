@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { API_URL } from '@/config/api-config';
-import { AreaData, CreateOlympiadPayload, OlympiadData } from '../interfaces/olympiad';
+import {
+  AreaData,
+  CreateOlympiadPayload,
+  OlympiadData,
+} from '../interfaces/olympiad';
 
 export class OlympiadApiService {
   static async getOlympiads(): Promise<OlympiadData[]> {
@@ -13,7 +17,6 @@ export class OlympiadApiService {
     }
   }
 
-  
   static async createOlympiad(
     payload: CreateOlympiadPayload,
   ): Promise<OlympiadData> {

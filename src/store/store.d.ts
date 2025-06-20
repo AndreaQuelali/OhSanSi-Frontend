@@ -1,4 +1,4 @@
-import { OlympiadInfo } from "@/interfaces/olympiad";
+import { OlympiadInfo } from '@/interfaces/olympiad';
 
 export interface OlimpiadaStore {
   olimpiadas: OlympiadInfo[];

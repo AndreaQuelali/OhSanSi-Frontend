@@ -20,9 +20,7 @@ import {
   VALIDATION_PATTERNS,
 } from '../../constants/participant-constants';
 
-import {
-  FormFields,
-} from '../../interfaces/form-data-excel';
+import { FormFields } from '../../interfaces/form-data-excel';
 
 export default function FormDataExcel() {
   const {
@@ -51,7 +49,9 @@ export default function FormDataExcel() {
 
   const [showModal, setShowModal] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | 'alert' | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | 'alert' | null
+  >(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -87,7 +87,10 @@ export default function FormDataExcel() {
     setIsRegistering(true);
 
     try {
-      await ParticipantApiService.registerExcelData(ciResponsable, rawDataToSend);
+      await ParticipantApiService.registerExcelData(
+        ciResponsable,
+        rawDataToSend,
+      );
       setConfirmationMessage(ERROR_MESSAGES.SUCCESS_REGISTRATION_EXCEL);
       setConfirmationStatus('success');
       setShowConfirmationModal(true);
@@ -97,15 +100,20 @@ export default function FormDataExcel() {
 
       let mensaje = '';
       if (data?.message) mensaje += `${data.message}\n`;
-      if (data?.error && data?.error !== data?.message) mensaje += `${data.error}\n`;
+      if (data?.error && data?.error !== data?.message)
+        mensaje += `${data.error}\n`;
       if (resultado) {
-        mensaje += parseExcelErrors(resultado, '', ERROR_MESSAGES.ERROR_REGISTER_EXCEL);
+        mensaje += parseExcelErrors(
+          resultado,
+          '',
+          ERROR_MESSAGES.ERROR_REGISTER_EXCEL,
+        );
       }
       if (!mensaje) {
         mensaje = ERROR_MESSAGES.ERROR_REGISTER_EXCEL;
       }
-        setErrorMessage(mensaje);
-        setShowErrorModal(true);
+      setErrorMessage(mensaje);
+      setShowErrorModal(true);
     } finally {
       setIsRegistering(false);
     }
@@ -146,7 +154,7 @@ export default function FormDataExcel() {
                 required: ERROR_MESSAGES.CI_RESPONSIBLE_REQUIRED,
                 pattern: {
                   value: VALIDATION_PATTERNS.CI_RESPONSIBLE,
-                  message: ERROR_MESSAGES.CI_RESPONSIBLE_INVALID
+                  message: ERROR_MESSAGES.CI_RESPONSIBLE_INVALID,
                 },
               }}
               errors={errors}
@@ -163,7 +171,7 @@ export default function FormDataExcel() {
               <button
                 type="button"
                 onClick={() =>
-                  window.open(ROUTES.DOWNLOAD_EXCEL_TEMPLATE , '_blank')
+                  window.open(ROUTES.DOWNLOAD_EXCEL_TEMPLATE, '_blank')
                 }
                 className="flex items-center text-primary underline body-md hover:text-secondary2 transition cursor-pointer"
               >

@@ -73,13 +73,13 @@ export const Header = () => {
             />
           </div>
         </div>
-      <motion.img
-        src="/assets/images/ohsansi2.png"
-        className="mb-10 w-80"
-        initial={{ scale: 1, rotate: 0 }}
-        animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
+        <motion.img
+          src="/assets/images/ohsansi2.png"
+          className="mb-10 w-80"
+          initial={{ scale: 1, rotate: 0 }}
+          animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
     </section>
   );

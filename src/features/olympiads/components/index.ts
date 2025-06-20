@@ -1,4 +1,3 @@
-
 export { default as FormInfo } from './forms/form-info';
 export { default as FormAreas } from './forms/form-areas';
 export { default as FormLevelsArea } from './forms/form-levels-area';

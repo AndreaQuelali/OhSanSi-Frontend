@@ -1,4 +1,4 @@
-import { FormInfo } from "../components";
+import { FormInfo } from '../components';
 
 export const RegisterInfoPage = () => {
   return (

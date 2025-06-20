@@ -58,8 +58,10 @@ export const useExcelUpload = () => {
       let mensaje = '';
       if (errores) {
         mensaje = 'Errores al procesar el archivo Excel:\n';
-        if (errores.archivo?.length) mensaje += `\n• ${errores.archivo.join('\n• ')}`;
-        if (errores.formato?.length) mensaje += `\n• ${errores.formato.join('\n• ')}`;
+        if (errores.archivo?.length)
+          mensaje += `\n• ${errores.archivo.join('\n• ')}`;
+        if (errores.formato?.length)
+          mensaje += `\n• ${errores.formato.join('\n• ')}`;
       } else {
         mensaje = ERROR_MESSAGES.INCORRECT_FORMAT;
       }

@@ -34,12 +34,8 @@ const FormAreas = () => {
   >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const {
-    areasRegistered,
-    fetchTableAreas,
-    checkDuplicateArea,
-    registerArea,
-  } = useAreas();
+  const { areasRegistered, fetchTableAreas, checkDuplicateArea, registerArea } =
+    useAreas();
 
   useEffect(() => {
     fetchTableAreas();

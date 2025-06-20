@@ -15,7 +15,7 @@ export function useCheckOlympianCI(
   setValue: UseFormSetValue<FormValues>,
   setError: UseFormSetError<FormValues>,
   clearErrors: UseFormClearErrors<FormValues>,
-  errors: FieldErrors<FormValues>
+  errors: FieldErrors<FormValues>,
 ) {
   const [isRegisteredOlimpista, setIsRegisteredOlimpista] = useState(false);
   const [ciOlimpistaFound, setCiOlimpistaFound] = useState<string | null>(null);

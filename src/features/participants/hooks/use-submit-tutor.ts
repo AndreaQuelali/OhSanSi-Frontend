@@ -43,7 +43,9 @@ export const useSubmitTutor = () => {
         const messages = Object.values(error.data.errors).flat().join('\n');
         showError(messages);
       } else {
-        showError(error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_TUTOR);
+        showError(
+          error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_TUTOR,
+        );
       }
     }
 

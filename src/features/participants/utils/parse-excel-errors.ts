@@ -1,4 +1,8 @@
-export const parseExcelErrors = (resultado: any, message?: string, errorMsg?: string) => {
+export const parseExcelErrors = (
+  resultado: any,
+  message?: string,
+  errorMsg?: string,
+) => {
   let mensaje = message ? `${message}\n` : '';
 
   const erroresPorEntidad = [
@@ -32,7 +36,7 @@ export const parseExcelErrors = (resultado: any, message?: string, errorMsg?: st
       });
     }
   }
-  console.log("mensajito:",mensaje)
+  console.log('mensajito:', mensaje);
 
   return mensaje || errorMsg || 'Error desconocido';
 };

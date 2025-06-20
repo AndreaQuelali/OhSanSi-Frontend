@@ -5,4 +5,4 @@ export type FormData = {
 export type TableRow = {
   id: number;
   area: string;
-}; 
+};

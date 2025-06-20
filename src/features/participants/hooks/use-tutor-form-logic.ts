@@ -2,7 +2,10 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { getData } from '@/services/api-service';
-import { ERROR_MESSAGES, VALIDATION_PATTERNS } from '../constants/participant-constants';
+import {
+  ERROR_MESSAGES,
+  VALIDATION_PATTERNS,
+} from '../constants/participant-constants';
 import { FormData } from '../interfaces/form-tutor';
 
 export const useTutorFormLogic = () => {
@@ -23,7 +26,11 @@ export const useTutorFormLogic = () => {
   const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
-    if (ciValue && String(ciValue).length >= 4 && VALIDATION_PATTERNS.CI.test(ciValue)) {
+    if (
+      ciValue &&
+      String(ciValue).length >= 4 &&
+      VALIDATION_PATTERNS.CI.test(ciValue)
+    ) {
       setCiConfirmed(true);
     } else {
       setCiConfirmed(false);

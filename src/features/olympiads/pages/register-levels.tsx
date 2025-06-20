@@ -1,4 +1,4 @@
-import { FormLevel } from "../components/forms/form-level";
+import { FormLevel } from '../components/forms/form-level';
 
 export const RegisterLevelsPage = () => {
   return (

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { CONFIRMATION_STATUS } from '../constants/participant-constants'
+import { CONFIRMATION_STATUS } from '../constants/participant-constants';
 
 type ConfirmationStatus = 'success' | 'error' | 'alert' | null;
-
 
 export const useConfirmationParticipant = () => {
   const [showModal, setShowModal] = useState(false);
@@ -11,18 +10,18 @@ export const useConfirmationParticipant = () => {
     useState<ConfirmationStatus>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-
   const openModal = () => {
     setShowModal(true);
   };
-
 
   const closeModal = () => {
     setShowModal(false);
   };
 
-
-  const showConfirmation = (status: 'success' | 'error' | 'alert', message: string) => {
+  const showConfirmation = (
+    status: 'success' | 'error' | 'alert',
+    message: string,
+  ) => {
     setConfirmationStatus(status);
     setConfirmationMessage(message);
     setShowConfirmationModal(true);

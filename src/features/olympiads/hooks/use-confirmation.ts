@@ -3,7 +3,6 @@ import { CONFIRMATION_STATUS } from '../constants/olympiad-constants';
 
 type ConfirmationStatus = 'success' | 'error' | null;
 
-
 export const useConfirmation = () => {
   const [showModal, setShowModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -11,16 +10,13 @@ export const useConfirmation = () => {
     useState<ConfirmationStatus>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-
   const openModal = () => {
     setShowModal(true);
   };
 
-
   const closeModal = () => {
     setShowModal(false);
   };
-
 
   const showConfirmation = (status: 'success' | 'error', message: string) => {
     setConfirmationStatus(status);

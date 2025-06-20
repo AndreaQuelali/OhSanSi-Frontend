@@ -6,4 +6,4 @@ export const LEVELS_GRADES_ERROR_MESSAGES = {
   ALREADY_REGISTERED: 'Este nivel ya se encuentra asociado a grados',
   REGISTER_SUCCESS: 'Nivel asociado a grado(s) exitosamente.',
   REGISTER_ERROR: 'Error al registrar la asociación de nivel y grado.',
-}; 
+};

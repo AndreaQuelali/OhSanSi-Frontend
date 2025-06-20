@@ -9,4 +9,4 @@ export type TableRow = {
   olympiad: string;
   area: string;
   level: string;
-}; 
+};

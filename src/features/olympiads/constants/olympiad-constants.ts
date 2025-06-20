@@ -1,11 +1,9 @@
-
 export const YEAR_OPTIONS = [
   { id: '2025', name: '2025' },
   { id: '2026', name: '2026' },
   { id: '2027', name: '2027' },
   { id: '2028', name: '2028' },
 ];
-
 
 export const VALIDATION_LIMITS = {
   MAX_OLYMPIAD_NAME_LENGTH: 50,
@@ -14,7 +12,6 @@ export const VALIDATION_LIMITS = {
   MAX_LIMIT_AREAS: 15,
   PAGINATION_PER_PAGE: 3,
 } as const;
-
 
 export const VALIDATION_PATTERNS = {
   OLYMPIAD_NAME: /^[A-ZÑÁÉÍÓÚ]+(?:(?: |-| - | -|- | - )[A-ZÑÁÉÍÓÚ]+)*$/,
@@ -49,12 +46,10 @@ export const ERROR_MESSAGES = {
     'Error al registrar la olimpiada. Por favor, intente nuevamente.',
 } as const;
 
-
 export const CONFIRMATION_STATUS = {
   SUCCESS: 'success',
   ERROR: 'error',
 } as const;
-
 
 export const ROUTES = {
   ADMINISTRATOR: '/administrator',

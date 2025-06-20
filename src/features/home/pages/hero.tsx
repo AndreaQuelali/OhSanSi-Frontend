@@ -10,16 +10,12 @@ import { PageLoader } from '@/components/ui/loadings';
 import { Header } from '../components/header';
 import { CardArea } from '../components/card-area';
 import { useEffect, useState } from 'react';
-import {
-  AlarmClockCheck,
-  AlarmClockOff,
-  CalendarX,
-} from 'lucide-react';
+import { AlarmClockCheck, AlarmClockOff, CalendarX } from 'lucide-react';
 import { Footer } from '../components/footer';
 
 export const Presentation = () => {
   const { data, loading } = useFetchData<OlympiadInfo[]>(
-    `/olympiads/${getCurrentYear()}/management`
+    `/olympiads/${getCurrentYear()}/management`,
   );
 
   localStorage.setItem('userRole', 'user');
@@ -32,10 +28,7 @@ export const Presentation = () => {
     }
   }, [currentOlympiad]);
 
-  const {
-    data: areasData,
-    loading: areasLoading,
-  } = useFetchData<{
+  const { data: areasData, loading: areasLoading } = useFetchData<{
     success: boolean;
     data: { year: number; areas: { area_id: number; area_name: string }[] };
   }>(areasUrl || '');
@@ -55,9 +48,9 @@ export const Presentation = () => {
   const availableAreas = areasData?.data.areas || [];
 
   const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = "/docs/convocatoria_OhSansi.pdf";
-    link.download = "convocatoria_OhSansi.pdf";
+    const link = document.createElement('a');
+    link.href = '/docs/convocatoria_OhSansi.pdf';
+    link.download = 'convocatoria_OhSansi.pdf';
     link.click();
   };
 
@@ -65,7 +58,9 @@ export const Presentation = () => {
     <main className="w-full min-h-screen flex flex-col items-center justify-start text-onBack bg-gradient-to-b from-white">
       <Header />
       <section className="text-center my-10 w-11/12 md:w-10/12 max-w-5xl">
-        <h1 className="text-3xl headline-lg text-primary mb-4 tracking-wide">Inscripción</h1>
+        <h1 className="text-3xl headline-lg text-primary mb-4 tracking-wide">
+          Inscripción
+        </h1>
         <div className="bg-white shadow-md rounded-2xl px-6 py-6 text-left">
           {loading ? (
             <div className="w-full flex justify-center items-center h-36">
@@ -86,15 +81,21 @@ export const Presentation = () => {
                 </span>
               </p>
               <p className="mb-3">
-                Costo de inscripción: <span className="text-error body-lg">{currentOlympiad.cost} Bs</span> por área
+                Costo de inscripción:{' '}
+                <span className="text-error body-lg">
+                  {currentOlympiad.cost} Bs
+                </span>{' '}
+                por área
               </p>
               {(() => {
                 const status = getRegistrationStatus(
                   currentOlympiad.start_date,
-                  currentOlympiad.end_date
+                  currentOlympiad.end_date,
                 );
                 return (
-                  <div className={`w-full p-4 mt-4 rounded-xl border-2 flex items-center justify-center gap-3 shadow-sm transition-all duration-300 ${statusColors[status.status]}`}>
+                  <div
+                    className={`w-full p-4 mt-4 rounded-xl border-2 flex items-center justify-center gap-3 shadow-sm transition-all duration-300 ${statusColors[status.status]}`}
+                  >
                     {icons[status.status]}
                     <p className="subtitle-md">{status.message}</p>
                   </div>
@@ -102,14 +103,18 @@ export const Presentation = () => {
               })()}
             </>
           ) : (
-            <p className="text-neutral">No se pudo cargar la información de la olimpiada.</p>
+            <p className="text-neutral">
+              No se pudo cargar la información de la olimpiada.
+            </p>
           )}
         </div>
       </section>
 
       {currentOlympiad && (
         <section className="text-center w-full py-16 px-6 md:px-20 bg-surface shadow-inner">
-          <h2 className="text-3xl headline-lg text-primary mb-4">Áreas Disponibles</h2>
+          <h2 className="text-3xl headline-lg text-primary mb-4">
+            Áreas Disponibles
+          </h2>
           <p className="body-lg text-onBack mb-8">
             Conoce las áreas que se encuentran disponibles en la olimpiada:
           </p>
@@ -133,28 +138,32 @@ export const Presentation = () => {
           Puedes descargar la convocatoria de la olimpiada.
         </p>
         <div className="w-full md:w-fit flex justify-center mx-auto">
-        <Button
-          className="w-full flex justify-center gap-2"
-          label="Descargar Convocatoria"
-          onClick={handleDownload}
-        />
+          <Button
+            className="w-full flex justify-center gap-2"
+            label="Descargar Convocatoria"
+            onClick={handleDownload}
+          />
         </div>
       </section>
 
       <section className="text-center w-full py-16 px-6 md:px-20 mb-10 bg-white shadow-inner">
-        <h2 className="text-3xl headline-lg text-primary mb-4">Prerrequisitos</h2>
-        <div className='bg-white shadow-md rounded-2xl px-6 py-6 text-left'>
-        <ol className="text-left body-lg list-decimal pl-6 space-y-2 text-onBack">
-          <li>Ser estudiante de nivel primaria o secundaria en Bolivia.</li>
-          <li>Registrar un tutor o profesor.</li>
-          <li>Registrarse en el formulario para el(las) área(s) seleccionadas.</li>
-          <li>Cumplir los requisitos de la categoría correspondiente.</li>
-          <li>Tener su cédula de identidad vigente.</li>
-          <li>Contar con correo electrónico personal o del tutor.</li>
-        </ol>
+        <h2 className="text-3xl headline-lg text-primary mb-4">
+          Prerrequisitos
+        </h2>
+        <div className="bg-white shadow-md rounded-2xl px-6 py-6 text-left">
+          <ol className="text-left body-lg list-decimal pl-6 space-y-2 text-onBack">
+            <li>Ser estudiante de nivel primaria o secundaria en Bolivia.</li>
+            <li>Registrar un tutor o profesor.</li>
+            <li>
+              Registrarse en el formulario para el(las) área(s) seleccionadas.
+            </li>
+            <li>Cumplir los requisitos de la categoría correspondiente.</li>
+            <li>Tener su cédula de identidad vigente.</li>
+            <li>Contar con correo electrónico personal o del tutor.</li>
+          </ol>
         </div>
       </section>
-      <section className='text-center w-full pb-10 mb-10 bg-white'>
+      <section className="text-center w-full pb-10 mb-10 bg-white">
         <Footer />
       </section>
     </main>

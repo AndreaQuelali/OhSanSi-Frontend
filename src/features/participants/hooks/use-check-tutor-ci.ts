@@ -9,7 +9,7 @@ export function useCheckTutorCI(
   citutor: string,
   ciOlimpista: string,
   setError: UseFormSetError<FormValues>,
-  clearErrors: UseFormClearErrors<FormValues>
+  clearErrors: UseFormClearErrors<FormValues>,
 ) {
   const [isTutorRegistered, setIsTutorRegistered] = useState(false);
 
@@ -44,7 +44,7 @@ export function useCheckTutorCI(
         });
         setIsTutorRegistered(true);
       }
-    }, 500)
+    }, 500),
   );
 
   useEffect(() => {

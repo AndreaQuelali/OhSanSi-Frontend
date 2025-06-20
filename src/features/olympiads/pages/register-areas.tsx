@@ -1,4 +1,4 @@
-import { FormAreas } from "../components";
+import { FormAreas } from '../components';
 
 export const RegisterAreas = () => {
   return (

@@ -26,4 +26,4 @@ export type FilterState = {
   selectedDepartamentos: string[];
   selectedProvincias: string[];
   selectedColegios: string[];
-}; 
+};

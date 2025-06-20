@@ -11,12 +11,17 @@ interface Nivel {
 
 interface AreaSelectionProps {
   nivelesSeleccionados: Record<string, Nivel[]>;
-  setNivelesSeleccionados: React.Dispatch<React.SetStateAction<Record<string, Nivel[]>>>;
+  setNivelesSeleccionados: React.Dispatch<
+    React.SetStateAction<Record<string, Nivel[]>>
+  >;
   areasDisponibles: Record<string, Nivel[]>;
   maxCategorias: number;
   setValue: UseFormSetValue<FormData>;
   ciTutor: string;
-  openConfirmationModal?: (status: 'success' | 'error' | 'alert', message: string) => void;
+  openConfirmationModal?: (
+    status: 'success' | 'error' | 'alert',
+    message: string,
+  ) => void;
 }
 
 export function useAreaSelection({
@@ -30,9 +35,15 @@ export function useAreaSelection({
 }: AreaSelectionProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
-  const [nivelesSeleccionadosTemp, setNivelesSeleccionadosTemp] = useState<Nivel[]>([]);
-  const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>({});
-  const [confirmationStatus, setConfirmationStatus] = useState<'success' | 'error' | 'alert' | null>(null);
+  const [nivelesSeleccionadosTemp, setNivelesSeleccionadosTemp] = useState<
+    Nivel[]
+  >([]);
+  const [tutoresPorArea, setTutoresPorArea] = useState<Record<string, string>>(
+    {},
+  );
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    'success' | 'error' | 'alert' | null
+  >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
@@ -41,7 +52,9 @@ export function useAreaSelection({
       alert(ERROR_MESSAGES.UNREGISTER_LEVEL);
       return;
     }
-    const nivelesYaRegistrados = nivelesSeleccionadosTemp.filter((n) => n.registrado);
+    const nivelesYaRegistrados = nivelesSeleccionadosTemp.filter(
+      (n) => n.registrado,
+    );
     if (nivelesSeleccionadosTemp.some((n) => n.id_nivel === nivel.id_nivel)) {
       setNivelesSeleccionadosTemp([...nivelesYaRegistrados]);
     } else {
@@ -51,25 +64,40 @@ export function useAreaSelection({
 
   const handleModalAceptar = () => {
     if (selectedArea) {
-      const hayNivelesNuevosSeleccionados = nivelesSeleccionadosTemp.some((nivel) => !nivel.registrado);
+      const hayNivelesNuevosSeleccionados = nivelesSeleccionadosTemp.some(
+        (nivel) => !nivel.registrado,
+      );
       if (hayNivelesNuevosSeleccionados) {
-        setTutoresPorArea((prev) => ({ ...prev, [selectedArea]: ciTutor || '' }));
+        setTutoresPorArea((prev) => ({
+          ...prev,
+          [selectedArea]: ciTutor || '',
+        }));
       } else {
         setTutoresPorArea((prev) => {
           const { [selectedArea]: _, ...rest } = prev;
           return rest;
         });
       }
-      const nivelesRegistradosEnArea = areasDisponibles[selectedArea]?.filter((nivel) => nivel.registrado) || [];
-      const todosLosNivelesRegistradosIncluidos = nivelesRegistradosEnArea.every((nivelReg) =>
-        nivelesSeleccionadosTemp.some((nivel) => nivel.id_nivel === nivelReg.id_nivel),
-      );
-      if (nivelesRegistradosEnArea.length > 0 && !todosLosNivelesRegistradosIncluidos) {
+      const nivelesRegistradosEnArea =
+        areasDisponibles[selectedArea]?.filter((nivel) => nivel.registrado) ||
+        [];
+      const todosLosNivelesRegistradosIncluidos =
+        nivelesRegistradosEnArea.every((nivelReg) =>
+          nivelesSeleccionadosTemp.some(
+            (nivel) => nivel.id_nivel === nivelReg.id_nivel,
+          ),
+        );
+      if (
+        nivelesRegistradosEnArea.length > 0 &&
+        !todosLosNivelesRegistradosIncluidos
+      ) {
         alert(ERROR_MESSAGES.LEVELS_ALREADY_REGISTERED);
         setModalVisible(false);
         return;
       }
-      const nivelesDisponiblesSinRegistrar = areasDisponibles[selectedArea]?.filter((nivel) => !nivel.registrado) || [];
+      const nivelesDisponiblesSinRegistrar =
+        areasDisponibles[selectedArea]?.filter((nivel) => !nivel.registrado) ||
+        [];
       if (nivelesDisponiblesSinRegistrar.length === 0) {
         alert(ERROR_MESSAGES.REGISTER_NO_LEVELS_AREA);
         setModalVisible(false);
@@ -77,7 +105,9 @@ export function useAreaSelection({
       }
       setNivelesSeleccionados((prev) => {
         if (nivelesSeleccionadosTemp.length === 0) {
-          const nivelesRegistrados = prev[selectedArea]?.filter((n) => n.registrado);
+          const nivelesRegistrados = prev[selectedArea]?.filter(
+            (n) => n.registrado,
+          );
           if (nivelesRegistrados?.length > 0) {
             return { ...prev, [selectedArea]: nivelesRegistrados };
           } else {
@@ -117,7 +147,10 @@ export function useAreaSelection({
     const areasConSelecciones = Object.keys(nivelesSeleccionados).length;
     if (areasConSelecciones >= maxCategorias) {
       if (openConfirmationModal) {
-        openConfirmationModal('alert', `Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`);
+        openConfirmationModal(
+          'alert',
+          `Ya has alcanzado el límite de ${maxCategorias} áreas permitidas.`,
+        );
       }
       return;
     }
@@ -146,4 +179,4 @@ export function useAreaSelection({
     showConfirmationModal,
     setShowConfirmationModal,
   };
-} 
+}

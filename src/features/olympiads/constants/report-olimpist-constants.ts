@@ -9,4 +9,4 @@ export const REPORT_OLIMPIST_MESSAGES = {
   DOWNLOAD_LABEL: 'Descargar',
   FILTER_BY: 'Filtrar por:',
   SUCCESS_EXPORT: 'Exportación exitosa',
-}; 
+};

@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Provincia, UnidadEducativa } from '../interfaces/register-participants';
+import {
+  Provincia,
+  UnidadEducativa,
+} from '../interfaces/register-participants';
 import { ERROR_MESSAGES } from '../constants/participant-constants';
 import { ParticipantApiService } from '../services/participant-api';
 
-export function useLoadSchools(selectedDepartment: string, selectedProv: string) {
+export function useLoadSchools(
+  selectedDepartment: string,
+  selectedProv: string,
+) {
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [colegios, setColegios] = useState<UnidadEducativa[]>([]);
   const [loadingProvincias, setLoadingProvincias] = useState(false);
@@ -14,7 +20,10 @@ export function useLoadSchools(selectedDepartment: string, selectedProv: string)
       const fetchProvincias = async () => {
         setLoadingProvincias(true);
         try {
-          const response = await ParticipantApiService.getProvincesByDepartment(selectedDepartment);
+          const response =
+            await ParticipantApiService.getProvincesByDepartment(
+              selectedDepartment,
+            );
           setProvincias(response.data);
         } catch (error) {
           console.error(ERROR_MESSAGES.PROVINCE_LOADING_ERROR, error);
@@ -34,7 +43,8 @@ export function useLoadSchools(selectedDepartment: string, selectedProv: string)
       const fetchColegios = async () => {
         setLoadingColegios(true);
         try {
-          const response = await ParticipantApiService.getSchoolsByProvince(selectedProv);
+          const response =
+            await ParticipantApiService.getSchoolsByProvince(selectedProv);
           setColegios(response.data);
         } catch (error) {
           console.error(ERROR_MESSAGES.DEPARTMENT_LOADING_ERROR, error);

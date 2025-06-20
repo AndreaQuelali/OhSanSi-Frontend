@@ -35,13 +35,8 @@ export default function FormLevelsArea() {
   >(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string>('');
 
-  const {
-    tableData,
-    fetchTableLA,
-    levels,
-    fetchLevels,
-    registerAssociation,
-  } = useLevelsArea();
+  const { tableData, fetchTableLA, levels, fetchLevels, registerAssociation } =
+    useLevelsArea();
 
   const { data: olympiads } =
     useFetchData<
@@ -63,7 +58,7 @@ export default function FormLevelsArea() {
 
   const handleRegister = async (data: FormData) => {
     setIsSubmitting(true);
-    const result = await registerAssociation(data, areas || [], levels);
+    const result = await registerAssociation(data);
     setIsModalOpen(false);
     if (result.success) {
       setConfirmationStatus('success');

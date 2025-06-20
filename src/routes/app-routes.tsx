@@ -121,7 +121,6 @@ export default function AppRoutes() {
               }
             />
           </Route>
-
           <Route path="/olympian">
             <Route index element={<Home />} />
             <Route

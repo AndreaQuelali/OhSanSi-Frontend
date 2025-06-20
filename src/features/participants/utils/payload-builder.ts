@@ -24,7 +24,10 @@ export function buildEnrollmentPayload({
   responsibleCi,
 }: {
   ciOlimpista: string;
-  nivelesSeleccionados: Record<string, { id_nivel: number; registrado?: boolean }[]>;
+  nivelesSeleccionados: Record<
+    string,
+    { id_nivel: number; registrado?: boolean }[]
+  >;
   tutoresPorArea: Record<string, string>;
   responsibleCi: string;
 }) {
