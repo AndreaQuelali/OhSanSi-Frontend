@@ -6,14 +6,14 @@ export const paymentUploadService = {
   uploadPaymentReceipt: async (
     imageBlob: Blob,
     fileName: string,
-    id_lista?: string | number,
+    list_id?: string | number,
     signal?: AbortSignal,
   ): Promise<VerificationResult> => {
     const formData = new FormData();
-    formData.append('boleta', imageBlob, fileName || 'comprobante.jpg');
+    formData.append('voucher', imageBlob, fileName || 'comprobante.jpg');
 
-    if (id_lista) {
-      formData.append('id_lista', id_lista.toString());
+    if (list_id) {
+      formData.append('list_id', list_id.toString());
     }
 
     const response = await axios.post(`${API_URL}/ocr`, formData, {

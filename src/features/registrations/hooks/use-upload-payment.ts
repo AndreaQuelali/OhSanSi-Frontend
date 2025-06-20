@@ -101,11 +101,10 @@ export const useUploadPayment = (
     try {
       const response = await fetch(state.enhancedPreview);
       const imageBlob = await response.blob();
-
       const result = await paymentUploadService.uploadPaymentReceipt(
         imageBlob,
         state.fileName || 'comprobante.jpg',
-        id_lista,
+        id_lista, // Se mantiene id_lista como parámetro del hook, pero internamente se convierte a list_id
         controller.signal,
       );
 
