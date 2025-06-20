@@ -1,15 +1,8 @@
 import { PaymentData, PaymentDataGroup } from './payment-order-modal';
+import { ListItem } from './registrations-list';
 
 export interface RegistrationCardProps {
-  list: {
-    id_lista: string | number;
-    ci: string;
-    responsable: string;
-    tipo: 'individual' | 'grupal';
-    cantidad: number;
-    cantidadOlimpistas: number;
-    estado: string;
-  };
+  list: ListItem;
   registrations: Array<{
     nombre: string;
     ci: string;
@@ -22,50 +15,62 @@ export interface RegistrationCardProps {
 }
 
 export interface PaymentVerificationResponse {
-  existe: boolean;
-  mensaje: string;
+  exists: boolean;
+  message: string;
 }
 
 export interface EnrollmentResponse {
-  listas: Array<{
-    id_lista: number;
-    detalle: {
-      tipo: 'individual' | 'grupal';
+  lists: Array<{
+    list_id: number;
+    detail: {
+      kind: 'individual' | 'grupal';
     };
   }>;
 }
 
 export interface GroupReceiptResponse {
-  responsable: {
+  responsible: {
     ci: string;
-    nombres: string;
-    apellidos: string;
+    names: string;
+    surnames: string;
   };
-  pago: {
-    total_inscripciones: number;
-    total_a_pagar: number;
-    monto_unitario: number;
-    fecha_pago: string;
-    referencia: string;
+  payment: {
+    id: number;
+    reference: string;
+    unit_amount: number;
+    total_registrations: number;
+    total_to_pay: number;
+    status: string | null;
+    payment_date: string;
+  };
+  group_detail: {
+    unique_participants: number;
   };
 }
 
 export interface IndividualReceiptResponse {
-  responsable: {
+  responsible: {
     ci: string;
-    nombres: string;
-    apellidos: string;
+    names: string;
+    surnames: string;
   };
-  pago: {
-    total_inscripciones?: number;
-    total_a_pagar: number;
-    monto_unitario: number;
-    fecha_pago: string;
-    referencia: string;
+  payment: {
+    id: number;
+    reference: string;
+    unit_amount: number;
+    total_registrations?: number;
+    total_to_pay: number;
+    status: string | null;
+    payment_date: string;
   };
-  niveles: Array<{
-    nivel_id: number;
-    nombre_nivel: string;
+  olympist: {
+    ci: number;
+    names: string;
+    surnames: string;
+  };
+  levels: Array<{
+    level_id: number;
+    level_name: string;
     area: string;
   }>;
 }
@@ -73,6 +78,6 @@ export interface IndividualReceiptResponse {
 export interface RegistrationCardState {
   showVisualModal: boolean;
   paymentData: (PaymentData | PaymentDataGroup) | null;
-  modalTipo: 'individual' | 'grupal' | null;
+  modalType: 'individual' | 'grupal' | null;
   showModalUpload: boolean;
 }

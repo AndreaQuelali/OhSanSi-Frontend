@@ -1,3 +1,6 @@
+// Legacy interfaces - These are deprecated and should use the interfaces from registrations-list.d.ts instead
+// This file will be removed in future cleanup
+
 export type Registration = {
   nombre: string;
   ci: string;
@@ -8,11 +11,11 @@ export type Registration = {
 export type List = {
   cantidad: number;
   cantidadOlimpistas: number;
-  responsable: string;
+  responsible: string; // Updated to match new API
   ci: string;
   estado: string;
   id_lista?: number;
-  tipo: 'individual' | 'grupal';
+  kind: 'individual' | 'grupal'; // Updated to match new API
 };
 
 export type RegistrationData = {
@@ -30,6 +33,8 @@ export type RegistrationsListProps = {
   title?: string;
 };
 
+// Duplicate definitions below should be removed and replaced with imports from registrations-list.d.ts
+
 export type Registration = {
   nombre: string;
   ci: string;
@@ -40,11 +45,11 @@ export type Registration = {
 export type List = {
   cantidad: number;
   cantidadOlimpistas: number;
-  responsable: string;
+  responsible: string; // Updated to match new API
   ci: string;
   estado: string;
   id_lista?: number;
-  tipo: 'individual' | 'grupal';
+  kind: 'individual' | 'grupal'; // Updated to match new API
 };
 
 export type PaymentData = {
@@ -54,7 +59,7 @@ export type PaymentData = {
   cantidadOlimpistas: number;
   total: number;
   unitario: number;
-  niveles: { nivel_id: number; nombre_nivel: string; area: string }[];
+  levels: { nivel_id: number; nombre_nivel: string; area: string }[]; // Updated to match new API
   totalLiteral: string;
   fecha: string;
   hora: string;

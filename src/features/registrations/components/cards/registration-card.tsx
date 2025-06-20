@@ -13,7 +13,7 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
   showGenerateButton,
   showUploadButton,
 }) => {
-  const isGroup = list.tipo === 'grupal';
+  const isGroup = list.kind === 'grupal';
   const { state, handlers } = useRegistrationCard(list);
 
   const {
@@ -35,8 +35,9 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
       <div className="flex flex-col md:flex-row gap-0 md:gap-10">
         <div className="flex flex-col gap-1 flex-1">
           <p className="subtitle-md">
+            {' '}
             <strong>Responsable: </strong>
-            {list.responsable}
+            {list.responsible}
           </p>
           {!isGroup && (
             <p className="subtitle-md">
@@ -84,7 +85,6 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
           </div>
         )}
         {isGroup && <div className="flex flex-col gap-1 flex-1"></div>}
-
         <div className="flex flex-col gap-1 flex-1">
           <p className="subtitle-md">
             <strong>Estado:</strong> {list.estado}
@@ -107,11 +107,10 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
               onClick={handleOpenModalUpload}
             />
           </div>
-        )}
-
+        )}{' '}
         {state.showVisualModal &&
           state.paymentData &&
-          state.modalTipo === 'grupal' && (
+          state.modalType === 'grupal' && (
             <PaymentOrderModal
               isOpen={state.showVisualModal}
               onClose={handleCloseVisualModal}
@@ -119,11 +118,10 @@ const RegistrationCard: React.FC<RegistrationCardProps> = ({
                 state.paymentData as import('../../interfaces/payment-order-modal').PaymentDataGroup
               }
             />
-          )}
-
+          )}{' '}
         {state.showVisualModal &&
           state.paymentData &&
-          state.modalTipo === 'individual' && (
+          state.modalType === 'individual' && (
             <PaymentOrderModalInd
               isOpen={state.showVisualModal}
               onClose={handleCloseVisualModal}

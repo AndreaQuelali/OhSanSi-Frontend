@@ -21,7 +21,7 @@ export const ERROR_MESSAGES = {
   paymentConsultError: 'Error al consultar el estado del pago.',
   enrollmentConsultError: 'Error al consultar las inscripciones.',
   noEnrollmentsFound: 'No se encontraron inscripciones asociadas.',
-  invalidListsFormat: "El campo 'listas' no es un arreglo.",
+  invalidListsFormat: "El campo 'lists' no es un arreglo.",
 } as const;
 
 export const DEFAULT_VALUES = {

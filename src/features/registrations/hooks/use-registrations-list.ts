@@ -42,10 +42,9 @@ export const useRegistrationsList = ({
       if (showUploadButton || title.includes('Subir comprobante de pago')) {
         try {
           const paymentData = await registrationsListService.checkPayment(ci);
-
-          if (!paymentData.existe) {
+          if (!paymentData.exists) {
             updateState({
-              errorMessage: paymentData.mensaje,
+              errorMessage: paymentData.message,
               data: [],
               loading: false,
             });
@@ -96,9 +95,8 @@ export const useRegistrationsList = ({
       ) {
         try {
           const paymentData = await registrationsListService.checkPayment(ci);
-
-          if (!paymentData.existe) {
-            updateState({ errorMessage: paymentData.mensaje });
+          if (!paymentData.exists) {
+            updateState({ errorMessage: paymentData.message });
           } else {
             updateState({ errorMessage: ERROR_MESSAGES.noEnrollmentsFound });
           }

@@ -10,7 +10,7 @@ export const useRegistrationCard = (list: RegistrationCardProps['list']) => {
   const [state, setState] = useState<RegistrationCardState>({
     showVisualModal: false,
     paymentData: null,
-    modalTipo: null,
+    modalType: null,
     showModalUpload: false,
   });
 
@@ -25,30 +25,26 @@ export const useRegistrationCard = (list: RegistrationCardProps['list']) => {
         const paymentCheck = await registrationCardService.checkPaymentExists(
           list.ci,
         );
-
-        if (!paymentCheck.existe) {
-          alert(paymentCheck.mensaje);
+        if (!paymentCheck.exists) {
+          alert(paymentCheck.message);
           return;
         }
-      }
-
-      // Obtener inscripciones
+      } // Obtener inscripciones
       const enrollmentData = await registrationCardService.getEnrollmentsByCI(
         list.ci,
       );
-      const listas = enrollmentData.listas;
+      const lists = enrollmentData.lists;
 
       // Buscar lista específica
       const listaEncontrada = registrationCardUtils.findListById(
-        listas,
+        lists,
         list.id_lista,
       );
-
       if (!listaEncontrada) {
         throw new Error('No se encontró la lista de inscripción');
       }
 
-      const tipo = listaEncontrada.detalle.tipo as 'individual' | 'grupal';
+      const tipo = listaEncontrada.detail.kind as 'individual' | 'grupal';
 
       let paymentDataTemp;
 
@@ -65,9 +61,8 @@ export const useRegistrationCard = (list: RegistrationCardProps['list']) => {
         paymentDataTemp =
           registrationCardUtils.formatIndividualPaymentData(response);
       }
-
       updateState({
-        modalTipo: tipo,
+        modalType: tipo,
         paymentData: paymentDataTemp,
         showVisualModal: true,
       });
@@ -82,12 +77,11 @@ export const useRegistrationCard = (list: RegistrationCardProps['list']) => {
   const handleOpenModalUpload = () => {
     updateState({ showModalUpload: true });
   };
-
   const handleCloseVisualModal = () => {
     updateState({
       showVisualModal: false,
       paymentData: null,
-      modalTipo: null,
+      modalType: null,
     });
   };
 

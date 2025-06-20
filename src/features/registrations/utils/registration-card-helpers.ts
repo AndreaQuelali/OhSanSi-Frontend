@@ -14,49 +14,52 @@ export const registrationCardUtils = {
   formatGroupPaymentData: (
     response: GroupReceiptResponse,
   ): PaymentDataGroup => {
-    const { responsable, pago } = response;
+    const { responsible, payment } = response;
 
     return {
-      ci: responsable.ci,
-      nombres: responsable.nombres,
-      apellidos: responsable.apellidos,
-      cantidadOlimpistas: pago.total_inscripciones,
-      total: pago.total_a_pagar,
-      unitario: pago.monto_unitario,
+      ci: responsible.ci,
+      nombres: responsible.names,
+      apellidos: responsible.surnames,
+      cantidadOlimpistas: payment.total_registrations,
+      total: payment.total_to_pay,
+      unitario: payment.unit_amount,
       totalLiteral: registrationCardUtils.convertNumberToWords(
-        pago.total_a_pagar,
+        payment.total_to_pay,
       ),
-      fecha: new Date(pago.fecha_pago).toLocaleDateString(),
-      hora: new Date(pago.fecha_pago).toLocaleTimeString(),
-      nroOrden: pago.referencia,
+      fecha: new Date(payment.payment_date).toLocaleDateString(),
+      hora: new Date(payment.payment_date).toLocaleTimeString(),
+      nroOrden: payment.reference,
     };
   },
   formatIndividualPaymentData: (
     response: IndividualReceiptResponse,
   ): PaymentData => {
-    const { responsable, pago, niveles } = response;
-    const fechaPago = new Date(pago.fecha_pago);
+    const { responsible, payment, levels } = response;
+    const paymentDate = new Date(payment.payment_date);
 
     return {
-      ci: responsable.ci,
-      nombres: responsable.nombres,
-      apellidos: responsable.apellidos,
-      total: pago.total_a_pagar,
-      unitario: pago.monto_unitario,
-      niveles,
-      fecha: fechaPago.toLocaleDateString(),
-      hora: fechaPago.toLocaleTimeString(),
-      nroOrden: pago.referencia,
+      ci: responsible.ci,
+      nombres: responsible.names,
+      apellidos: responsible.surnames,
+      total: payment.total_to_pay,
+      unitario: payment.unit_amount,
+      niveles: levels.map((level) => ({
+        nivel_id: level.level_id,
+        nombre_nivel: level.level_name,
+        area: level.area,
+      })),
+      fecha: paymentDate.toLocaleDateString(),
+      hora: paymentDate.toLocaleTimeString(),
+      nroOrden: payment.reference,
     };
   },
-
   findListById: (
     lists: Array<{
-      id_lista: number;
-      detalle: { tipo: 'individual' | 'grupal' };
+      list_id: number;
+      detail: { kind: 'individual' | 'grupal' };
     }>,
     listId: string | number,
   ) => {
-    return lists.find((l) => l.id_lista === Number(listId));
+    return lists.find((l) => l.list_id === Number(listId));
   },
 };
