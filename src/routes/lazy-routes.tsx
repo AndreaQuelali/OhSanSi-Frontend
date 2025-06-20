@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 export const Home = lazy(() =>
-  import('@/features/home/home-administrator').then((module) => ({
+  import('@/features/home/pages/home-administrator').then((module) => ({
     default: module.Home,
   })),
 );
@@ -70,12 +70,12 @@ export const RegistrationGuard = lazy(
 export const AdminGuard = lazy(() => import('@/components/guards/admin-guard'));
 
 export const Presentation = lazy(() =>
-  import('@/features/home/home-index').then((module) => ({
+  import('@/features/home/pages/hero').then((module) => ({
     default: module.Presentation,
   })),
 );
 export const Login = lazy(() =>
-  import('@/features/auth/login').then((module) => ({
+  import('@/features/auth/pages/login').then((module) => ({
     default: module.Login,
   })),
 );

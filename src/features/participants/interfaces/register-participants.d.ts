@@ -10,25 +10,25 @@ export type FormAreaPartProps = {
 };
 
 export type Grado = {
-  id_grado: number;
-  nombre_grado: string;
+  grade_id: number;
+  grade_name: string;
 };
 
 export type Departamento = {
-  id_departamento: number;
-  nombre_departamento: string;
+  department_id: number;
+  department_name: string;
 };
 
 export type Provincia = {
-  id_provincia: number;
-  nombre_provincia: string;
-  id_departamento: number;
+  province_id: number;
+  province_name: string;
+  department_id: number;
 };
 
 export type UnidadEducativa = {
-  id_colegio: number;
-  nombre_colegio: string;
-  id_provincia: number;
+  school_id: number;
+  school_name: string;
+  province_id: number;
 };
 
 export type FormValues = {

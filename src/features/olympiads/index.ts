@@ -1,6 +1,13 @@
-export * from './components/card-upload-image';
-export * from './components/form-areas';
-export * from './components/form-info';
-export * from './index';
-export * from './pages/register-areas';
-export * from './pages/register-info';
+export * from './components';
+
+export * from './hooks/use-olympiads';
+export * from './hooks/use-areas';
+export * from './hooks/use-confirmation';
+
+export * from './services/olympiad-api';
+
+export * from './utils/olympiad-helpers';
+
+export * from './constants/olympiad-constants';
+
+export type { FormData as OlympiadFormData } from './interfaces/form-info';

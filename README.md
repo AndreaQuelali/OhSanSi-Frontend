@@ -1,54 +1,83 @@
-# React + TypeScript + Vite
+# Feature: Olympiads
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este feature maneja toda la funcionalidad relacionada con la gestión de olimpiadas, incluyendo la creación, configuración de áreas, niveles y reportes.
 
-Currently, two official plugins are available:
+## 📁 Estructura de Carpetas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+src/features/olympiads/
+├── components/           # Componentes UI organizados por tipo
+│   ├── cards/           # Componentes tipo tarjeta
+│   ├── forms/           # Formularios
+│   ├── modals/          # Modales
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+│   ├── tables/          # Tablas
+│   └── index.ts         # Exportaciones de componentes
+├── constants/           # Constantes y configuraciones
+│   └── olympiad-constants.ts
+├── hooks/              # Hooks personalizados
+│   ├── use-areas.ts
+│   ├── use-confirmation.ts
+│   └── use-olympiads.ts
+├── interfaces/         # Tipos TypeScript
+│   ├── form-info.d.ts
+│   └── form-levels.d.ts
+├── pages/             # Páginas/rutas del feature
+│   ├── register-areas.tsx
+│   ├── register-info.tsx
+│   ├── register-levels.tsx
+│   ├── register-levels-area.tsx
+│   ├── register-levels-grades.tsx
+│   └── report-registerered-olimpist.tsx
+├── services/          # Lógica de API
+│   └── olympiad-api.ts
+├── utils/             # Utilidades y helpers
+│   └── olympiad-helpers.ts
+└── index.ts           # Exportaciones principales del feature
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# Registrations Feature - Estructura Refactorizada
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Este directorio contiene toda la lógica relacionada con registros y pagos, reestructurada siguiendo el patrón de `features/registrations`.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## 📁 Estructura de Archivos
+
+```
+registrations/
+├── components/
+│   ├── modals/
+│   │   ├── modal-upload-payment.tsx          # Modal de subida de comprobantes
+│   │   ├── payment-order-modal-individual.tsx # Modal de orden de pago individual
+│   │   └── payment-order-modal.tsx           # Modal de orden de pago grupal
+│   ├── cards/
+│   │   └── registration-card.tsx             # Componente de tarjeta de registro
+│   ├── payment-order-content.tsx             # Contenido del PDF individual
+│   ├── payment-order-group-content.tsx       # Contenido del PDF grupal
+│   └── registrations-list.tsx                # Lista de registros
+├── hooks/
+│   ├── use-upload-payment.ts                 # Hook para modal de subida
+│   ├── use-payment-order-modal.ts            # Hook para modal individual
+│   ├── use-payment-order-group-modal.ts      # Hook para modal grupal
+│   ├── use-registration-card.ts              # Hook para tarjeta de registro
+│   └── use-registrations-list.ts             # Hook para lista de registros
+├── interfaces/
+│   ├── modal-upload-payment.d.ts             # Tipos para subida de comprobantes
+│   ├── payment-order-modal.d.ts              # Tipos para orden de pago
+│   ├── registration-card.d.ts                # Tipos para tarjeta de registro
+│   ├── registrations-list.d.ts               # Tipos para lista de registros
+│   └── registrations.d.ts                    # Tipos heredados (legacy)
+├── services/
+│   ├── payment-upload-api.ts                 # API para subida de comprobantes
+│   ├── registration-card-api.ts              # API para tarjeta de registro
+│   └── registrations-list-api.ts             # API para lista de registros
+├── utils/
+│   ├── image-validation.ts                   # Validación de imágenes
+│   ├── pdf-generator.ts                      # Generación de PDF
+│   ├── registration-card-helpers.ts          # Helpers para tarjeta
+│   └── registrations-list-helpers.ts         # Helpers para lista
+├── constants/
+│   └── registrations-list.ts                 # Constantes y validaciones
+├── pages/
+│   └── pre-registrations.tsx                 # Página de pre-registros
+└── index.ts                                  # Exportaciones principales
 ```

@@ -20,6 +20,8 @@ import {
   RegistrationGuard,
   AdminGuard,
   Login,
+  Presentation,
+  Home,
 } from './lazy-routes';
 
 export default function AppRoutes() {

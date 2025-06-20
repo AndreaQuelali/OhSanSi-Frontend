@@ -1,4 +1,4 @@
-import FormLevelsArea from '../components/form-levels-area';
+import { FormLevelsArea } from "../components";
 
 export const RegisterLevelsAreaPage = () => {
   return (
