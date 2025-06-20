@@ -44,21 +44,20 @@ export const Home = () => {
       {olympiadLoading && <PageLoader />}
       {!olympiadLoading && userRole === 'olympian' && (
         <section className="mb-14 w-11/12">
-          <h1 className="headline-lg text-primary mb-8 text-center">
+          <h1 className="headline-lg text-primary mb-6 text-center">
             Pasos de Inscripción
           </h1>
 
           <h2 className="headline-sm text-secondary mb-4 text-left">
             Inscripción Individual
           </h2>
-
-          <div className="flex flex-wrap justify-center gap-6 mb-10">
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 mb-10">
             <CardPaso
               Icon={<IconStep1 />}
-              text="¿Eres padre/madre o profesor del olimpista? Regístrate como tutor, sino salta este paso"
+              text="¿Eres padre/madre o profesor del olimpista? Regístrate como tutor, sino salta este paso."
               route="/olympian/register-tutor"
             />
-            <div className="flex items-center">
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso
@@ -66,7 +65,8 @@ export const Home = () => {
               text="Registra los datos personales y académicos del olimpista."
               route="/olympian/register-olympians"
             />
-            <div className="flex items-center">
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso
@@ -74,7 +74,8 @@ export const Home = () => {
               text="Registra las áreas en las que el olimpista desea participar."
               route="/olympian/register-selected-areas"
             />
-            <div className="flex items-center">
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso
@@ -82,7 +83,8 @@ export const Home = () => {
               text="Genera la boleta de orden de pago del registro del olimpista."
               route="/olympian/generate-order-payment"
             />
-            <div className="flex items-center">
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso
@@ -96,13 +98,14 @@ export const Home = () => {
             Inscripción por Lista
           </h2>
 
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 mb-10">
             <CardPaso
               Icon={<IconStep6 />}
               text="Registra varios olimpistas a través de un archivo Excel."
               route="/olympian/register-data-excel"
             />
-            <div className="flex items-center">
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso
@@ -110,7 +113,8 @@ export const Home = () => {
               text="Genera la boleta de orden de pago del registro del olimpista."
               route="/olympian/generate-order-payment"
             />
-            <div className="flex items-center">
+
+            <div className="md:mt-20 mt-0 rotate-90 md:rotate-0">
               <IconArrow />
             </div>
             <CardPaso

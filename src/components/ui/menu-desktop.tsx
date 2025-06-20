@@ -78,7 +78,7 @@ export default function DesktopMenu({
               to="/olympian"
               className="p-1 subtitle-sm hover:text-secondary"
             >
-              Pasos de Inscripción
+              Inicio
             </Link>
           </li>
           <li

@@ -12,11 +12,11 @@ export const CardPaso = ({ Icon, text, route }: CardPasoProps) => {
 
   return (
     <div
-      className="flex flex-col items-center text-center cursor-pointer hover:scale-95 transition-transform duration-200 w-32 md:w-36"
+      className="flex flex-col items-center text-center cursor-pointer hover:scale-95 transition-transform duration-200 w-40"
       onClick={() => navigate(route)}
     >
-      <div className="w-16 h-16 md:w-20 md:h-20 mb-8">{Icon}</div>
-      <p className="font-roboto text-sm md:text-base">{text}</p>
+      <div className="w-20 h-20 mb-4 flex ">{Icon}</div>
+      <p className="font-roboto text-base">{text}</p>
     </div>
   );
 };
