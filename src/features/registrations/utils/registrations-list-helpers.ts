@@ -81,7 +81,6 @@ export const registrationsListUtils = {
     response: EnrollmentApiResponse,
   ): RegistrationData[] => {
     const { responsible, lists } = response;
-
     if (!Array.isArray(lists)) {
       throw new Error(ERROR_MESSAGES.invalidListsFormat);
     }
@@ -89,6 +88,7 @@ export const registrationsListUtils = {
     const responsableName =
       registrationsListUtils.formatResponsableName(responsible);
     const responsableCI = responsible?.ci?.toString() || DEFAULT_VALUES.noCI;
+
     return lists
       .map((item: ListItem) => {
         if (item.detail?.kind === 'individual') {

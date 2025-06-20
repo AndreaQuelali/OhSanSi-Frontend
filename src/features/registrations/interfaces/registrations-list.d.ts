@@ -52,7 +52,6 @@ export interface EnrollmentApiResponse {
     status?: string;
     detail: {
       kind: 'individual' | 'grupal';
-      // Para registros individuales
       registration_quantity?: number;
       olympist?: {
         olympist_ci?: number;

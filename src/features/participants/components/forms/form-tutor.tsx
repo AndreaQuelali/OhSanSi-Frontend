@@ -13,7 +13,7 @@ import { useSubmitTutor, useTutorFormLogic } from '../../hooks';
 
 export default function FormTutor({ viewTB }: FormTutorProps) {
   const navigate = useNavigate();
-  
+
   const {
     register,
     handleSubmit,
@@ -44,9 +44,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
   };
 
   const handleCloseConfirmationModal = () => {
-    closeConfirmationModal(() => {
-      window.location.reload();
-    });
+    closeConfirmationModal(() => (window.location.href = ROUTES.OLYMPIAN_MENU));
   };
 
   return (
@@ -107,9 +105,7 @@ export default function FormTutor({ viewTB }: FormTutorProps) {
             `}
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
-                <p>
-                  {MESSAGES.FORM_TUTOR_CI_REGISTERED}
-                </p>
+                <p>{MESSAGES.FORM_TUTOR_CI_REGISTERED}</p>
                 <div className="mt-3 flex justify-end">
                   <Button
                     label="Ir a formulario de registro de olimpista"

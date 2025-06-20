@@ -63,7 +63,8 @@ export default function FormAreaPart() {
   useEffect(() => {
     async function fetchMaxCategorias() {
       try {
-        const response = await ParticipantApiService.getMaxCategoriesByDate(formattedDate);
+        const response =
+          await ParticipantApiService.getMaxCategoriesByDate(formattedDate);
         setMaxCategorias(response.data?.max_categories_per_olympist || 0);
       } catch {
         setMaxCategorias(0);
@@ -117,7 +118,7 @@ export default function FormAreaPart() {
     } catch (err: any) {
       console.error('Error:', err);
       confirmationModal.showError(
-        err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS
+        err.response?.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_AREAS,
       );
     } finally {
       responsibleModal.closeResponsibleModal();
@@ -127,7 +128,7 @@ export default function FormAreaPart() {
   const handleCloseConfirmationModal = () => {
     confirmationModal.closeConfirmationModal(() => {
       if (confirmationModal.confirmationStatus === 'success') {
-        window.location.href = ROUTES.REGISTER_SELECTED_AREAS;
+        window.location.href = ROUTES.OLYMPIAN_MENU;
       }
     });
   };
@@ -193,7 +194,9 @@ export default function FormAreaPart() {
               : undefined
           }
           onNextStep={
-            confirmationModal.confirmationStatus === 'success' ? handleNextStep : undefined
+            confirmationModal.confirmationStatus === 'success'
+              ? handleNextStep
+              : undefined
           }
         />
       )}
