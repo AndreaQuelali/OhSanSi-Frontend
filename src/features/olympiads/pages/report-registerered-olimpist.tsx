@@ -29,18 +29,36 @@ export const ReportRegisterOliPage = () => {
   });
   const selectedOlympiadId = watch('olympiad');
 
-  const { data: olympiads } = useFetchData<{ id_olimpiada: number; gestion: number; nombre_olimpiada: string }[]>(`/olympiads`);
-  const selectedOlympiad = olympiads?.find((o) => o.id_olimpiada === Number(selectedOlympiadId));
+  const { data: olympiads } =
+    useFetchData<
+      { olympiad_id: number; year: number; olympiad_name: string }[]
+    >(`/olympiads`);
+  const selectedOlympiad = olympiads?.find(
+    (o) => o.olympiad_id === Number(selectedOlympiadId),
+  );
   const olympiadTitle = selectedOlympiad
-    ? `${selectedOlympiad.gestion} - ${selectedOlympiad.nombre_olimpiada}`
+    ? `${selectedOlympiad.year} - ${selectedOlympiad.olympiad_name}`
     : REPORT_OLIMPIST_MESSAGES.NO_OLYMPIAD_SELECTED;
 
-  const { data: areas } = useFetchData<{ id_area: number; nombre: string }[]>(`/areas`);
-  const { data: levels } = useFetchData<{ niveles: { id_nivel: number; nombre: string }[] }>(`/levels`);
-  const { data: grades } = useFetchData<{ id_grado: number; nombre_grado: string }[]>(`/grades`);
-  const { data: departamentos } = useFetchData<{ id_departamento: number; nombre_departamento: string }[]>(`/departaments`);
-  const { data: provincias } = useFetchData<{ id_provincia: number; nombre_provincia: string }[]>(`/provinces`);
-  const { data: colegios } = useFetchData<{ id_colegio: number; nombre_colegio: string }[]>(`/schools/names`);
+  const { data: areas } =
+    useFetchData<{ area_id: number; area_name: string }[]>(`/areas`);
+  const { data: levels } = useFetchData<{
+    niveles: { level_id: number; level_name: string }[];
+  }>(`/levels`);
+  const { data: grades } =
+    useFetchData<{ grade_id: number; grade_name: string }[]>(`/grades`);
+  const { data: departamentos } =
+    useFetchData<{ department_id: number; department_name: string }[]>(
+      `/departments`,
+    );
+  const { data: provincias } =
+    useFetchData<{ province_id: number; province_name: string }[]>(
+      `/provinces`,
+    );
+  const { data: colegios } =
+    useFetchData<{ school_id: number; school_name: string }[]>(
+      `/schools/names`,
+    );
 
   const [tempSelectedAreas, setTempSelectedAreas] = useState<string[]>([]);
   const [showAreaModal, setShowAreaModal] = useState(false);
@@ -82,7 +100,10 @@ export const ReportRegisterOliPage = () => {
     setShowGradesModal(false);
   };
   const confirmDepartamentos = () => {
-    setFilters((prev) => ({ ...prev, selectedDepartamentos: tempDepartamentos }));
+    setFilters((prev) => ({
+      ...prev,
+      selectedDepartamentos: tempDepartamentos,
+    }));
     setShowDepartamentosModal(false);
   };
   const confirmProvincias = () => {
@@ -110,8 +131,8 @@ export const ReportRegisterOliPage = () => {
               className="w-full"
               options={
                 olympiads?.map((olimpiada) => ({
-                  id: olimpiada.id_olimpiada.toString(),
-                  name: `${olimpiada.gestion} - ${olimpiada.nombre_olimpiada}`,
+                  id: olimpiada.olympiad_id.toString(),
+                  name: `${olimpiada.year} - ${olimpiada.olympiad_name}`,
                 })) || []
               }
               displayKey="name"
@@ -126,7 +147,9 @@ export const ReportRegisterOliPage = () => {
 
           {selectedOlympiadId && originalParticipants.length !== 0 && (
             <div className="flex flex-wrap gap-4">
-              <p className="body-lg text-primary">{REPORT_OLIMPIST_MESSAGES.FILTER_BY}</p>
+              <p className="body-lg text-primary">
+                {REPORT_OLIMPIST_MESSAGES.FILTER_BY}
+              </p>
               <Button
                 onClick={() => {
                   setTempSelectedAreas(filters.selectedAreas);
@@ -236,8 +259,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por área"
           options={areas || []}
-          valueKey="nombre"
-          labelKey="nombre"
+          valueKey="area_name"
+          labelKey="area_name"
           selectedValues={tempSelectedAreas}
           onChange={setTempSelectedAreas}
           onClose={() => setShowAreaModal(false)}
@@ -248,8 +271,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por Nivel"
           options={levels?.niveles ?? []}
-          valueKey="nombre"
-          labelKey="nombre"
+          valueKey="level_name"
+          labelKey="level_name"
           selectedValues={tempLevels}
           onChange={setTempLevels}
           onClose={() => setShowLevelsModal(false)}
@@ -260,8 +283,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por Grado"
           options={grades ?? []}
-          valueKey="nombre_grado"
-          labelKey="nombre_grado"
+          valueKey="grade_name"
+          labelKey="grade_name"
           selectedValues={tempGrades}
           onChange={setTempGrades}
           onClose={() => setShowGradesModal(false)}
@@ -272,8 +295,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por Departamento"
           options={departamentos ?? []}
-          valueKey="nombre_departamento"
-          labelKey="nombre_departamento"
+          valueKey="department_name"
+          labelKey="department_name"
           selectedValues={tempDepartamentos}
           onChange={setTempDepartamentos}
           onClose={() => setShowDepartamentosModal(false)}
@@ -284,8 +307,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por Provincia"
           options={provincias ?? []}
-          valueKey="nombre_provincia"
-          labelKey="nombre_provincia"
+          valueKey="province_name"
+          labelKey="province_name"
           selectedValues={tempProvincias}
           onChange={setTempProvincias}
           onClose={() => setShowProvinciasModal(false)}
@@ -296,8 +319,8 @@ export const ReportRegisterOliPage = () => {
         <FilterModal
           label="Filtrar por Unidad Educativa"
           options={colegios ?? []}
-          valueKey="nombre_colegio"
-          labelKey="nombre_colegio"
+          valueKey="school_name"
+          labelKey="school_name"
           selectedValues={tempColegios}
           onChange={setTempColegios}
           onClose={() => setShowColegiosModal(false)}

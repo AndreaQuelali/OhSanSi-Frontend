@@ -9,7 +9,9 @@ import { saveAs } from 'file-saver';
 
 export function useReportOlimpist(selectedOlympiadId: string) {
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [originalParticipants, setOriginalParticipants] = useState<Participant[]>([]);
+  const [originalParticipants, setOriginalParticipants] = useState<
+    Participant[]
+  >([]);
   const [filters, setFilters] = useState<FilterState>({
     selectedAreas: [],
     selectedLevels: [],
@@ -31,18 +33,20 @@ export function useReportOlimpist(selectedOlympiadId: string) {
     const fetchParticipants = async () => {
       if (!selectedOlympiadId) return;
       try {
-        const response = await fetch(`${API_URL}/enrollments/participants/${selectedOlympiadId}`);
+        const response = await fetch(
+          `${API_URL}/enrollments/participants/${selectedOlympiadId}`,
+        );
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
           const formattedData = result.data.map((item: any) => ({
-            Apellido: item.apellidos,
-            Nombre: item.nombres,
-            Departamento: item.departamento,
-            Provincia: item.provincia,
-            UnidadEducativa: item.colegio,
-            Grado: item.grado,
+            Apellido: item.surnames,
+            Nombre: item.names,
+            Departamento: item.department,
+            Provincia: item.province,
+            UnidadEducativa: item.school,
+            Grado: item.grade,
             Area: item.area,
-            NivelCategoria: item.nivel,
+            NivelCategoria: item.level,
           }));
           setOriginalParticipants(formattedData);
           setParticipants(formattedData);
@@ -61,22 +65,32 @@ export function useReportOlimpist(selectedOlympiadId: string) {
   useEffect(() => {
     let filtered = [...originalParticipants];
     if (filters.selectedDepartamentos.length > 0) {
-      filtered = filtered.filter((p) => filters.selectedDepartamentos.includes(p.Departamento));
+      filtered = filtered.filter((p) =>
+        filters.selectedDepartamentos.includes(p.Departamento),
+      );
     }
     if (filters.selectedAreas.length > 0) {
       filtered = filtered.filter((p) => filters.selectedAreas.includes(p.Area));
     }
     if (filters.selectedLevels.length > 0) {
-      filtered = filtered.filter((p) => filters.selectedLevels.includes(p.NivelCategoria));
+      filtered = filtered.filter((p) =>
+        filters.selectedLevels.includes(p.NivelCategoria),
+      );
     }
     if (filters.selectedGrades.length > 0) {
-      filtered = filtered.filter((p) => filters.selectedGrades.includes(p.Grado));
+      filtered = filtered.filter((p) =>
+        filters.selectedGrades.includes(p.Grado),
+      );
     }
     if (filters.selectedProvincias.length > 0) {
-      filtered = filtered.filter((p) => filters.selectedProvincias.includes(p.Provincia));
+      filtered = filtered.filter((p) =>
+        filters.selectedProvincias.includes(p.Provincia),
+      );
     }
     if (filters.selectedColegios.length > 0) {
-      filtered = filtered.filter((p) => filters.selectedColegios.includes(p.UnidadEducativa));
+      filtered = filtered.filter((p) =>
+        filters.selectedColegios.includes(p.UnidadEducativa),
+      );
     }
     setParticipants(filtered);
   }, [filters, originalParticipants]);
@@ -88,7 +102,9 @@ export function useReportOlimpist(selectedOlympiadId: string) {
     doc.text(REPORT_OLIMPIST_MESSAGES.UNIVERSITY, 15, 12);
     doc.text(REPORT_OLIMPIST_MESSAGES.EVENT, 195, 12, { align: 'right' });
     doc.setFontSize(16);
-    doc.text(REPORT_OLIMPIST_MESSAGES.REPORT_TITLE, 105, 20, { align: 'center' });
+    doc.text(REPORT_OLIMPIST_MESSAGES.REPORT_TITLE, 105, 20, {
+      align: 'center',
+    });
     doc.setFontSize(12);
     doc.text(olympiadTitle, 105, 28, { align: 'center' });
     doc.setFontSize(10);
@@ -101,11 +117,17 @@ export function useReportOlimpist(selectedOlympiadId: string) {
     if (filters.selectedGrades.length > 0)
       filtersSummary.push(`Grado(s): ${filters.selectedGrades.join(' - ')}`);
     if (filters.selectedDepartamentos.length > 0)
-      filtersSummary.push(`Departamento(s): ${filters.selectedDepartamentos.join(' - ')}`);
+      filtersSummary.push(
+        `Departamento(s): ${filters.selectedDepartamentos.join(' - ')}`,
+      );
     if (filters.selectedProvincias.length > 0)
-      filtersSummary.push(`Provincia(s): ${filters.selectedProvincias.join(' - ')}`);
+      filtersSummary.push(
+        `Provincia(s): ${filters.selectedProvincias.join(' - ')}`,
+      );
     if (filters.selectedColegios.length > 0)
-      filtersSummary.push(`Unidad(es) Educativa(s): ${filters.selectedColegios.join(' - ')}`);
+      filtersSummary.push(
+        `Unidad(es) Educativa(s): ${filters.selectedColegios.join(' - ')}`,
+      );
     let currentY = 44;
     filtersSummary.forEach((line) => {
       doc.text(line, 15, currentY);
@@ -161,11 +183,15 @@ export function useReportOlimpist(selectedOlympiadId: string) {
       if (filters.selectedGrades.length > 0)
         summary.push(`Grado(s): ${filters.selectedGrades.join(' - ')}`);
       if (filters.selectedDepartamentos.length > 0)
-        summary.push(`Departamento(s): ${filters.selectedDepartamentos.join(' - ')}`);
+        summary.push(
+          `Departamento(s): ${filters.selectedDepartamentos.join(' - ')}`,
+        );
       if (filters.selectedProvincias.length > 0)
         summary.push(`Provincia(s): ${filters.selectedProvincias.join(' - ')}`);
       if (filters.selectedColegios.length > 0)
-        summary.push(`Unidad(es) Educativa(s): ${filters.selectedColegios.join(' - ')}`);
+        summary.push(
+          `Unidad(es) Educativa(s): ${filters.selectedColegios.join(' - ')}`,
+        );
       return summary;
     };
     const filtersSummary = getFiltersSummary();
@@ -175,7 +201,9 @@ export function useReportOlimpist(selectedOlympiadId: string) {
       doc.text(REPORT_OLIMPIST_MESSAGES.UNIVERSITY, 15, 12);
       doc.text(REPORT_OLIMPIST_MESSAGES.EVENT, 195, 12, { align: 'right' });
       doc.setFontSize(16);
-      doc.text(REPORT_OLIMPIST_MESSAGES.REPORT_TITLE, 105, 20, { align: 'center' });
+      doc.text(REPORT_OLIMPIST_MESSAGES.REPORT_TITLE, 105, 20, {
+        align: 'center',
+      });
       doc.setFontSize(12);
       doc.text(olympiadTitle, 105, 28, { align: 'center' });
       doc.setFontSize(10);
@@ -285,4 +313,4 @@ export function useReportOlimpist(selectedOlympiadId: string) {
     handlePrint,
     handleDownload,
   };
-} 
+}
