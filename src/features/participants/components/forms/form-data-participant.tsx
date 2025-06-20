@@ -15,7 +15,11 @@ import {
   FormValues,
   Grado,
 } from '../../interfaces/register-participants';
-import { useCheckOlympianCI, useCheckTutorCI, useLoadSchools } from '../../hooks';
+import {
+  useCheckOlympianCI,
+  useCheckTutorCI,
+  useLoadSchools,
+} from '../../hooks';
 import { saveFieldToLocalStorage, buildOlimpistaPayload } from '../../utils';
 import { useConfirmationParticipant } from '../../hooks';
 import { ParticipantApiService } from '../../services/participant-api';
@@ -76,14 +80,15 @@ export default function FormDataPart() {
     setCiOlimpistaFound,
   } = useCheckOlympianCI(ci, setValue, setError, clearErrors, errors);
 
-  const { isTutorRegistered, debouncedCheckCiTutorRef } = useCheckTutorCI(citutor, ci, setError, clearErrors);
+  const { isTutorRegistered, debouncedCheckCiTutorRef } = useCheckTutorCI(
+    citutor,
+    ci,
+    setError,
+    clearErrors,
+  );
 
-  const {
-    provincias,
-    colegios,
-    loadingProvincias,
-    loadingColegios,
-  } = useLoadSchools(selectedDepartment, selectedProv);
+  const { provincias, colegios, loadingProvincias, loadingColegios } =
+    useLoadSchools(selectedDepartment, selectedProv);
 
   const checkCi = () => {
     if (ci && ci.length <= 8) {
@@ -127,9 +132,7 @@ export default function FormDataPart() {
   }, [ci, ciOlimpistaFound, clearErrors, setValue]);
 
   useEffect(() => {
-    setCiConfirmed(
-      !!ci && ci.length >= 4 && VALIDATION_PATTERNS.CI.test(ci)
-    );
+    setCiConfirmed(!!ci && ci.length >= 4 && VALIDATION_PATTERNS.CI.test(ci));
   }, [ci]);
 
   useEffect(() => {
@@ -175,7 +178,7 @@ export default function FormDataPart() {
     } catch (error: any) {
       console.error(ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN, error);
       showError(
-        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN
+        error.data?.message || ERROR_MESSAGES.ERROR_REGISTRATION_OLYMPIAN,
       );
     } finally {
       closeModal();
@@ -183,7 +186,7 @@ export default function FormDataPart() {
   };
 
   const handleCloseConfirmationModal = () => {
-    closeConfirmationModal(() => window.location.reload());
+    closeConfirmationModal(() => (window.location.href = ROUTES.OLYMPIAN_MENU));
   };
 
   const handleNextStep = () => {
@@ -252,9 +255,7 @@ export default function FormDataPart() {
             `}
             >
               <div className="bg-surface border-l-4 subtitle-sm border-primary text-onBack p-4 mb-6 rounded">
-                <p>
-                  {MESSAGES.FORM_OLYMPIAN_CI_REGISTERED}
-                </p>
+                <p>{MESSAGES.FORM_OLYMPIAN_CI_REGISTERED}</p>
                 <div className="mt-3 flex justify-end">
                   <Button
                     label="Ir a registro de olimpista en áreas de competencia"
