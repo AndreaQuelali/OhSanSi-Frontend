@@ -45,7 +45,7 @@ export const Presentation = () => {
     ended: <CalendarX className="w-5 h-5" />,
   };
 
-  const availableAreas = areasData?.data.areas || [];
+  const availableAreas = areasData?.data?.areas ?? [];
 
   const handleDownload = () => {
     const link = document.createElement('a');
